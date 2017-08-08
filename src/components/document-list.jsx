@@ -9,6 +9,7 @@ const LoadMoreDocumentsStore = require('../stores/load-more-documents-store');
 const RemoveDocumentStore = require('../stores/remove-document-store');
 const InsertDocumentStore = require('../stores/insert-document-store');
 const InsertDocumentDialog = require('./insert-document-dialog');
+const SamplingMessage = require('./sampling-message');
 const Actions = require('../actions');
 
 /* eslint no-return-assign:0 */
@@ -51,7 +52,6 @@ class DocumentList extends React.Component {
   constructor(props) {
     super(props);
     const appRegistry = global.hadronApp.appRegistry;
-    this.samplingMessage = appRegistry.getComponent('Query.SamplingMessage');
     this.CollectionStore = appRegistry.getStore('App.CollectionStore');
     this.NamespaceStore = appRegistry.getStore('App.NamespaceStore');
     this.projection = false;
@@ -62,7 +62,8 @@ class DocumentList extends React.Component {
       docs: [],
       nextSkip: 0,
       namespace: this.NamespaceStore.ns,
-      loading: false
+      loading: false,
+      activeDocumentView: 'List'
     };
   }
 
@@ -203,6 +204,10 @@ class DocumentList extends React.Component {
     this.projection = state.project !== null;
   }
 
+  handleViewSwitch(view) {
+    this.setState({ activeDocumentView: view });
+  }
+
   /**
    * Get the next batch of documents. Will only fire if there are more documents
    * in the collection to load.
@@ -241,6 +246,17 @@ class DocumentList extends React.Component {
     });
   }
 
+  renderViews() {
+    if (this.state.activeDocumentView === 'List') {
+      return (
+        <ol className={LIST_CLASS} ref={(c) => this._node = c}>
+          {this.state.docs}
+          <InsertDocumentDialog />
+        </ol>
+      );
+    }
+  }
+
   /**
    * Render the list of documents.
    *
@@ -257,10 +273,7 @@ class DocumentList extends React.Component {
     return (
       <div className="column-container">
         <div className="column main">
-          <ol className={LIST_CLASS} ref={(c) => this._node = c}>
-            {this.state.docs}
-            <InsertDocumentDialog />
-          </ol>
+          {this.renderViews()}
           <div className={this.state.loading ? `${LOADING} ${IS_LOADING}` : LOADING}>
             <i className="fa fa-circle-o-notch fa-spin" aria-hidden="true"></i>
           </div>
@@ -279,7 +292,10 @@ class DocumentList extends React.Component {
       <div className="content-container content-container-documents compass-documents">
         <div className="controls-container">
           <this.queryBar buttonLabel="Find" />
-          <this.samplingMessage insertHandler={this.handleOpenInsert.bind(this)} />
+          <SamplingMessage
+            insertHandler={this.handleOpenInsert.bind(this)}
+            viewSwitchHandler={this.handleViewSwitch.bind(this)}
+            activeDocumentView={this.state.activeDocumentView} />
         </div>
         {this.renderContent()}
       </div>
