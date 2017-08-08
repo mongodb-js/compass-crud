@@ -19,9 +19,9 @@ const HELP_URLS = Object.freeze({
 });
 
 /**
- * Component for the sampling message.
+ * Component for the CRUD toolbar.
  */
-class SamplingMessage extends React.Component {
+class Toolbar extends React.Component {
 
   /**
    * The component constructor.
@@ -181,12 +181,12 @@ class SamplingMessage extends React.Component {
   }
 }
 
-SamplingMessage.displayName = 'SamplingMessage';
+Toolbar.displayName = 'Toolbar';
 
-SamplingMessage.propTypes = {
+Toolbar.propTypes = {
   activeDocumentView: PropTypes.string.isRequired,
   insertHandler: PropTypes.func.isRequired,
   viewSwitchHandler: PropTypes.func.isRequired
 };
 
-module.exports = SamplingMessage;
+module.exports = Toolbar;

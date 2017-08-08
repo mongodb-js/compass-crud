@@ -9,7 +9,7 @@ const LoadMoreDocumentsStore = require('../stores/load-more-documents-store');
 const RemoveDocumentStore = require('../stores/remove-document-store');
 const InsertDocumentStore = require('../stores/insert-document-store');
 const InsertDocumentDialog = require('./insert-document-dialog');
-const SamplingMessage = require('./sampling-message');
+const Toolbar = require('./toolbar');
 const Actions = require('../actions');
 
 /* eslint no-return-assign:0 */
@@ -292,7 +292,7 @@ class DocumentList extends React.Component {
       <div className="content-container content-container-documents compass-documents">
         <div className="controls-container">
           <this.queryBar buttonLabel="Find" />
-          <SamplingMessage
+          <Toolbar
             insertHandler={this.handleOpenInsert.bind(this)}
             viewSwitchHandler={this.handleViewSwitch.bind(this)}
             activeDocumentView={this.state.activeDocumentView} />
