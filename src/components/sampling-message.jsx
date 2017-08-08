@@ -162,6 +162,7 @@ class SamplingMessage extends React.Component {
             <ViewSwitcher
               label="View"
               buttonLabels={['List', 'Table']}
+              iconClassNames={['fa fa-list-ul', 'fa fa-table']}
               activeButton={this.props.activeDocumentView}
               onClick={this.switchDocumentView.bind(this)} />
           </div>

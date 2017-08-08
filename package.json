@@ -53,7 +53,7 @@
     "hadron-build": "^13.1.0",
     "hadron-ipc": "0.0.8",
     "hadron-react-buttons": "^1.5.0",
-    "hadron-react-components": "^1.8.0",
+    "hadron-react-components": "^1.9.1",
     "hadron-spectron": "^0.0.1",
     "hadron-type-checker": "^2.1.0",
     "jsdom": "^9.4.2",
