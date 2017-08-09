@@ -18,6 +18,12 @@ const HELP_URLS = Object.freeze({
   SCHEMA_SAMPLING: 'https://docs.mongodb.com/compass/current/faq/#what-is-sampling-and-why-is-it-used'
 });
 
+const BASE_CLASS = 'document-list';
+const ACTION_BAR_CLASS = `${BASE_CLASS}-action-bar`;
+const MESSAGE_CLASS = `${ACTION_BAR_CLASS}-message`;
+const REFRESH_CLASS = `${ACTION_BAR_CLASS}-refresh`;
+const VIEW_SWITCHER_CLASS = `${ACTION_BAR_CLASS}-view-switcher`;
+
 /**
  * Component for the CRUD toolbar.
  */
@@ -134,23 +140,27 @@ class Toolbar extends React.Component {
     const noun = pluralize('document', this.state.count);
     return (
       <div>
-        <div className="sampling-message">
-          Query returned&nbsp;<b>{this.state.count}</b>&nbsp;{noun}.&nbsp;
-          {this._loadedMessage()}
-          <InfoSprinkle
-            helpLink={HELP_URLS.DOCUMENTS}
-            onClickHandler={shell.openExternal}
-          />
-          <AnimatedIconTextButton
-            clickHandler={this.handleRefreshDocuments.bind(this)}
-            stopAnimationListenable={ResetDocumentListStore}
-            dataTestId="refresh-documents-button"
-            className="btn btn-default btn-xs sampling-message-refresh-documents"
-            iconClassName="fa fa-repeat"
-            animatingIconClassName="fa fa-refresh fa-spin"
-            text="&nbsp;Refresh" />
+        <div className={ACTION_BAR_CLASS}>
+          <div className={MESSAGE_CLASS}>
+            Query returned&nbsp;<b>{this.state.count}</b>&nbsp;{noun}.&nbsp;
+            {this._loadedMessage()}
+            <InfoSprinkle
+              helpLink={HELP_URLS.DOCUMENTS}
+              onClickHandler={shell.openExternal}
+            />
+          </div>
+          <div className={REFRESH_CLASS}>
+            <AnimatedIconTextButton
+              clickHandler={this.handleRefreshDocuments.bind(this)}
+              stopAnimationListenable={ResetDocumentListStore}
+              dataTestId="refresh-documents-button"
+              className="btn btn-default btn-xs sampling-message-refresh-documents"
+              iconClassName="fa fa-repeat"
+              animatingIconClassName="fa fa-refresh fa-spin"
+              text="&nbsp;Refresh" />
+          </div>
         </div>
-        <div className="document-list-action-bar">
+        <div className={ACTION_BAR_CLASS}>
           <this.TextWriteButton
             className="btn btn-primary btn-xs open-insert"
             dataTestId="open-insert-document-modal-button"
@@ -158,7 +168,7 @@ class Toolbar extends React.Component {
             text="Insert Document"
             tooltipId="document-is-not-writable"
             clickHandler={this.props.insertHandler} />
-          <div className="document-view-switcher">
+          <div className={VIEW_SWITCHER_CLASS}>
             <ViewSwitcher
               label="View"
               buttonLabels={['List', 'Table']}

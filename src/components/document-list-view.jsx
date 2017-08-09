@@ -28,6 +28,9 @@ const SCROLL_EVENT = 'scroll';
  */
 class DocumentListView extends React.Component {
 
+  /**
+   * Attach the scroll event, for now.
+   */
   componentDidMount() {
     this.attachScrollEvent();
   }

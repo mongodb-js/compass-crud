@@ -9,6 +9,7 @@ const RemoveDocumentStore = require('../stores/remove-document-store');
 const InsertDocumentStore = require('../stores/insert-document-store');
 const InsertDocumentDialog = require('./insert-document-dialog');
 const DocumentListView = require('./document-list-view');
+const DocumentListTableView = require('./document-list-table-view');
 const Toolbar = require('./toolbar');
 const Actions = require('../actions');
 
@@ -37,10 +38,9 @@ class DocumentList extends React.Component {
     const appRegistry = global.hadronApp.appRegistry;
     this.CollectionStore = appRegistry.getStore('App.CollectionStore');
     this.NamespaceStore = appRegistry.getStore('App.NamespaceStore');
-    this.projection = false;
     this.queryBar = appRegistry.getComponent('Query.QueryBar');
     this.QueryChangedStore = appRegistry.getStore('Query.ChangedStore');
-    this.Document = appRegistry.getRole('CRUD.Document')[0].component;
+    this.projection = false;
     this.state = {
       docs: [],
       nextSkip: 0,
@@ -191,9 +191,14 @@ class DocumentList extends React.Component {
     }
   }
 
+  /**
+   * Render the views for the document list.
+   *
+   * @returns {React.Component} The document list views.
+   */
   renderViews() {
+    const isEditable = !this.CollectionStore.isReadonly() && !this.projection;
     if (this.state.activeDocumentView === 'List') {
-      const isEditable = !this.CollectionStore.isReadonly() && !this.projection;
       return (
         <DocumentListView
           docs={this.state.docs}
@@ -201,6 +206,9 @@ class DocumentList extends React.Component {
           scrollHandler={this.handleScroll.bind(this)} />
       );
     }
+    return (
+      <DocumentListTableView docs={this.state.docs} isEditable={isEditable} />
+    );
   }
 
   /**
