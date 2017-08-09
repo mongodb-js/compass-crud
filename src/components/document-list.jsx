@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const React = require('react');
-const uuid = require('uuid');
 const ObjectID = require('bson').ObjectID;
 const Action = require('../actions');
 const { StatusRow } = require('hadron-react-components');
@@ -9,20 +8,9 @@ const LoadMoreDocumentsStore = require('../stores/load-more-documents-store');
 const RemoveDocumentStore = require('../stores/remove-document-store');
 const InsertDocumentStore = require('../stores/insert-document-store');
 const InsertDocumentDialog = require('./insert-document-dialog');
+const DocumentListView = require('./document-list-view');
 const Toolbar = require('./toolbar');
 const Actions = require('../actions');
-
-/* eslint no-return-assign:0 */
-
-/**
- * The full document list container class.
- */
-const LIST_CLASS = 'document-list';
-
-/**
- * The scroll event name.
- */
-const SCROLL_EVENT = 'scroll';
 
 /**
  * The loading more class.
@@ -33,11 +21,6 @@ const LOADING = 'loading-indicator';
  * Loading indicator is loading.
  */
 const IS_LOADING = `${LOADING}-is-loading`;
-
-/**
- * The list item test id.
- */
-const LIST_ITEM_TEST_ID = 'document-list-item';
 
 /**
  * Component for the entire document list.
@@ -71,7 +54,6 @@ class DocumentList extends React.Component {
    * Fetch the state when the component mounts.
    */
   componentDidMount() {
-    this.attachScrollEvent();
     this.unsubscribeReset = ResetDocumentListStore.listen(this.handleReset.bind(this));
     this.unsubscribeLoadMore = LoadMoreDocumentsStore.listen(this.handleLoadMore.bind(this));
     this.unsubscribeRemove = RemoveDocumentStore.listen(this.handleRemove.bind(this));
@@ -90,16 +72,6 @@ class DocumentList extends React.Component {
   }
 
   /**
-   * Attach the scroll event to the parent container.
-   */
-  attachScrollEvent() {
-    this._node.parentNode.parentNode.addEventListener(
-      SCROLL_EVENT,
-      this.handleScroll.bind(this)
-    );
-  }
-
-  /**
    * Handle the loading of more documents.
    *
    * @param {Object} error - Error when trying to load more documents.
@@ -110,7 +82,7 @@ class DocumentList extends React.Component {
     // list and increment the page. The loaded count is incremented
     // by the number of new documents.
     this.setState({
-      docs: this.state.docs.concat(this.renderDocuments(documents)),
+      docs: this.state.docs.concat(documents),
       nextSkip: (this.state.nextSkip + documents.length),
       loadedCount: (this.state.loadedCount + documents.length),
       error: error,
@@ -133,7 +105,7 @@ class DocumentList extends React.Component {
       // the documents as the filter changed. The loaded count and
       // total count are reset here as well.
       this.setState({
-        docs: this.renderDocuments(documents),
+        docs: documents,
         nextSkip: documents.length,
         count: count,
         loadedCount: documents.length,
@@ -192,7 +164,7 @@ class DocumentList extends React.Component {
   handleInsert(error, doc) {
     if (!error) {
       this.setState({
-        docs: this.state.docs.concat(this.renderDocuments([doc])),
+        docs: this.state.docs.concat([doc]),
         nextSkip: (this.state.nextSkip + 1),
         loadedCount: (this.state.loadedCount + 1),
         count: this.state.count + 1
@@ -219,40 +191,14 @@ class DocumentList extends React.Component {
     }
   }
 
-  /**
-   * Get the key for a doc.
-   *
-   * @returns {String} The unique key.
-   */
-  _key() {
-    return uuid.v4();
-  }
-
-  /**
-   * Get the document list item components.
-   *
-   * @param {Array} docs - The raw documents.
-   *
-   * @return {Array} The document list item components.
-   */
-  renderDocuments(docs) {
-    return _.map(docs, (doc) => {
-      const editable = !this.CollectionStore.isReadonly() && !this.projection;
-      return (
-        <li className="document-list-item" data-test-id={LIST_ITEM_TEST_ID} key={this._key()}>
-          <this.Document doc={doc} key={this._key()} editable={editable} />
-        </li>
-      );
-    });
-  }
-
   renderViews() {
     if (this.state.activeDocumentView === 'List') {
+      const isEditable = !this.CollectionStore.isReadonly() && !this.projection;
       return (
-        <ol className={LIST_CLASS} ref={(c) => this._node = c}>
-          {this.state.docs}
-          <InsertDocumentDialog />
-        </ol>
+        <DocumentListView
+          docs={this.state.docs}
+          isEditable={isEditable}
+          scrollHandler={this.handleScroll.bind(this)} />
       );
     }
   }
@@ -298,6 +244,7 @@ class DocumentList extends React.Component {
             activeDocumentView={this.state.activeDocumentView} />
         </div>
         {this.renderContent()}
+        <InsertDocumentDialog />
       </div>
     );
   }
