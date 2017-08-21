@@ -231,7 +231,10 @@ class EditableDocument extends React.Component {
    * Handle clicking the expand button.
    */
   handleExpandClick() {
-    this.setState({ expanded: !this.state.expanded });
+    require('marky').mark('EditableDocument - Show N more fields');
+    this.setState({ expanded: !this.state.expanded }, () => {
+      require('marky').stop('EditableDocument - Show N more fields');
+    });
   }
 
   /**
