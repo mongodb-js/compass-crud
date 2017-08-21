@@ -332,7 +332,10 @@ class EditableDocument extends React.Component {
    * Handle clicking the expand all button.
    */
   handleExpandAll() {
-    this.setState({ expandAll: !this.state.expandAll });
+    require('marky').mark('EditableDocument - Expand All');
+    this.setState({ expandAll: !this.state.expandAll }, () => {
+      require('marky').stop('EditableDocument - Expand All');
+    });
   }
 
   /**
