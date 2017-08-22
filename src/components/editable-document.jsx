@@ -399,6 +399,9 @@ class EditableDocument extends React.Component {
           rootFieldIndex={this.state.expanded ? 0 : index} />
       ));
       index++;
+      if (index > FIELD_LIMIT) {
+        break;
+      }
     }
     return components;
   }
