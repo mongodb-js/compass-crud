@@ -287,7 +287,10 @@ class EditableDocument extends React.Component {
    * Handles canceling edits to the document.
    */
   handleCancel() {
-    this.setState({ editing: false });
+    require('marky').mark('EditableDocument - Cancel');
+    this.setState({ editing: false }, () => {
+      require('marky').stop('EditableDocument - Cancel');
+    });
   }
 
   /**
@@ -315,7 +318,10 @@ class EditableDocument extends React.Component {
    * Handle the edit click.
    */
   handleEdit() {
-    this.setState({ editing: true, expanded: true });
+    require('marky').mark('EditableDocument - Edit');
+    this.setState({ editing: true, expanded: true }, () => {
+      require('marky').stop('EditableDocument - Edit');
+    });
   }
 
   /**
