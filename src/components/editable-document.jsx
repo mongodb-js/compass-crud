@@ -255,7 +255,6 @@ class EditableDocument extends React.Component {
    * Handles a trigger from the store.
    *
    * @param {Boolean} success - If the update succeeded.
-   * @param {Object} object - The error or document.
    */
   handleStoreRemove(success) {
     if (success) {
@@ -264,7 +263,7 @@ class EditableDocument extends React.Component {
   }
 
   /**
-   * Handle a sucessful update.
+   * Handle a successful update.
    *
    * @param {Object} doc - The updated document.
    */
@@ -277,9 +276,7 @@ class EditableDocument extends React.Component {
   }
 
   /**
-   * Handle a sucessful update.
-   *
-   * @param {Object} doc - The updated document.
+   * Handle a successful update.
    */
   handleRemoveSuccess() {
     this.setState({ deleting: false, deleteFinished: true });
