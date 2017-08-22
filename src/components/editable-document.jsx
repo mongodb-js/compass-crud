@@ -268,10 +268,13 @@ class EditableDocument extends React.Component {
    * @param {Object} doc - The updated document.
    */
   handleUpdateSuccess(doc) {
+    require('marky').mark('EditableDocument - Handle update success');
     this.doc = EditableDocument.loadDocument(doc);
     this.subscribeToDocumentEvents();
     setTimeout(() => {
-      this.setState({ editing: false });
+      this.setState({ editing: false }, () => {
+        require('marky').stop('EditableDocument - Handle update success');
+      });
     }, 500);
   }
 
