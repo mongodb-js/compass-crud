@@ -4,20 +4,11 @@ const Reflux = require('reflux');
 const HadronDocument = require('hadron-document');
 const Element = require('hadron-document').Element;
 const Actions = require('../actions');
+const ExpansionBar = require('./expansion-bar');
 const EditableElement = require('./editable-element');
 const DocumentActions = require('./document-actions');
 const DocumentFooter = require('./document-footer');
 const RemoveDocumentFooter = require('./remove-document-footer');
-
-/**
- * The arrow up class.
- */
-const ARROW_UP = 'fa fa-arrow-up';
-
-/**
- * The arrow down class.
- */
-const ARROW_DOWN = 'fa fa-arrow-down';
 
 /**
  * The base class.
@@ -39,11 +30,6 @@ const INITIAL_FIELD_LIMIT = 25;
  * "Show N more fields" button click.
  */
 const MAX_EXTRA_FIELDS = 1000;
-
-/**
- * The expander class.
- */
-const EXPANDER = 'btn btn-default btn-xs';
 
 /**
  * The test id.
@@ -69,7 +55,7 @@ class EditableDocument extends React.Component {
     super(props);
     this.doc = EditableDocument.loadDocument(props.doc);
     this.state = {
-      renderFieldsLimit: INITIAL_FIELD_LIMIT,
+      renderSize: INITIAL_FIELD_LIMIT,
       editing: false,
       deleting: false,
       deleteFinished: false,
@@ -102,6 +88,15 @@ class EditableDocument extends React.Component {
     this.unsubscribeUpdate();
     this.unsubscribeRemove();
     this.unsubscribeFromDocumentEvents();
+  }
+
+  setRenderSize(newLimit) {
+    require('marky').mark('EditableDocument - Show/Hide N fields');
+    this.setState({
+      renderSize: newLimit
+    }, () => {
+      require('marky').mark('EditableDocument - Show/Hide N fields');
+    });
   }
 
   /**
@@ -230,27 +225,6 @@ class EditableDocument extends React.Component {
       handleResult: function(error, result) {
         return (error) ? this.trigger(false, error) : this.trigger(true, result);
       }
-    });
-  }
-
-  /**
-   * Handle clicking the expand button.
-   */
-  handleHideClick() {
-    require('marky').mark('EditableDocument - Hide N fields');
-    this.setState({ renderFieldsLimit: INITIAL_FIELD_LIMIT }, () => {
-      require('marky').stop('EditableDocument - Hide N fields');
-    });
-  }
-
-  /**
-   * Handle clicking the expand button.
-   */
-  handleExpandClick() {
-    require('marky').mark('EditableDocument - Show N more fields');
-    const newLimit = Math.min(this.state.renderFieldsLimit + MAX_EXTRA_FIELDS, this.doc.elements.size);
-    this.setState({ renderFieldsLimit: newLimit}, () => {
-      require('marky').stop('EditableDocument - Show N more fields');
     });
   }
 
@@ -416,49 +390,22 @@ class EditableDocument extends React.Component {
         />
       ));
       index++;
-      if (index >= this.state.renderFieldsLimit) {
+      if (index >= this.state.renderSize) {
         if (!this.state.editing && !this.state.deleting) {
           break;
         }
       }
     }
-    components.push(this.renderExpansion());
-    return components;
-  }
-
-  /**
-   * Render the show/hide fields bar.
-   *
-   * Clicking "Show N more fields" adds up to MAX_EXTRA_FIELDS at a time,
-   * clicking "Hide M fields" hides drops back to INITIAL_FIELD_LIMIT.
-   *
-   * @returns {React.Component} The expander bar.
-   */
-  renderExpansion() {
-    const components = [];
-    const totalFields = this.doc.elements.size;
-    if (totalFields > INITIAL_FIELD_LIMIT && !this.state.editing && !this.state.deleting) {
-      const addFields = Math.min(totalFields - this.state.renderFieldsLimit, MAX_EXTRA_FIELDS);
-      const removeFields = this.state.renderFieldsLimit - INITIAL_FIELD_LIMIT;
-      const showText = `Show ${addFields} more fields`;
-      const hideText = `Hide ${removeFields} fields`;
-      if (this.state.renderFieldsLimit < totalFields) {
-        components.push(
-          <button className={EXPANDER} onClick={this.handleExpandClick.bind(this)}>
-            <i className={ARROW_DOWN} aria-hidden="true" />
-            <span>{showText}</span>
-          </button>
-        );
-      }
-      if (this.state.renderFieldsLimit > INITIAL_FIELD_LIMIT) {
-        components.push(
-          <button className={EXPANDER} onClick={this.handleHideClick.bind(this)}>
-            <i className={ARROW_UP} aria-hidden="true" />
-            <span>{hideText}</span>
-          </button>
-        );
-      }
-    }
+    const everythingSize = this.doc.elements.size;
+    components.push(<ExpansionBar
+      deleting={this.state.deleting}
+      editing={this.state.editing}
+      everythingSize={everythingSize}
+      initialSize={INITIAL_FIELD_LIMIT}
+      perClickSize={MAX_EXTRA_FIELDS}
+      renderSize={this.state.renderSize}
+      setRenderSize={this.setRenderSize.bind(this)}
+    />);
     return components;
   }
 
