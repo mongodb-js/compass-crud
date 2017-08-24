@@ -55,6 +55,7 @@ dataService.connect((error, ds) => {
 
   // Set the namespace for the CRUD plugin.
   CollectionStore.setCollection({ _id: 'compass-crud.test' });
+  QueryChangedStore.onQueryStoreChanged({ns: "compass-crud.test"});
 });
 
 ReactDOM.render(
