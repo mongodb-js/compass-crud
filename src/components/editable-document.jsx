@@ -26,12 +26,6 @@ const ELEMENTS = `${BASE}-elements`;
 const INITIAL_FIELD_LIMIT = 25;
 
 /**
- * The maximum number of extra fields to render per
- * "Show N more fields" button click.
- */
-const MAX_EXTRA_FIELDS = 1000;
-
-/**
  * The test id.
  */
 const TEST_ID = 'editable-document';
@@ -402,7 +396,6 @@ class EditableDocument extends React.Component {
       editing={this.state.editing}
       everythingSize={everythingSize}
       initialSize={INITIAL_FIELD_LIMIT}
-      perClickSize={MAX_EXTRA_FIELDS}
       renderSize={this.state.renderSize}
       setRenderSize={this.setRenderSize.bind(this)}
     />);

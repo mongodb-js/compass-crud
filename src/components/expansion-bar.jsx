@@ -16,6 +16,12 @@ const ARROW_DOWN = 'fa fa-arrow-down';
  */
 const ARROW_UP = 'fa fa-arrow-up';
 
+/**
+ * The maximum number of extra elements to render per
+ * "Show N more fields" button click.
+ */
+const MAX_EXTRA_ELEMENTS = 1000;
+
 class ExpansionBar extends React.PureComponent {
 
   /**
@@ -84,9 +90,13 @@ ExpansionBar.propTypes = {
   editing: PropTypes.bool.isRequired,
   everythingSize: PropTypes.number.isRequired,  // Maximum number of elements to render
   initialSize: PropTypes.number.isRequired,     // Initial number of elements to render
-  perClickSize: PropTypes.number.isRequired,    // Extra elements to render per click
+  perClickSize: PropTypes.number,               // Extra elements to render per click
   renderSize: PropTypes.number.isRequired,      // Current number of elements to be rendered
   setRenderSize: PropTypes.func.isRequired      // Callback to allow the new renderSize to be set outside the component
+};
+
+ExpansionBar.defaultProps = {
+  perClickSize: MAX_EXTRA_ELEMENTS
 };
 
 module.exports = ExpansionBar;
