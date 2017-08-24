@@ -35,7 +35,8 @@ class ExpansionBar extends React.PureComponent {
    * Handle clicking the "Show N more fields" button.
    */
   handleShowClick() {
-    const newSize = Math.min(this.props.renderSize + this.props.perClickSize, this.props.everythingSize);
+    const newSize = Math.min(this.props.renderSize + this.props.perClickSize,
+                             this.props.everythingSize);
     this.props.setRenderSize(newSize);
   }
 
@@ -71,7 +72,8 @@ class ExpansionBar extends React.PureComponent {
     const components = [];
     const total = this.props.everythingSize;
     if (total > this.props.initialSize) {
-      const showMoreFields = Math.min(total - this.props.renderSize, this.props.perClickSize);
+      const showMoreFields = Math.min(total - this.props.renderSize,
+                                      this.props.perClickSize);
       const hideFields = this.props.renderSize - this.props.initialSize;
       if (this.props.renderSize < total) {
         components.push(this.renderShowMoreFieldsButton(showMoreFields));
