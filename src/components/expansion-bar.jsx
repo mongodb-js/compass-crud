@@ -90,7 +90,7 @@ class ExpansionBar extends React.PureComponent {
         components.push(this.renderHideFieldsButton(hideFields));
       }
     }
-    return <div>{components}</div>;
+    return <div className="expansion-bar">{components}</div>;
   }
 }
 

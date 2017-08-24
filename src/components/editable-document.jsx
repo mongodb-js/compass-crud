@@ -390,19 +390,26 @@ class EditableDocument extends React.Component {
         }
       }
     }
+    return components;
+  }
+
+  /**
+   * Render the show/hide fields bar.
+   *
+   * @returns {React.Component} The expansion bar.
+   */
+  renderExpansion() {
     const everythingSize = this.doc.elements.size;
     let initialSize = INITIAL_FIELD_LIMIT;
     if (this.state.deleting || this.state.editing) {
       initialSize = everythingSize;
     }
-    components.push(<ExpansionBar
-      key="EXPANSION_BAR"
+    return (<ExpansionBar
       everythingSize={everythingSize}
       initialSize={initialSize}
       renderSize={this.state.renderSize}
       setRenderSize={this.setRenderSize.bind(this)}
     />);
-    return components;
   }
 
   /**
@@ -440,6 +447,7 @@ class EditableDocument extends React.Component {
         <ol className={ELEMENTS}>
           {this.renderElements()}
         </ol>
+        {this.renderExpansion()}
         {this.renderActions()}
         {this.renderFooter()}
       </div>
