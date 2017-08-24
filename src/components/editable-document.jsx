@@ -391,11 +391,13 @@ class EditableDocument extends React.Component {
       }
     }
     const everythingSize = this.doc.elements.size;
+    let initialSize = INITIAL_FIELD_LIMIT;
+    if (this.state.deleting || this.state.editing) {
+      initialSize = everythingSize;
+    }
     components.push(<ExpansionBar
-      deleting={this.state.deleting}
-      editing={this.state.editing}
       everythingSize={everythingSize}
-      initialSize={INITIAL_FIELD_LIMIT}
+      initialSize={initialSize}
       renderSize={this.state.renderSize}
       setRenderSize={this.setRenderSize.bind(this)}
     />);

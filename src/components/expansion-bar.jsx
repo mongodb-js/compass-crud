@@ -70,7 +70,7 @@ class ExpansionBar extends React.PureComponent {
   render() {
     const components = [];
     const total = this.props.everythingSize;
-    if (total > this.props.initialSize && !this.props.editing && !this.props.deleting) {
+    if (total > this.props.initialSize) {
       const showMoreFields = Math.min(total - this.props.renderSize, this.props.perClickSize);
       const hideFields = this.props.renderSize - this.props.initialSize;
       if (this.props.renderSize < total) {
@@ -85,9 +85,6 @@ class ExpansionBar extends React.PureComponent {
 }
 
 ExpansionBar.propTypes = {
-  // TODO: Can we generalise the deleting/editing to make this component easier to understand?
-  deleting: PropTypes.bool.isRequired,
-  editing: PropTypes.bool.isRequired,
   everythingSize: PropTypes.number.isRequired,  // Maximum number of elements to render
   initialSize: PropTypes.number.isRequired,     // Initial number of elements to render
   perClickSize: PropTypes.number,               // Extra elements to render per click
