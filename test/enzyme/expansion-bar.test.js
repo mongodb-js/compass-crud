@@ -100,11 +100,11 @@ describe('<ExpansionBar />', () => {
         expect(hideSize).to.be.equal(5);
         bar = mount(<ExpansionBar {...props} />);
       });
-      it('renders a show more fields button', () => {
+      it('does not render a show more fields button', () => {
         const downButtons = bar.find('.fa-arrow-down');
         expect(downButtons.length).to.equal(0);
       });
-      it('does not render a hide fields button', () => {
+      it('renders a hide fields button', () => {
         const upButtons = bar.find('.fa-arrow-up').parent();
         expect(upButtons.text()).to.be.equal(`Hide ${hideSize} fields`);
       });
