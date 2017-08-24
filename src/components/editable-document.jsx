@@ -396,6 +396,7 @@ class EditableDocument extends React.Component {
       initialSize = everythingSize;
     }
     components.push(<ExpansionBar
+      key="EXPANSION_BAR"
       everythingSize={everythingSize}
       initialSize={initialSize}
       renderSize={this.state.renderSize}

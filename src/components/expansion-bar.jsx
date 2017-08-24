@@ -43,7 +43,11 @@ class ExpansionBar extends React.PureComponent {
   renderShowMoreFieldsButton(showMoreFields) {
     const showText = `Show ${showMoreFields} more fields`;
     return (
-      <button className={EXPANDER} onClick={this.handleShowClick.bind(this)}>
+      <button
+        key="EXPANSION_BAR_SHOW"
+        className={EXPANDER}
+        onClick={this.handleShowClick.bind(this)}
+      >
         <i className={ARROW_DOWN} aria-hidden="true" />
         <span>{showText}</span>
       </button>
@@ -53,7 +57,11 @@ class ExpansionBar extends React.PureComponent {
   renderHideFieldsButton(hideFields) {
     const hideText = `Hide ${hideFields} fields`;
     return (
-      <button className={EXPANDER} onClick={this.handleHideClick.bind(this)}>
+      <button
+        key="EXPANSION_BAR_HIDE"
+        className={EXPANDER}
+        onClick={this.handleHideClick.bind(this)}
+      >
         <i className={ARROW_UP} aria-hidden="true" />
         <span>{hideText}</span>
       </button>
