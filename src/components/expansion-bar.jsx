@@ -29,8 +29,11 @@ class ExpansionBar extends React.PureComponent {
    */
   handleHideClick() {
     if (this.onHideScrollParentIntoView) {
-      // Avoid loading more documents on clicking the Hide button
-      this.onHideScrollParentIntoView.parentElement.scrollIntoView();
+      const parent = this.onHideScrollParentIntoView.parentElement;
+      if (typeof(parent.scrollIntoView) === 'function') {
+        // Avoid loading more documents on clicking the Hide button
+        parent.scrollIntoView();
+      }
     }
     this.props.setRenderSize(this.props.initialSize);
   }
