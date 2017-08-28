@@ -47,7 +47,7 @@ class ReadonlyDocument extends React.Component {
     this.setState({
       renderSize: newLimit
     }, () => {
-      require('marky').mark('ReadonlyDocument - Show/Hide N fields');
+      require('marky').stop('ReadonlyDocument - Show/Hide N fields');
     });
   }
 

@@ -89,7 +89,7 @@ class EditableDocument extends React.Component {
     this.setState({
       renderSize: newLimit
     }, () => {
-      require('marky').mark('EditableDocument - Show/Hide N fields');
+      require('marky').stop('EditableDocument - Show/Hide N fields');
     });
   }
 
