@@ -28,6 +28,10 @@ class ExpansionBar extends React.PureComponent {
    * Handle clicking the "Hide N fields" button.
    */
   handleHideClick() {
+    if (this.onHideScrollParentIntoView) {
+      // Avoid loading more documents on clicking the Hide button
+      this.onHideScrollParentIntoView.parentElement.scrollIntoView();
+    }
     this.props.setRenderSize(this.props.initialSize);
   }
 
@@ -90,7 +94,14 @@ class ExpansionBar extends React.PureComponent {
         components.push(this.renderHideFieldsButton(hideFields));
       }
     }
-    return <div className="expansion-bar">{components}</div>;
+    return (
+      <div
+        ref={(div) => { this.onHideScrollParentIntoView = div; }}
+        className="expansion-bar"
+      >
+        {components}
+      </div>
+    );
   }
 }
 
