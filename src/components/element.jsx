@@ -114,7 +114,7 @@ class Element extends React.Component {
    */
   renderElement() {
     return (
-      <li className={this.renderStyle(CLASS)}>
+      <li className={CLASS}>
         <div className={FIELD}>
           {this.props.element.currentKey}
         </div>
