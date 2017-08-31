@@ -48,6 +48,7 @@ class CellRenderer extends React.Component {
     this.element = props.value;
 
     this._editors = initEditors(this.element);
+    console.log(util.inspect(props));
   }
 
   componentDidMount() {
@@ -131,7 +132,10 @@ class CellRenderer extends React.Component {
     )
   }
 
+  // add render for empty cell
+
   render() {
+    // If this.elements === undefined render empty cell
     if (!this.element.isCurrentTypeValid()) {
       return this.renderInvalidCell();
     }

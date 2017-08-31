@@ -54,8 +54,8 @@ dataService.connect((error, ds) => {
   global.hadronApp.appRegistry.onConnected(error, ds);
 
   // Set the namespace for the CRUD plugin.
-  CollectionStore.setCollection({ _id: 'compass-crud.test' });
-  QueryChangedStore.onQueryStoreChanged({ns: "compass-crud.test"});
+  CollectionStore.setCollection({ _id: 'emptyfields.test' });
+  QueryChangedStore.onQueryStoreChanged({ns: "emptyfields.test"});
 });
 
 ReactDOM.render(
