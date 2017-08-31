@@ -97,7 +97,6 @@ class DocumentListTableView extends React.Component {
         }
       }
       _.map(this.props.docs[i], function(val, key) {
-
         headers[key] = {
           headerName: key,
           valueGetter: function(params) {
@@ -124,7 +123,6 @@ class DocumentListTableView extends React.Component {
         // }
       });
     }
-    console.log("HEADERs", headers)
     return Object.values(headers);
   }
 
