@@ -109,8 +109,6 @@ class CellRenderer extends React.Component {
    * @returns {String} The element style.
    */
   style(base = BEM_BASE) {
-    if (this.element === undefined) return;
-
     let style = base;
     if (this.element.isAdded()) {
       style = style.concat(` ${base}-${ADDED}`);
@@ -137,9 +135,7 @@ class CellRenderer extends React.Component {
   renderEmptyCell() {
     return (
       <div className="table-cell">
-        <div className={this.style()}>
           No field
-        </div>
       </div>
     );
   }
