@@ -142,8 +142,17 @@ class DocumentListTableView extends React.Component {
       }
     };
 
+    function getTypes(types, type) {
+      if (types.indexOf(type) === -1) types.push(type);
+      else return;
+    }
+
     for (let i = 0; i < this.props.docs.length; i++) {
+      const types = [];
+
       _.map(this.props.docs[i], function(val, key) {
+        getTypes(types, TypeChecker.type(val));
+
         headers[key] = {
           headerName: key,
           // width: width, TODO: prevents horizontal scrolling
@@ -154,7 +163,8 @@ class DocumentListTableView extends React.Component {
           headerComponentFramework: HeaderComponent,
           headerComponentParams: {
             isRowNumber: false,
-            bsonType: TypeChecker.type(val)
+            bsonType: TypeChecker.type(val),
+            mixedType: types.length > 1 ? true : false
           },
 
           cellRendererFramework: CellRenderer,

@@ -14,7 +14,8 @@ class HeaderCellRenderer extends React.Component {
     if (this.props.isRowNumber) return null;
     return (
       <div className="table-view-header-cell">
-        <b>{this.props.displayName}</b> {this.props.bsonType}
+        <b>{this.props.displayName}</b>
+        {this.props.mixedType ? 'Mixed' : this.props.bsonType}
       </div>
     );
   }
@@ -23,6 +24,7 @@ class HeaderCellRenderer extends React.Component {
 HeaderCellRenderer.propTypes = {
   displayName: PropTypes.string.isRequired,
   bsonType: PropTypes.string,
+  mixedType: PropTypes.bool,
   isRowNumber: PropTypes.bool
 };
 
