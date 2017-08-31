@@ -1,11 +1,11 @@
 const React = require('react');
 const PropTypes = require('prop-types');
-// const _ = require('lodash');
-const util = require('util');
 const getComponent = require('hadron-react-bson');
 const { Element } = require('hadron-document');
+
 const initEditors = require('../editor/');
-const { Tooltip } = require('hadron-react-components');
+
+// const util = require('util');
 
 /**
  * The BEM base style name for the element.
@@ -52,52 +52,51 @@ class CellRenderer extends React.Component {
   }
 
   componentDidMount() {
-    this.unsubscribeAdded = this.handleAdded.bind(this);
-    this.unsubscribeConverted = this.handleConverted.bind(this);
+    // this.unsubscribeAdded = this.handleAdded.bind(this);
+    // this.unsubscribeConverted = this.handleConverted.bind(this);
+    // this.unsubscribeRemoved = this.handleRemoved.bind(this);
+    // this.unsubscribeReverted = this.handleReverted.bind(this);
+    // this.unsubscribeInvalid = this.handleInvalid.bind(this);
     this.unsubscribeEdited = this.handleEdited.bind(this);
-    this.unsubscribeRemoved = this.handleRemoved.bind(this);
-    this.unsubscribeReverted = this.handleReverted.bind(this);
-    this.unsubscribeInvalid = this.handleInvalid.bind(this);
 
-    this.element.on(Element.Events.Added, this.unsubscribeAdded);
-    this.element.on(Element.Events.Converted, this.unsubscribeConverted);
+    // this.element.on(Element.Events.Added, this.unsubscribeAdded);
+    // this.element.on(Element.Events.Converted, this.unsubscribeConverted);
+    // this.element.on(Element.Events.Removed, this.unsubscribeRemoved);
+    // this.element.on(Element.Events.Reverted, this.unsubscribeReverted);
+    // this.element.on(Element.Events.Invalid, this.unsubscribeInvalid);
     this.element.on(Element.Events.Edited, this.unsubscribeEdited);
-    this.element.on(Element.Events.Removed, this.unsubscribeRemoved);
-    this.element.on(Element.Events.Reverted, this.unsubscribeReverted);
-    this.element.on(Element.Events.Invalid, this.unsubscribeInvalid);
   }
 
   /**
    * Unsubscribe from the events.
    */
   componentWillUnmount() {
-    this.element.removeListener(Element.Events.Added, this.unsubscribeAdded);
-    this.element.removeListener(Element.Events.Converted, this.unsubscribeConverted);
+    // this.element.removeListener(Element.Events.Added, this.unsubscribeAdded);
+    // this.element.removeListener(Element.Events.Converted, this.unsubscribeConverted);
+    // this.element.removeListener(Element.Events.Removed, this.unsubscribeRemoved);
+    // this.element.removeListener(Element.Events.Reverted, this.unsubscribeReverted);
+    // this.element.removeListener(Element.Events.Invalid, this.unsubscribeInvalid);
     this.element.removeListener(Element.Events.Edited, this.unsubscribeEdited);
-    this.element.removeListener(Element.Events.Removed, this.unsubscribeRemoved);
-    this.element.removeListener(Element.Events.Reverted, this.unsubscribeReverted);
-    this.element.removeListener(Element.Events.Invalid, this.unsubscribeInvalid);
   }
 
-  handleAdded() {
-    console.log("handle added");
-  }
-  handleConverted() {
-    console.log("handle converted");
-  }
-  handleRemoved() {
-    console.log("handle removed");
-  }
-  handleReverted() {
-    console.log("handle reverted");
-  }
-  handleInvalid() {
-    console.log("handle invalid");
-  }
+  // handleAdded() {
+  //   console.log("handle added");
+  // }
+  // handleConverted() {
+  //   console.log("handle converted");
+  // }
+  // handleRemoved() {
+  //   console.log("handle removed");
+  // }
+  // handleReverted() {
+  //   console.log("handle reverted");
+  // }
+  // handleInvalid() {
+  //   console.log("handle invalid");
+  // }
 
   handleEdited() {
-    //TODO: set for consistency, state is only really used for update rows.
-    console.log("handle edited");
+    // TODO: set for consistency, state is only really used for update rows.
     this.props.node.data.state = 'modified';
   }
 
@@ -129,7 +128,7 @@ class CellRenderer extends React.Component {
           {this.element.currentValue}
         </div>
       </div>
-    )
+    );
   }
 
   // add render for empty cell
@@ -159,7 +158,7 @@ class CellRenderer extends React.Component {
 CellRenderer.propTypes = {
   api: PropTypes.any,
   value: PropTypes.any,
-  isEditable: PropTypes.bool.isRequired
+  node: PropTypes.any
 };
 
 CellRenderer.displayName = 'CellRenderer';
