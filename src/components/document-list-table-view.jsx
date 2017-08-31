@@ -133,21 +133,20 @@ class DocumentListTableView extends React.Component {
     // const width = this.gridOptions.context.column_width;
     const isEditable = this.props.isEditable;
 
+    headers.hadronRowNumber = {
+      headerName: 'Row',
+      field: 'rowNumber',
+      headerComponentFramework: HeaderComponent,
+      headerComponentParams: {
+        isRowNumber: true
+      }
+    };
+
     for (let i = 0; i < this.props.docs.length; i++) {
-      headers.hadronRowNumber = {
-        headerName: 'Row',
-        field: 'rowNumber',
-        headerComponentFramework: HeaderComponent,
-        headerComponentParams: {
-          isRowNumber: true,
-          bsonType: null
-        }
-      };
       _.map(this.props.docs[i], function(val, key) {
         headers[key] = {
           headerName: key,
           // width: width, TODO: prevents horizontal scrolling
-
           valueGetter: function(params) {
             return params.data.hadronDocument.get(key);
           },
