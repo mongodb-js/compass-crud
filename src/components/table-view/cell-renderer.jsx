@@ -114,9 +114,10 @@ class CellRenderer extends React.Component {
       style = style.concat(` ${base}-${ADDED}`);
     } else if (this.element.isEdited()) {
       style = style.concat(` ${base}-${EDITED}`);
-    } else if (this.element.isRemoved()) {
-      style = style.concat(` ${base}-${REMOVED}`);
     }
+    // else if (this.element.isRemoved()) {
+    //   style = style.concat(` ${base}-${REMOVED}`);
+    // }
     return style;
   }
 
@@ -134,8 +135,16 @@ class CellRenderer extends React.Component {
 
   renderEmptyCell() {
     return (
-      <div className="table-cell">
-          No field
+      <div className="table-view-cell-no-field">
+        No field
+      </div>
+    );
+  }
+
+  renderDeletedCell() {
+    return (
+      <div className="table-view-cell-deleted">
+        Deleted field
       </div>
     );
   }
@@ -146,6 +155,9 @@ class CellRenderer extends React.Component {
     }
     if (!this.element.isCurrentTypeValid()) {
       return this.renderInvalidCell();
+    }
+    if (this.element.isRemoved()) {
+      return this.renderDeletedCell();
     }
 
     const component = getComponent(this.element.currentType);

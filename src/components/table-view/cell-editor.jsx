@@ -90,6 +90,10 @@ class CellEditor extends React.Component {
 
   handleRemoveField() {
     console.log('remove field');
+    if (this.element.isRemovable()) {
+      this.element.remove();
+      this.props.api.stopEditing();
+    }
   }
 
   handleDrillDown() {
@@ -221,13 +225,13 @@ class CellEditor extends React.Component {
         {this.renderDrillDown()}
         <button
           className="table-view-cell-editor-button"
-          onClick={this.handleAddField}
+          onClick={this.handleAddField.bind(this)}
         >
           <FontAwesome name="plus-square-o" className="table-view-cell-editor-button-icon"/>
         </button>
         <button
         className="table-view-cell-editor-button"
-        onClick={this.handleRemoveField}
+        onClick={this.handleRemoveField.bind(this)}
         >
           <FontAwesome name="trash" className="table-view-cell-editor-button-icon"/>
         </button>
@@ -248,7 +252,8 @@ class CellEditor extends React.Component {
 
 CellEditor.propTypes = {
   reactContainer: PropTypes.any,
-  value: PropTypes.any
+  value: PropTypes.any,
+  api: PropTypes.any
 };
 
 CellEditor.displayName = 'CellEditor';
