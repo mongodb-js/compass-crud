@@ -133,18 +133,37 @@ class DocumentListTableView extends React.Component {
     // const width = this.gridOptions.context.column_width;
     const isEditable = this.props.isEditable;
 
+<<<<<<< HEAD
+=======
+    headers.hadronRowNumber = {
+      headerName: 'Row',
+      field: 'rowNumber',
+      headerComponentFramework: HeaderComponent,
+      headerComponentParams: {
+        isRowNumber: true
+      }
+    };
+
+>>>>>>> master
     for (let i = 0; i < this.props.docs.length; i++) {
       _.map(this.props.docs[i], function(val, key) {
         headers[key] = {
           headerName: key,
           // width: width, TODO: prevents horizontal scrolling
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
           valueGetter: function(params) {
             return params.data.hadronDocument.get(key);
           },
 
           headerComponentFramework: HeaderComponent,
           headerComponentParams: {
+<<<<<<< HEAD
+=======
+            isRowNumber: false,
+>>>>>>> master
             bsonType: TypeChecker.type(val)
           },
 
@@ -173,7 +192,11 @@ class DocumentListTableView extends React.Component {
    * @returns {Array} A list of HadronDocument wrappers.
    */
   createRowData() {
+<<<<<<< HEAD
     return _.map(this.props.docs, function(val) {
+=======
+    return _.map(this.props.docs, function(val, i) {
+>>>>>>> master
       // TODO: Make wrapper object for HadronDocument
       return {
         /* The same doc is shared between a document row and it's footer */
@@ -183,7 +206,13 @@ class DocumentListTableView extends React.Component {
         /* If this is a document row, does it already have a footer? */
         hasFooter: false,
         /* If this is a footer, state is 'editing' or 'deleting' */
+<<<<<<< HEAD
         state: null
+=======
+        state: null,
+        /* Add a row number for the first column */
+        rowNumber: i + 1
+>>>>>>> master
       };
     });
   }

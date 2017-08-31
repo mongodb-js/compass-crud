@@ -92,6 +92,10 @@ class CellEditor extends React.Component {
     console.log('remove field');
   }
 
+  handleDrillDown() {
+    console.log('drill down');
+  }
+
   handleChange(event) {
     if (this._pasting) {
       this._pasteEdit(event.target.value);
@@ -191,6 +195,7 @@ class CellEditor extends React.Component {
     );
   }
 
+<<<<<<< HEAD
   /**
    * Render the add field/delete field buttons. If the element is an object or
    * an array, provide a "drill down" button.
@@ -204,10 +209,37 @@ class CellEditor extends React.Component {
       <div className="table-view-cell-editor">
         {this.renderInput()}
         {this.renderTypes()}
+=======
+  renderDrillDown() {
+    if (this.element.currentType === 'Object' || this.element.currentType === 'Array') {
+      return (
+        <button
+          className="table-view-cell-editor-button"
+          onClick={this.handleDrillDown}
+        >
+          <FontAwesome name="forward" className="table-view-cell-editor-button-icon"/>
+        </button>
+      );
+    }
+    return null;
+  }
+
+  /**
+   * Render the add field/delete field buttons. If the element is an object or
+   * an array, provide a "drill down" button.
+   *
+   * @returns {React.Component} The component.
+   */
+  renderActions() {
+    return (
+      <span className="table-view-cell-editor-actions">
+        {this.renderDrillDown()}
+>>>>>>> master
         <button
           className="table-view-cell-editor-button"
           onClick={this.handleAddField}
         >
+<<<<<<< HEAD
           <FontAwesome name="plus-square-o" className="table-view-button-icon"/>
         </button>
         <button
@@ -216,6 +248,26 @@ class CellEditor extends React.Component {
         >
           <FontAwesome name="trash" className="table-view-button-icon"/>
         </button>
+=======
+          <FontAwesome name="plus-square-o" className="table-view-cell-editor-button-icon"/>
+        </button>
+        <button
+        className="table-view-cell-editor-button"
+        onClick={this.handleRemoveField}
+        >
+          <FontAwesome name="trash" className="table-view-cell-editor-button-icon"/>
+        </button>
+      </span>
+    );
+  }
+
+  render() {
+    return (
+      <div className="table-view-cell-editor">
+        {this.renderInput()}
+        {this.renderTypes()}
+        {this.renderActions()}
+>>>>>>> master
       </div>
     );
   }
