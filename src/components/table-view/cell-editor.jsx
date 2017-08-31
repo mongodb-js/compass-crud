@@ -1,12 +1,23 @@
 const React = require('react');
-const PropTypes = require('prop-types');
-// const _ = require('lodash');
-const util = require('util');
 const ReactDOM = require('react-dom');
+const PropTypes = require('prop-types');
+
 const initEditors = require('../editor/');
 const Types = require('../types');
 const FontAwesome = require('react-fontawesome');
+const { Tooltip } = require('hadron-react-components');
 
+// const util = require('util');
+
+/**
+ * The document value class.
+ */
+const VALUE_CLASS = 'editable-element-value';
+
+/**
+ * Invalid type class.
+ */
+const INVALID = `${VALUE_CLASS}-is-invalid-type`;
 
 /**
  * The custom cell editor for the table view.
@@ -16,12 +27,11 @@ class CellEditor extends React.Component {
     super(props);
     this.element = props.value;
 
-    this.onKeyDown = this.onKeyDown.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleAddField = this.handleAddField.bind(this);
-    this.handleRemoveField = this.handleRemoveField.bind(this);
-
     this._editors = initEditors(props.value);
+  }
+
+  componentWillMount() {
+    this.editor().start();
   }
 
   componentDidMount() {
@@ -37,20 +47,77 @@ class CellEditor extends React.Component {
     this.props.reactContainer.removeEventListener('keydown', this.onKeyDown);
   }
 
-  /**
-   * This is only required if you are preventing event propagation.
-   * @param {Object} event
-   */
-  onKeyDown(event) {
-  }
+  // /**
+  //  * This is only required if you are preventing event propagation.
+  //  * @param {Object} event
+  //  */
+  // handleKeyDown(event) {
+  // }
 
+  // handleAddField(event) {
+  //   console.log("add field");
+  // }
+  //
+  // handleRemoveField(event) {
+  //   console.log("remove field");
+  // }
+
+  /**
+   * AG-Grid API call to get final result of editing. Not being used because
+   * changes are tracked with HadronDocument internally, so we don't need to
+   * set it using the API (for now).
+   *
+   * @returns {*} The value that will be set.
+   */
   getValue() {
     this.editor().complete();
     return this.editor().value();
   }
 
+  /**
+   * Determines if the editor can take up more space than just 1 cell.
+   * @returns {boolean}
+   */
   isPopup() {
     return true;
+  }
+
+  focus() {
+    // TODO: why this?
+    setTimeout(() => {
+      const container = ReactDOM.findDOMNode(this.props.reactContainer);
+      if (container) {
+        container.focus();
+      }
+    });
+  }
+
+  handleChange(event) {
+    if (this._pasting) {
+      this._pasteEdit(event.target.value);
+    } else {
+      this.editor().edit(event.target.value);
+    }
+    this.forceUpdate();
+  }
+
+  handlePaste() {
+    this._pasting = true;
+  }
+
+  /**
+   * Edit the field value when using copy/paste.
+   *
+   * @param {String} value - The value to paste in.
+   */
+  _pasteEdit(value) {
+    try {
+      this.editor().paste(value);
+    } catch (e) {
+      this.editor().edit(value);
+    } finally {
+      this._pasting = false;
+    }
   }
 
   /**
@@ -62,30 +129,26 @@ class CellEditor extends React.Component {
     return this._editors[this.element.currentType] || this._editors.Standard;
   }
 
-  handleChange(event) {
-    // TODO: change event is triggered when enter is pressed/editing is done
-    this.editor().edit(event.target.value);
-    this.forceUpdate();
+  /**
+   * Get the style for the value of the element.
+   *
+   * @returns {String} The value style.
+   */
+  style() {
+    let typeClass = `${VALUE_CLASS}-is-${this.element.currentType.toLowerCase()}`;
+    if (!this.element.isCurrentTypeValid()) {
+      typeClass = `${typeClass} ${INVALID}`;
+    }
+    return `${VALUE_CLASS} ${VALUE_CLASS}-is-editing ${typeClass}`;
   }
 
-  handleAddField(event) {
-    console.log("add field");
-  }
-
-  handleRemoveField(event) {
-    console.log("remove field");
-  }
-
-  focus() {
-    this.editor().start();
-
-    // // TODO: why this?
-    setTimeout(() => {
-      const container = ReactDOM.findDOMNode(this.props.reactContainer);
-      if (container) {
-        container.focus();
-      }
-    });
+  /**
+   * Get the style for the input wrapper.
+   *
+   * @returns {String} The class name.
+   */
+  wrapperStyle() {
+    return `${VALUE_CLASS}-wrapper ${VALUE_CLASS}-wrapper-is-${this.element.currentType.toLowerCase()}`;
   }
 
   /**
@@ -99,14 +162,39 @@ class CellEditor extends React.Component {
     );
   }
 
+  /**
+   * Render the input field.
+   *
+   * @returns {React.Component} The component.
+   */
+  renderInput() {
+    const length = 120; // TODO: styles
+    return (
+      <span className={this.wrapperStyle()}>
+        <Tooltip
+          id={this.element.uuid}
+          className="editable-element-value-tooltip"
+          border
+          getContent={() => { return this.element.invalidTypeMessage; }}/>
+        <input
+          data-tip=""
+          data-for={this.element.uuid}
+          ref={(c) => {this._node = c;}}
+          type="text"
+          style={{ width: `${length}px` }}
+          className={this.style()}
+          onChange={this.handleChange.bind(this)}
+          onKeyDown={this.handleKeyDown.bind(this)}
+          onPaste={this.handlePaste.bind(this)}
+          value={this.editor().value(true)} />
+      </span>
+    );
+  }
+
   render() {
     return (
       <div className="table-view-cell-editor">
-        <input className="table-view-cell-editor-input"
-               ref="input"
-               value={this.editor().value(true)}
-               onChange={this.handleChange}
-        />
+        {this.renderInput()}
         {this.renderTypes()}
         <button
           className="table-view-cell-editor-button"
