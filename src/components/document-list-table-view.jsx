@@ -142,7 +142,7 @@ class DocumentListTableView extends React.Component {
           isRowNumber: true,
           bsonType: null
         }
-      }
+      };
       _.map(this.props.docs[i], function(val, key) {
         headers[key] = {
           headerName: key,

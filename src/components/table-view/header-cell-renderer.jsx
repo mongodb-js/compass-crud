@@ -22,7 +22,8 @@ class HeaderCellRenderer extends React.Component {
 
 HeaderCellRenderer.propTypes = {
   displayName: PropTypes.string.isRequired,
-  bsonType: PropTypes.string
+  bsonType: PropTypes.string,
+  isRowNumber: PropTypes.bool
 };
 
 HeaderCellRenderer.displayName = 'HeaderCellRenderer';
