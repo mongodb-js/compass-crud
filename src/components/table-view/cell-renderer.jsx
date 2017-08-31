@@ -48,10 +48,11 @@ class CellRenderer extends React.Component {
     this.element = props.value;
 
     this._editors = initEditors(this.element);
-    console.log(util.inspect(props));
   }
 
   componentDidMount() {
+    if (this.element === undefined) return;
+
     // this.unsubscribeAdded = this.handleAdded.bind(this);
     // this.unsubscribeConverted = this.handleConverted.bind(this);
     // this.unsubscribeRemoved = this.handleRemoved.bind(this);
@@ -71,6 +72,8 @@ class CellRenderer extends React.Component {
    * Unsubscribe from the events.
    */
   componentWillUnmount() {
+    if (this.element === undefined) return;
+
     // this.element.removeListener(Element.Events.Added, this.unsubscribeAdded);
     // this.element.removeListener(Element.Events.Converted, this.unsubscribeConverted);
     // this.element.removeListener(Element.Events.Removed, this.unsubscribeRemoved);
@@ -108,6 +111,8 @@ class CellRenderer extends React.Component {
    * @returns {String} The element style.
    */
   style(base = BEM_BASE) {
+    if (this.element === undefined) return;
+
     let style = base;
     if (this.element.isAdded()) {
       style = style.concat(` ${base}-${ADDED}`);
@@ -131,10 +136,20 @@ class CellRenderer extends React.Component {
     );
   }
 
-  // add render for empty cell
+  renderEmptyCell() {
+    return (
+      <div className="table-cell">
+        <div className={this.style()}>
+          No field
+        </div>
+      </div>
+    );
+  }
 
   render() {
-    // If this.elements === undefined render empty cell
+    if (this.element === undefined) {
+      return this.renderEmptyCell();
+    }
     if (!this.element.isCurrentTypeValid()) {
       return this.renderInvalidCell();
     }
