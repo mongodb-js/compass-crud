@@ -64,7 +64,9 @@ class DocumentListTableView extends React.Component {
    *     event?: {Event} - event if this was result of a browser event
    */
   onRowClicked(event) {
-    this.addEditingFooter(event.node, event.data, event.rowIndex);
+    if (this.isEditable()) {
+      this.addEditingFooter(event.node, event.data, event.rowIndex);
+    }
   }
 
   /**

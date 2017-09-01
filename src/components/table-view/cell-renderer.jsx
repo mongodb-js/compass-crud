@@ -173,7 +173,6 @@ class CellRenderer extends React.Component {
       }
     }
 
-
     return (
       <div className={className}>
         {element}
