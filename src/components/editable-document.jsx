@@ -399,17 +399,17 @@ class EditableDocument extends React.Component {
    * @returns {React.Component} The expansion bar.
    */
   renderExpansion() {
-    const everythingSize = this.doc.elements.size;
+    const totalSize = this.doc.elements.size;
     let initialSize = INITIAL_FIELD_LIMIT;
     if (this.state.deleting || this.state.editing) {
-      initialSize = everythingSize;
+      initialSize = totalSize;
     }
     return (
       <ExpansionBar
-        everythingSize={everythingSize}
         initialSize={initialSize}
         renderSize={this.state.renderSize}
         setRenderSize={this.setRenderSize.bind(this)}
+        totalSize={totalSize}
       />
     );
   }

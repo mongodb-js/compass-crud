@@ -43,7 +43,7 @@ class ExpansionBar extends React.PureComponent {
    */
   handleShowClick() {
     const newSize = Math.min(this.props.renderSize + this.props.perClickSize,
-                             this.props.everythingSize);
+                             this.props.totalSize);
     this.props.setRenderSize(newSize);
   }
 
@@ -85,7 +85,7 @@ class ExpansionBar extends React.PureComponent {
    */
   render() {
     const components = [];
-    const total = this.props.everythingSize;
+    const total = this.props.totalSize;
     if (total > this.props.initialSize) {
       const showMoreFields = Math.min(total - this.props.renderSize,
                                       this.props.perClickSize);
@@ -109,11 +109,11 @@ class ExpansionBar extends React.PureComponent {
 }
 
 ExpansionBar.propTypes = {
-  everythingSize: PropTypes.number.isRequired,  // Maximum number of elements to render
   initialSize: PropTypes.number.isRequired,     // Initial number of elements to render
   perClickSize: PropTypes.number,               // Extra elements to render per click
   renderSize: PropTypes.number.isRequired,      // Current number of elements to be rendered
-  setRenderSize: PropTypes.func.isRequired      // Callback to allow the new renderSize to be set outside the component
+  setRenderSize: PropTypes.func.isRequired,     // Callback to allow the new renderSize to be set outside the component
+  totalSize: PropTypes.number.isRequired        // Maximum number of elements to render
 };
 
 ExpansionBar.defaultProps = {

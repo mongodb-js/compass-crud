@@ -19,11 +19,11 @@ describe('<ExpansionBar />', () => {
       before(() => {
         const size = 8;
         const props = {
-          everythingSize: size,
           initialSize: size,
           perClickSize: size,
           renderSize: size,
-          setRenderSize: () => {}
+          setRenderSize: () => {},
+          totalSize: size
         };
         bar = mount(<ExpansionBar {...props} />);
       });
@@ -42,11 +42,11 @@ describe('<ExpansionBar />', () => {
         showSize = 2;
         const size = 3;
         const props = {
-          everythingSize: 8,
           initialSize: size,
           perClickSize: showSize,
           renderSize: size,
-          setRenderSize: () => {}
+          setRenderSize: () => {},
+          totalSize: 8
         };
         bar = mount(<ExpansionBar {...props} />);
       });
@@ -63,16 +63,16 @@ describe('<ExpansionBar />', () => {
     context('when initialSize < renderSize < everythingSize', () => {
       before(() => {
         const props = {
-          everythingSize: 8,
           initialSize: 3,
           perClickSize: 2,
-          setRenderSize: () => {}
+          setRenderSize: () => {},
+          totalSize: 8
         };
         hideSize = 2 * props.perClickSize;  // 2 clicks of "Show more" button
         expect(hideSize).to.be.equal(4);
         props.renderSize = props.initialSize + hideSize;
         expect(props.renderSize).to.be.equal(7);
-        showSize = props.everythingSize - props.renderSize;
+        showSize = props.totalSize - props.renderSize;
         expect(showSize).to.be.equal(1);
         bar = mount(<ExpansionBar {...props} />);
       });
@@ -90,13 +90,13 @@ describe('<ExpansionBar />', () => {
       before(() => {
         const size = 8;
         const props = {
-          everythingSize: size,
+          totalSize: size,
           initialSize: 3,
           perClickSize: 2,
           renderSize: size,
           setRenderSize: () => {}
         };
-        hideSize = props.everythingSize - props.initialSize;
+        hideSize = props.totalSize - props.initialSize;
         expect(hideSize).to.be.equal(5);
         bar = mount(<ExpansionBar {...props} />);
       });
@@ -114,11 +114,11 @@ describe('<ExpansionBar />', () => {
       before(() => {
         spy = sinon.spy();
         const props = {
-          everythingSize: 8,
           initialSize: 3,
           perClickSize: 2,
           renderSize: 5,  // Between 3 and 8 to make both buttons show
-          setRenderSize: spy
+          setRenderSize: spy,
+          totalSize: 8
         };
         bar = mount(<ExpansionBar {...props} />);
       });

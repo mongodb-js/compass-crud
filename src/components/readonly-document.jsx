@@ -81,13 +81,13 @@ class ReadonlyDocument extends React.Component {
    * @returns {React.Component} The expander bar.
    */
   renderExpansion() {
-    const everythingSize = this.doc.elements.size;
+    const totalSize = this.doc.elements.size;
     return (
       <ExpansionBar
-        everythingSize={everythingSize}
         initialSize={INITIAL_FIELD_LIMIT}
         renderSize={this.state.renderSize}
         setRenderSize={this.setRenderSize.bind(this)}
+        totalSize={totalSize}
       />
     );
   }
