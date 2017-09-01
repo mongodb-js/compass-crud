@@ -2,17 +2,42 @@
 .table-view-cell {
   z-index: 1;
   position: absolute;
-  dislay: flex;
+  //display: flex;
   height: 100%;
   width: 100%;
+  min-height: 28px;
 
   .editable-element {
-    height: 100%;
+    min-height: 28px;
   }
 
-  &-deleted {
-    height:100%;
+  &-is-deleted {
+    min-height: 28px;
     background-color: #FFE5EA;
     border: 2px solid pink;
+    line-height: 28px;
   }
+
+  &-is-edited {
+    .editable-element {
+      min-height: 24px;
+    }
+    border: 2px solid #ffd27f;
+  }
+
+  &-is-added {
+    .editable-element {
+      min-height: 24px;
+    }
+    height:100%;
+    min-height: 28px;
+    border: 2px solid #b2d8b2;
+    background-color: #cce5cc;
+  }
+
+  &-is-empty {
+    min-height: 28px;
+    line-height: 28px;
+  }
+
 }

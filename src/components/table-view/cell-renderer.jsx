@@ -8,18 +8,24 @@ const initEditors = require('../editor/');
 // const util = require('util');
 
 /**
- * The BEM base style name for the element.
+ * The BEM base style name for the cell.
  */
-const BEM_BASE = 'editable-element';
+const BEM_BASE = 'table-view-cell';
+
+/**
+ * The BEM base style name for the value.
+ */
+const VALUE_BASE = 'editable-element';
+
 /**
  * The document value class.
  */
 const VALUE_CLASS = 'editable-element-value';
 
 /**
- * Invalid type class.
+ * Invalid value class.
  */
-const INVALID = `${VALUE_CLASS}-is-invalid-type`;
+const INVALID_VALUE = `${VALUE_CLASS}-is-invalid-type`;
 
 /**
  * The added constant.
@@ -30,6 +36,21 @@ const ADDED = 'is-added';
  * The edited constant.
  */
 const EDITED = 'is-edited';
+
+/**
+ * The empty constant.
+ */
+const EMPTY = 'is-empty';
+
+/**
+ * The invalid constant.
+ */
+const INVALID = 'is-invalid';
+
+/**
+ * The deleted constant.
+ */
+const DELETED = 'is-deleted';
 
 
 /**
@@ -96,60 +117,25 @@ class CellRenderer extends React.Component {
     this.props.node.data.state = 'modified';
   }
 
-  /**
-   * Get the style for the element component.
-   *
-   * @param {String} base - The base style.
-   *
-   * @returns {String} The element style.
-   */
-  style(base = BEM_BASE) {
-    let style = base;
-    if (this.element.isAdded()) {
-      style = style.concat(` ${base}-${ADDED}`);
-    } else if (this.element.isEdited()) {
-      style = style.concat(` ${base}-${EDITED}`);
-    }
-    return style;
-  }
-
   renderInvalidCell() {
     let valueClass = `${VALUE_CLASS}-is-${this.element.currentType.toLowerCase()}`;
-    valueClass = `${valueClass} ${INVALID}`;
+    valueClass = `${valueClass} ${INVALID_VALUE}`;
+
+    /* Return internal div because invalid cells should only hightlight text? */
+
     return (
-      <div className="table-view-cell">
-        <div className={valueClass}>
-          {this.element.currentValue}
-        </div>
+      <div className={valueClass}>
+        {this.element.currentValue}
       </div>
     );
   }
 
-  renderEmptyCell() {
-    return (
-      <div className="table-view-cell-no-field">
-        No field
-      </div>
-    );
-  }
-
-  renderDeletedCell() {
-    return (
-      <div className="table-view-cell-deleted">
-        Deleted field
-      </div>
-    );
-  }
-
-  render() {
-    if (this.element === undefined) {
-      return this.renderEmptyCell();
-    }
-    if (!this.element.isCurrentTypeValid()) {
-      return this.renderInvalidCell();
-    }
-    if (this.element.isRemoved()) {
-      return this.renderDeletedCell();
+  renderValidCell() {
+    let className = VALUE_BASE;
+    if (this.element.isAdded()) {
+      className = `${className} ${VALUE_BASE}-${ADDED}`;
+    } else if (this.element.isEdited()) {
+      className = `${className} ${VALUE_BASE}-${EDITED}`;
     }
 
     const component = getComponent(this.element.currentType);
@@ -159,10 +145,38 @@ class CellRenderer extends React.Component {
     );
 
     return (
-      <div className="table-view-cell">
-        <div className={this.style()}>
-          {element}
-        </div>
+      <div className={className}>
+        {element}
+      </div>
+    );
+  }
+
+  render() {
+    let element;
+    let className = BEM_BASE;
+
+    if (this.element === undefined) {
+      element = 'No field';
+      className = `${className}-${EMPTY}`;
+    } else if (!this.element.isCurrentTypeValid()) {
+      element = this.renderInvalidCell();
+      className = `${className}-${INVALID}`;
+    } else if (this.element.isRemoved()) {
+      element = 'Deleted field';
+      className = `${className}-${DELETED}`;
+    } else {
+      element = this.renderValidCell();
+      if (this.element.isEdited()) {
+        className = `${className}-${EDITED}`;
+      } else if (this.element.isAdded()) {
+        className = `${className}-${ADDED}`;
+      }
+    }
+
+
+    return (
+      <div className={className}>
+        {element}
       </div>
     );
   }
