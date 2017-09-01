@@ -31,11 +31,6 @@ const ADDED = 'is-added';
  */
 const EDITED = 'is-edited';
 
-/**
- * The removed constant.
- */
-const REMOVED = 'is-removed-cell';
-
 
 /**
  * The custom cell renderer that renders a cell in the table view.
@@ -115,9 +110,6 @@ class CellRenderer extends React.Component {
     } else if (this.element.isEdited()) {
       style = style.concat(` ${base}-${EDITED}`);
     }
-    // else if (this.element.isRemoved()) {
-    //   style = style.concat(` ${base}-${REMOVED}`);
-    // }
     return style;
   }
 
