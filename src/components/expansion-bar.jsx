@@ -47,6 +47,12 @@ class ExpansionBar extends React.PureComponent {
     this.props.setRenderSize(newSize);
   }
 
+  /**
+   * Render the "Show N more fields" button.
+   *
+   * @param {Number|String} showMoreFields  How many additional fields to show
+   * @returns {React.Component} The "Show N more fields" button.
+   */
   renderShowMoreFieldsButton(showMoreFields) {
     const showText = `Show ${showMoreFields} more fields`;
     return (
@@ -61,6 +67,12 @@ class ExpansionBar extends React.PureComponent {
     );
   }
 
+  /**
+   * Render the "Hide M fields" button.
+   *
+   * @param {Number|String} hideFields  How many fields to be hidden from view
+   * @returns {React.Component} The "Hide M fields" button.
+   */
   renderHideFieldsButton(hideFields) {
     const hideText = `Hide ${hideFields} fields`;
     return (
