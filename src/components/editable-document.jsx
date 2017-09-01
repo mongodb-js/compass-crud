@@ -406,13 +406,14 @@ class EditableDocument extends React.Component {
    */
   renderExpansion() {
     const totalSize = this.doc.elements.size;
-    let initialSize = INITIAL_FIELD_LIMIT;
+    let disableHideButton = false;
     if (this.state.deleting || this.state.editing) {
-      initialSize = totalSize;
+      disableHideButton = true;
     }
     return (
       <ExpansionBar
-        initialSize={initialSize}
+        disableHideButton={disableHideButton}
+        initialSize={INITIAL_FIELD_LIMIT}
         renderSize={this.state.renderSize}
         setRenderSize={this.setRenderSize.bind(this)}
         totalSize={totalSize}
