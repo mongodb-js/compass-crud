@@ -391,9 +391,7 @@ class EditableDocument extends React.Component {
       ));
       index++;
       if (index >= this.state.renderSize) {
-        if (!this.state.editing && !this.state.deleting) {
-          break;
-        }
+        break;
       }
     }
     return components;
