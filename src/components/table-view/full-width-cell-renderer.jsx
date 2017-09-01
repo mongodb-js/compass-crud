@@ -1,6 +1,8 @@
 const React = require('react');
 const PropTypes = require('prop-types');
 
+const HadronDocument = require('hadron-document');
+
 const DocumentFooter = require('../document-footer');
 const RemoveDocumentFooter = require('../remove-document-footer');
 
@@ -23,6 +25,24 @@ class FullWidthCellRenderer extends React.Component {
     this.actions = {update: ()=>{}, remove: ()=>{}};
     this.updateStore = {listen: ()=>{return ()=>{};}};
     this.removeStore = {listen: ()=>{return ()=>{};}};
+  }
+
+  componentDidMount() {
+    this.unsubscribeCancel = this.closeFooter.bind(this);
+    this.doc.on(HadronDocument.Events.Cancel, this.unsubscribeCancel);
+  }
+
+  componentWillUnmount() {
+    this.doc.removeListener(HadronDocument.Events.Cancel, this.unsubscribeCancel);
+  }
+
+  closeFooter() {
+    const api = this.props.api;
+    const data = this.props.data;
+
+    setTimeout(function() {
+      api.updateRowData({remove: [data]});
+    }, 0);
   }
 
   handleCancelDelete() {

@@ -61,39 +61,50 @@ class CellRenderer extends React.Component {
     super(props);
     props.api.selectAll();
 
+    this.isEmpty = props.value === undefined;
     this.element = props.value;
 
     this._editors = initEditors(this.element);
   }
 
   componentDidMount() {
-    if (this.element === undefined) return;
-    // this.unsubscribeAdded = this.handleAdded.bind(this);
-    // this.unsubscribeConverted = this.handleConverted.bind(this);
-    // this.unsubscribeRemoved = this.handleRemoved.bind(this);
-    // this.unsubscribeReverted = this.handleReverted.bind(this);
-    // this.unsubscribeInvalid = this.handleInvalid.bind(this);
-    this.unsubscribeEdited = this.handleEdited.bind(this);
-
-    // this.element.on(Element.Events.Added, this.unsubscribeAdded);
-    // this.element.on(Element.Events.Converted, this.unsubscribeConverted);
-    // this.element.on(Element.Events.Removed, this.unsubscribeRemoved);
-    // this.element.on(Element.Events.Reverted, this.unsubscribeReverted);
-    // this.element.on(Element.Events.Invalid, this.unsubscribeInvalid);
-    this.element.on(Element.Events.Edited, this.unsubscribeEdited);
+    if (!this.isEmpty) {
+      this.subscribeElementEvents();
+    }
   }
 
   /**
    * Unsubscribe from the events.
    */
   componentWillUnmount() {
-    if (this.element === undefined) return;
+    if (!this.isEmpty) {
+      this.unsubscribeElementEvents();
+    }
+  }
+
+  subscribeElementEvents() {
+    // this.unsubscribeAdded = this.handleAdded.bind(this);
+    // this.unsubscribeConverted = this.handleConverted.bind(this);
+    // this.unsubscribeInvalid = this.handleInvalid.bind(this);
+    this.unsubscribeReverted = this.handleReverted.bind(this);
+    this.unsubscribeRemoved = this.handleRemoved.bind(this);
+    this.unsubscribeEdited = this.handleEdited.bind(this);
+
+    // this.element.on(Element.Events.Added, this.unsubscribeAdded);
+    // this.element.on(Element.Events.Converted, this.unsubscribeConverted);
+    // this.element.on(Element.Events.Invalid, this.unsubscribeInvalid);
+    this.element.on(Element.Events.Reverted, this.unsubscribeReverted);
+    this.element.on(Element.Events.Removed, this.unsubscribeRemoved);
+    this.element.on(Element.Events.Edited, this.unsubscribeEdited);
+  }
+
+  unsubscribeElementEvents() {
     // this.element.removeListener(Element.Events.Added, this.unsubscribeAdded);
     // this.element.removeListener(Element.Events.Converted, this.unsubscribeConverted);
-    // this.element.removeListener(Element.Events.Removed, this.unsubscribeRemoved);
-    // this.element.removeListener(Element.Events.Reverted, this.unsubscribeReverted);
     // this.element.removeListener(Element.Events.Invalid, this.unsubscribeInvalid);
+    this.element.removeListener(Element.Events.Removed, this.unsubscribeRemoved);
     this.element.removeListener(Element.Events.Edited, this.unsubscribeEdited);
+    this.element.removeListener(Element.Events.Reverted, this.unsubscribeReverted);
   }
 
   // handleAdded() {
@@ -102,15 +113,19 @@ class CellRenderer extends React.Component {
   // handleConverted() {
   //   console.log("handle converted");
   // }
-  // handleRemoved() {
-  //   console.log("handle removed");
-  // }
-  // handleReverted() {
-  //   console.log("handle reverted");
-  // }
   // handleInvalid() {
   //   console.log("handle invalid");
   // }
+
+  handleReverted() {
+    this.forceUpdate();
+  }
+
+  handleRemoved() {
+    this.isEmpty = true;
+    this.unsubscribeElementEvents();
+    this.element = null;
+  }
 
   handleEdited() {
     // TODO: set for consistency, state is only really used for update rows.
@@ -155,7 +170,7 @@ class CellRenderer extends React.Component {
     let element;
     let className = BEM_BASE;
 
-    if (this.element === undefined) {
+    if (this.isEmpty) {
       element = 'No field';
       className = `${className}-${EMPTY}`;
     } else if (!this.element.isCurrentTypeValid()) {
