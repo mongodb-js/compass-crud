@@ -82,12 +82,14 @@ class ReadonlyDocument extends React.Component {
    */
   renderExpansion() {
     const everythingSize = this.doc.elements.size;
-    return (<ExpansionBar
-      everythingSize={everythingSize}
-      initialSize={INITIAL_FIELD_LIMIT}
-      renderSize={this.state.renderSize}
-      setRenderSize={this.setRenderSize.bind(this)}
-    />);
+    return (
+      <ExpansionBar
+        everythingSize={everythingSize}
+        initialSize={INITIAL_FIELD_LIMIT}
+        renderSize={this.state.renderSize}
+        setRenderSize={this.setRenderSize.bind(this)}
+      />
+    );
   }
 
   /**
