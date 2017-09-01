@@ -263,7 +263,10 @@ class EditableDocument extends React.Component {
     this.doc = EditableDocument.loadDocument(doc);
     this.subscribeToDocumentEvents();
     setTimeout(() => {
-      this.setState({ editing: false }, () => {
+      this.setState({
+        editing: false,
+        renderSize: INITIAL_FIELD_LIMIT
+      }, () => {
         marky.stop('EditableDocument - Handle update success');
       });
     }, 500);
@@ -282,7 +285,7 @@ class EditableDocument extends React.Component {
    */
   handleCancel() {
     marky.mark('EditableDocument - Cancel');
-    this.setState({ editing: false }, () => {
+    this.setState({ editing: false, renderSize: INITIAL_FIELD_LIMIT }, () => {
       marky.stop('EditableDocument - Cancel');
     });
   }
@@ -298,7 +301,11 @@ class EditableDocument extends React.Component {
    * Handles document deletion.
    */
   handleDelete() {
-    this.setState({ editing: false, deleting: true });
+    this.setState({
+      deleting: true,
+      editing: false,
+      renderSize: INITIAL_FIELD_LIMIT
+    });
   }
 
   /**
@@ -313,7 +320,10 @@ class EditableDocument extends React.Component {
    */
   handleEdit() {
     marky.mark('EditableDocument - Edit');
-    this.setState({ editing: true }, () => {
+    this.setState({
+      editing: true,
+      renderSize: INITIAL_FIELD_LIMIT
+    }, () => {
       marky.stop('EditableDocument - Edit');
     });
   }
