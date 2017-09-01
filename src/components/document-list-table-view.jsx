@@ -229,7 +229,8 @@ class DocumentListTableView extends React.Component {
 
             rowData={this.createRowData()}
             getRowNodeId={function(data) {
-              return data.hadronDocument.get('_id').toString() + data.isFooter.toString();
+              const fid = data.isFooter ? '1' : '0';
+              return data.hadronDocument.get('_id').value.toString() + fid;
             }}
             // events
             onGridReady={this.onGridReady.bind(this)}
