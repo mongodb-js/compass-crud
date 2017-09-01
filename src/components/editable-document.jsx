@@ -9,6 +9,7 @@ const EditableElement = require('./editable-element');
 const DocumentActions = require('./document-actions');
 const DocumentFooter = require('./document-footer');
 const RemoveDocumentFooter = require('./remove-document-footer');
+const marky = require('marky');
 
 /**
  * The base class.
@@ -85,11 +86,11 @@ class EditableDocument extends React.Component {
   }
 
   setRenderSize(newLimit) {
-    require('marky').mark('EditableDocument - Show/Hide N fields');
+    marky.mark('EditableDocument - Show/Hide N fields');
     this.setState({
       renderSize: newLimit
     }, () => {
-      require('marky').stop('EditableDocument - Show/Hide N fields');
+      marky.stop('EditableDocument - Show/Hide N fields');
     });
   }
 
@@ -253,12 +254,12 @@ class EditableDocument extends React.Component {
    * @param {Object} doc - The updated document.
    */
   handleUpdateSuccess(doc) {
-    require('marky').mark('EditableDocument - Handle update success');
+    marky.mark('EditableDocument - Handle update success');
     this.doc = EditableDocument.loadDocument(doc);
     this.subscribeToDocumentEvents();
     setTimeout(() => {
       this.setState({ editing: false }, () => {
-        require('marky').stop('EditableDocument - Handle update success');
+        marky.stop('EditableDocument - Handle update success');
       });
     }, 500);
   }
@@ -275,9 +276,9 @@ class EditableDocument extends React.Component {
    * Handles canceling edits to the document.
    */
   handleCancel() {
-    require('marky').mark('EditableDocument - Cancel');
+    marky.mark('EditableDocument - Cancel');
     this.setState({ editing: false }, () => {
-      require('marky').stop('EditableDocument - Cancel');
+      marky.stop('EditableDocument - Cancel');
     });
   }
 
@@ -306,9 +307,9 @@ class EditableDocument extends React.Component {
    * Handle the edit click.
    */
   handleEdit() {
-    require('marky').mark('EditableDocument - Edit');
+    marky.mark('EditableDocument - Edit');
     this.setState({ editing: true }, () => {
-      require('marky').stop('EditableDocument - Edit');
+      marky.stop('EditableDocument - Edit');
     });
   }
 
@@ -323,9 +324,9 @@ class EditableDocument extends React.Component {
    * Handle clicking the expand all button.
    */
   handleExpandAll() {
-    require('marky').mark('EditableDocument - Expand All');
+    marky.mark('EditableDocument - Expand All');
     this.setState({ expandAll: !this.state.expandAll }, () => {
-      require('marky').stop('EditableDocument - Expand All');
+      marky.stop('EditableDocument - Expand All');
     });
   }
 
