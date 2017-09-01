@@ -228,6 +228,9 @@ class DocumentListTableView extends React.Component {
             fullWidthCellRendererFramework={FullWidthCellRenderer}
 
             rowData={this.createRowData()}
+            getRowNodeId={function(data) {
+              return data.hadronDocument.get('_id').toString() + data.isFooter.toString();
+            }}
             // events
             onGridReady={this.onGridReady.bind(this)}
         />

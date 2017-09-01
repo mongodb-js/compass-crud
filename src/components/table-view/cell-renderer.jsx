@@ -123,8 +123,8 @@ class CellRenderer extends React.Component {
 
   handleRemoved() {
     this.isEmpty = true;
-    this.unsubscribeElementEvents();
-    this.element = null;
+    // this.unsubscribeElementEvents();
+    // this.element = null;
   }
 
   handleEdited() {

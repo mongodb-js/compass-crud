@@ -41,6 +41,7 @@ class FullWidthCellRenderer extends React.Component {
     const data = this.props.data;
 
     setTimeout(function() {
+      api.getRowNode(data.hadronDocument.get('_id').toString() + true.toString()).data.hasFooter = false;
       api.updateRowData({remove: [data]});
     }, 0);
   }
