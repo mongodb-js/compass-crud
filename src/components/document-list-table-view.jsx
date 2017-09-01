@@ -133,6 +133,7 @@ class DocumentListTableView extends React.Component {
     const headers = {};
     // const width = this.gridOptions.context.column_width;
     const isEditable = this.props.isEditable;
+    const docs = this.props.docs;
 
     headers.hadronRowNumber = {
       headerName: 'Row',
@@ -155,7 +156,16 @@ class DocumentListTableView extends React.Component {
           headerComponentFramework: HeaderComponent,
           headerComponentParams: {
             isRowNumber: false,
-            bsonType: TypeChecker.type(val)
+            name: key
+          },
+          headerValueGetter: function() {
+            const type = TypeChecker.type(val);
+            for (let q = 0; q < docs.length; q ++ ) {
+              if (TypeChecker.type(docs[q][key]) !== type) {
+                return 'Mixed';
+              }
+            }
+            return type;
           },
 
           cellRendererFramework: CellRenderer,

@@ -8,13 +8,29 @@ class HeaderCellRenderer extends React.Component {
 
   constructor(props) {
     super(props);
+    // this.state = {
+    //   columns: props.columns,
+    //   key: props.key,
+    //   type: props.type
+    // };
+    // mapping of column names to type
+
+  //  componentDidMount() {
+  //    // bind typeChanged to some event
+  //  }
+
+ // typeChanged(key, type) {
+ //   if (this.state.columns[key] !== type) {
+ //     this.setState({type: 'mixed'});
+ //   }
+ // }
   }
 
   render() {
     if (this.props.isRowNumber) return null;
     return (
       <div className="table-view-header-cell">
-        <b>{this.props.displayName}</b> {this.props.bsonType}
+        <b>{this.props.name}</b> {this.props.type}
       </div>
     );
   }
@@ -22,8 +38,9 @@ class HeaderCellRenderer extends React.Component {
 
 HeaderCellRenderer.propTypes = {
   displayName: PropTypes.string.isRequired,
-  bsonType: PropTypes.string,
-  isRowNumber: PropTypes.bool
+  name: PropTypes.string,
+  isRowNumber: PropTypes.bool,
+  type: PropTypes.string
 };
 
 HeaderCellRenderer.displayName = 'HeaderCellRenderer';
