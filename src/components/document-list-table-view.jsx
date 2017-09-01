@@ -87,6 +87,7 @@ class DocumentListTableView extends React.Component {
 
     /* Add footer below this row */
     rowNode.data.hasFooter = true;
+    rowNode.data.state = 'editing';
     const newData = {
       hadronDocument: data.hadronDocument,
       hasFooter: false,
@@ -107,16 +108,26 @@ class DocumentListTableView extends React.Component {
    * @param {number} rowIndex - Index of the row clicked on.
    */
   addDeletingFooter(rowNode, data, rowIndex) {
-    /* If bar exists and is in editing mode, set to deleting */
-    if (data.isFooter) {
+    if (data.isFooter || data.state === 'deleting') {
       return;
     } else if (data.hasFooter) {
-      data.state = 'deleting'; // TODO: need to notify footer row that state has changed (COMPASS-1870)
+      /* If bar exists and is in editing mode, set this row deleting and also
+       * this rows' footer's state to deleting. */
+
+      data.state = 'deleting';
+      const rowId = data.hadronDocument.get('_id').value.toString() + '1';
+
+      const footerNode = this.gridApi.getRowNode(rowId);
+      footerNode.data.state = 'deleting';
+
+      /* rerender footer */
+      this.gridApi.redrawRows([footerNode]);
       return;
     }
 
     /* Add deleting row below this row */
     rowNode.data.hasFooter = true;
+    rowNode.data.state = 'deleting';
     const newData = {
       hadronDocument: data.hadronDocument,
       hasFooter: false,
@@ -164,7 +175,7 @@ class DocumentListTableView extends React.Component {
           cellRendererParams: {},
 
           editable: function(params) {
-            if (!isEditable) {
+            if (!isEditable || params.node.data.state === 'deleting') {
               return false;
             }
             return params.node.data.hadronDocument.get(key).isValueEditable();
