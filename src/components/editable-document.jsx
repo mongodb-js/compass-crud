@@ -82,7 +82,7 @@ class EditableDocument extends React.Component {
   }
 
   /**
-   * Unsubscribe from the udpate store on unmount.
+   * Unsubscribe from the update store on unmount.
    */
   componentWillUnmount() {
     this.unsubscribeUpdate();
