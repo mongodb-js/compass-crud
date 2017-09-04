@@ -266,7 +266,9 @@ class AddFieldButton extends React.Component {
    */
   renderMenu() {
     return (
-      <ul className={this.menuClassName()}>
+      <ul className={this.menuClassName()}
+          style={{left: `${this.props.displace}px`}}
+      >
         {this.renderObjectItem()}
         {this.renderArrayItem()}
         {this.renderDefaultItem()}
@@ -284,9 +286,10 @@ class AddFieldButton extends React.Component {
       <div className={this.divClassName()}
         onClick={this.handleClick.bind(this)}
         onKeyPress={this.handleKeyPress.bind(this)}
-        onBlur={this.handleClickOutside.bind(this)}>
-        {this.renderMenu()}
+        onBlur={this.handleClickOutside.bind(this)}
+      >
         <FontAwesome name="plus-square-o" className={`${BEM_BASE}-icon`}/>
+        {this.renderMenu()}
       </div>
     );
   }
@@ -295,7 +298,8 @@ class AddFieldButton extends React.Component {
 AddFieldButton.displayName = 'AddFieldButton';
 
 AddFieldButton.propTypes = {
-  element: PropTypes.object.isRequired
+  element: PropTypes.object.isRequired,
+  displace: PropTypes.number.isRequired
 };
 
 module.exports = outsideClickable(AddFieldButton);

@@ -200,7 +200,7 @@ class CellEditor extends React.Component {
       return (
         <input
           type="text"
-          style={{ width: `100px` }}
+          style={{ width: '100px' }}
           className={`${BEM_BASE}-field-name`}
           onChange={this.handleChange.bind(this)}
           // onKeyDown={this.handleKeyDown.bind(this)}
@@ -277,13 +277,15 @@ class CellEditor extends React.Component {
    * Render the add field/delete field buttons. If the element is an object or
    * an array, provide a "expand" button.
    *
+   * @params {Number} The distance to push the add-field dropdown.
+   *
    * @returns {React.Component} The component.
    */
-  renderActions() {
+  renderActions(displace) {
     return (
       <span className={`${BEM_BASE}-actions`}>
         {this.renderExpand()}
-        <AddFieldButton element={this.element} />
+        <AddFieldButton element={this.element} displace={displace}/>
         <div className={`${BEM_BASE}-button`} onClick={this.handleRemoveField.bind(this)}>
           <FontAwesome name="trash" className={`${BEM_BASE}-button-icon`}/>
         </div>
@@ -292,12 +294,18 @@ class CellEditor extends React.Component {
   }
 
   render() {
+    let width = 265;
+    let displace = 218;
+    if (this.element.currentType === 'Object' || this.element.currentType === 'Array') {
+      width = 170;
+      displace = 120;
+    }
     return (
-      <div className={BEM_BASE}>
+      <div className={BEM_BASE} style={{width: `${width}px`}}>
         {this.renderFieldName()}
         {this.renderInput()}
         {this.renderTypes()}
-        {this.renderActions()}
+        {this.renderActions(displace)}
       </div>
     );
   }

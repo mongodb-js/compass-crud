@@ -1,7 +1,7 @@
 .table-view-cell-editor {
   z-index: 1000;
   position: absolute;
-  width: 280px; //TODO: set correctly
+  width: 265px; //TODO: set correctly
   background: white;
   border: 1px solid #807f7f;
   border-radius: 3px;
@@ -17,7 +17,6 @@
     border: 1px solid #d3d3d3;
     border-radius: 3px;
     height: 21px;
-    margin-right: 3px;
 
     .editable-element-value-is-editing {
       border: none;
@@ -29,13 +28,13 @@
 
   &-types {
     display: inline-block;
-    width: 80px;
+    width: 90px;
     color: #807f7f;
     height: 21px;
     flex-shrink: 0;
     border: 1px solid #d3d3d3;
     border-radius: 3px;
-    margin-right: 3px;
+    margin-left: 3px;
 
     .closed > .dropdown-menu {
       display: none;
@@ -45,18 +44,21 @@
       padding: 1px 12px;
     }
 
-    .btn {
+    .btn-crud {
       background-color: transparent;
-      color: #a09f9e;
       border: none;
       text-transform: none;
       font-size: 12px;
       border-radius: 8px;
-      padding: 1px 12px;
+      padding: 1px 5px;
+      width: 100%;
+      color: black;
+      text-align: left;
+
     }
 
     .caret {
-      visibility: hidden;
+      margin-left: 36px;
     }
 
     &-is-edited {
@@ -97,14 +99,14 @@
     height: 21px;
     border: solid #d3d3d3 1px;
     border-radius: 3px;
-    margin-right: 3px;
+    margin-left: 3px;
 
     &-is-selected {
       border: solid black 1px;
     }
 
     &-icon {
-      font-size: 8px;
+      font-size: 10px;
     }
 
     &-menu {
@@ -116,7 +118,7 @@
       li {
         span {
           display: block;
-          padding: 3px 20px;
+          padding: 3px 5px;
           clear: both;
           font-weight: normal;
           font-size: 11px;
