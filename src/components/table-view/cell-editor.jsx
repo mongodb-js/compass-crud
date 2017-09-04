@@ -1,12 +1,14 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 const PropTypes = require('prop-types');
+const FontAwesome = require('react-fontawesome');
+
+const { Tooltip } = require('hadron-react-components');
+const TypeChecker = require('hadron-type-checker');
 
 const initEditors = require('../editor/');
 const Types = require('../types');
-const FontAwesome = require('react-fontawesome');
-const { Tooltip } = require('hadron-react-components');
-const TypeChecker = require('hadron-type-checker');
+const AddFieldButton = require('./add-field-button');
 
 // const util = require('util');
 
@@ -204,38 +206,41 @@ class CellEditor extends React.Component {
    * @returns {React.Component} The component.
    */
   renderInput() {
-    const length = 120; // TODO: styles
-    return (
-      <span className={this.wrapperStyle()}>
-        <Tooltip
-          id={this.element.uuid}
-          className="editable-element-value-tooltip"
-          border
-          getContent={() => { return this.element.invalidTypeMessage; }}/>
-        <input
-          data-tip=""
-          data-for={this.element.uuid}
-          ref={(c) => {this._node = c;}}
-          type="text"
-          style={{ width: `${length}px` }}
-          className={this.style()}
-          onChange={this.handleChange.bind(this)}
-          // onKeyDown={this.handleKeyDown.bind(this)}
-          onPaste={this.handlePaste.bind(this)}
-          value={this.editor().value(true)} />
-      </span>
-    );
+    if (this.element.currentType !== 'Object' && this.element.currentType !== 'Array') {
+      const length = 120; // TODO: styles
+      return (
+        <span className={this.wrapperStyle()}>
+          <Tooltip
+            id={this.element.uuid}
+            className="editable-element-value-tooltip"
+            border
+            getContent={() => { return this.element.invalidTypeMessage; }}/>
+          <input
+            data-tip=""
+            data-for={this.element.uuid}
+            ref={(c) => {this._node = c;}}
+            type="text"
+            style={{ width: `${length}px` }}
+            className={this.style()}
+            onChange={this.handleChange.bind(this)}
+            // onKeyDown={this.handleKeyDown.bind(this)}
+            onPaste={this.handlePaste.bind(this)}
+            value={this.editor().value(true)}/>
+        </span>
+      );
+    }
+    return null;
   }
 
   renderDrillDown() {
     if (this.element.currentType === 'Object' || this.element.currentType === 'Array') {
       return (
-        <button
-          className="table-view-cell-editor-button"
+        <div
+          className="table-view-button"
           onClick={this.handleDrillDown}
         >
           <FontAwesome name="forward" className="table-view-cell-editor-button-icon"/>
-        </button>
+        </div>
       );
     }
     return null;
@@ -251,18 +256,13 @@ class CellEditor extends React.Component {
     return (
       <span className="table-view-cell-editor-actions">
         {this.renderDrillDown()}
-        <button
-          className="table-view-cell-editor-button"
-          onClick={this.handleAddField.bind(this)}
-        >
-          <FontAwesome name="plus-square-o" className="table-view-cell-editor-button-icon"/>
-        </button>
-        <button
-        className="table-view-cell-editor-button"
+        <AddFieldButton element={this.element} />
+        <div
+        className="table-view-button"
         onClick={this.handleRemoveField.bind(this)}
         >
           <FontAwesome name="trash" className="table-view-cell-editor-button-icon"/>
-        </button>
+        </div>
       </span>
     );
   }
