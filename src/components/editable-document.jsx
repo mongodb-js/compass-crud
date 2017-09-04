@@ -421,7 +421,7 @@ class EditableDocument extends React.Component {
       setRenderSize: this.setRenderSize.bind(this),
       totalSize: totalSize
     };
-    if (this.state.deleting || this.state.editing) {
+    if (this.state.editing) {
       // Not sure how to handle case where hide/collapse an edited row,
       // should the update be applied or ignored? So just disable the update.
       props.disableHideButton = true;
