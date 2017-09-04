@@ -277,7 +277,7 @@ class CellEditor extends React.Component {
    * Render the add field/delete field buttons. If the element is an object or
    * an array, provide a "expand" button.
    *
-   * @params {Number} The distance to push the add-field dropdown.
+   * @param {Number} displace - The distance to push the add-field dropdown.
    *
    * @returns {React.Component} The component.
    */
