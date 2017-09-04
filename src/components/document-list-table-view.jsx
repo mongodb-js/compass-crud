@@ -164,6 +164,9 @@ class DocumentListTableView extends React.Component {
           valueGetter: function(params) {
             return params.data.hadronDocument.get(key);
           },
+          valueSetter: function(params) {
+            return (params.oldValue === undefined && params.newValue !== undefined);
+          },
 
           headerComponentFramework: HeaderComponent,
           headerComponentParams: {
@@ -177,6 +180,9 @@ class DocumentListTableView extends React.Component {
           editable: function(params) {
             if (!isEditable || params.node.data.state === 'deleting') {
               return false;
+            }
+            if (params.node.data.hadronDocument.get(key) === undefined) {
+              return true;
             }
             return params.node.data.hadronDocument.get(key).isValueEditable();
           },

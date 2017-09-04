@@ -6,6 +6,7 @@ const initEditors = require('../editor/');
 const Types = require('../types');
 const FontAwesome = require('react-fontawesome');
 const { Tooltip } = require('hadron-react-components');
+const TypeChecker = require('hadron-type-checker');
 
 // const util = require('util');
 
@@ -25,12 +26,29 @@ const INVALID = `${VALUE_CLASS}-is-invalid-type`;
 class CellEditor extends React.Component {
   constructor(props) {
     super(props);
-    this.element = props.value;
-
-    this._editors = initEditors(props.value);
   }
 
   componentWillMount() {
+    this.element = this.props.value;
+    this.wasEmpty = false;
+
+    if (this.element === undefined) {
+      this.wasEmpty = true;
+      let key = this.props.column.colDef.headerName;
+      if (key === '$New Field') {
+        // TODO: adding a new field
+        key = '';
+      }
+      let type = this.props.column.colDef.headerComponentParams.bsonType;
+      if (type === 'mixed') {
+        type = 'Undefined';
+      }
+      this.element = this.props.node.data.hadronDocument.insertEnd(key, '');
+      const value = TypeChecker.cast(null, type);
+      this.element.edit(value);
+    }
+
+    this._editors = initEditors(this.element);
     this.editor().start();
   }
 
@@ -62,8 +80,15 @@ class CellEditor extends React.Component {
    * @returns {*} The value that will be set.
    */
   getValue() {
+    return this.element;
+  }
+
+  /**
+   * AG-Grid API call to do a final check before closing the. Returning false
+   * will cancel editing.
+   */
+  isCancelAfterEnd() {
     this.editor().complete();
-    return this.editor().value();
   }
 
   /**
@@ -92,6 +117,9 @@ class CellEditor extends React.Component {
     console.log('remove field');
     if (this.element.isRemovable()) {
       this.element.remove();
+      if (this.wasEmpty) {
+        this.element = undefined; // return state to undefined
+      }
       this.props.api.stopEditing();
     }
   }
@@ -253,6 +281,8 @@ class CellEditor extends React.Component {
 CellEditor.propTypes = {
   reactContainer: PropTypes.any,
   value: PropTypes.any,
+  column: PropTypes.any,
+  node: PropTypes.any,
   api: PropTypes.any
 };
 
