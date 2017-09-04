@@ -329,6 +329,7 @@ class EditableDocument extends React.Component {
       // TODO: Need a loading spinner here, preserving the user's current state
       // TODO: ... (and focus if they double-clicked on a field to edit it)
       // TODO: ... is probably more valuable than raw performance here.
+      // TODO: See COMPASS-1901
     }, () => {
       marky.stop('EditableDocument - Edit');
     });
