@@ -414,18 +414,22 @@ class EditableDocument extends React.Component {
    */
   renderExpansion() {
     const totalSize = this.doc.elements.size;
-    let disableHideButton = false;
+    const props = {
+      disableHideButton: false,
+      initialSize: INITIAL_FIELD_LIMIT,
+      renderSize: this.state.renderSize,
+      setRenderSize: this.setRenderSize.bind(this),
+      totalSize: totalSize
+    };
     if (this.state.deleting || this.state.editing) {
-      disableHideButton = true;
+      // Not sure how to handle case where hide/collapse an edited row,
+      // should the update be applied or ignored? So just disable the update.
+      props.disableHideButton = true;
+      // Performance - Reduce extra fields added per click in edit mode
+      props.perClickSize = 100;
     }
     return (
-      <ExpansionBar
-        disableHideButton={disableHideButton}
-        initialSize={INITIAL_FIELD_LIMIT}
-        renderSize={this.state.renderSize}
-        setRenderSize={this.setRenderSize.bind(this)}
-        totalSize={totalSize}
-      />
+      <ExpansionBar {...props} />
     );
   }
 
