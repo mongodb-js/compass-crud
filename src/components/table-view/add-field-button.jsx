@@ -7,7 +7,7 @@ const getComponent = require('hadron-react-bson');
 /**
  * The BEM base style name for the element.
  */
-const BEM_BASE = 'table-view-button';
+const BEM_BASE = 'table-view-cell-editor-button';
 
 /**
  * The menu class.
@@ -286,7 +286,7 @@ class AddFieldButton extends React.Component {
         onKeyPress={this.handleKeyPress.bind(this)}
         onBlur={this.handleClickOutside.bind(this)}>
         {this.renderMenu()}
-        <FontAwesome name="plus-square-o" className="table-view-cell-editor-button-icon"/>
+        <FontAwesome name="plus-square-o" className={`${BEM_BASE}-icon`}/>
       </div>
     );
   }

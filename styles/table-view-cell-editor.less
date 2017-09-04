@@ -4,21 +4,38 @@
   width: 280px; //TODO: set correctly
   background: white;
   border: 1px solid #807f7f;
-  border-radius: 2px;
+  border-radius: 3px;
   height: 28px;
   padding: 2px;
 
   &-input {
+    :focus {
+      outline: none;
+    }
+    display: inline-block;
     width: 120px;
-    border: 1px solid #807f7f;
+    border: 1px solid #d3d3d3;
+    border-radius: 3px;
+    height: 21px;
+    margin-right: 3px;
+
+    .editable-element-value-is-editing {
+      border: none;
+      box-shadow: none;
+      margin-top: 3px;
+      height: 15px;
+    }
   }
 
   &-types {
     display: inline-block;
     width: 80px;
     color: #807f7f;
-    height: 20px;
+    height: 21px;
     flex-shrink: 0;
+    border: 1px solid #d3d3d3;
+    border-radius: 3px;
+    margin-right: 3px;
 
     .closed > .dropdown-menu {
       display: none;
@@ -33,7 +50,7 @@
       color: #a09f9e;
       border: none;
       text-transform: none;
-      font-size: 11px;
+      font-size: 12px;
       border-radius: 8px;
       padding: 1px 12px;
     }
@@ -51,6 +68,50 @@
 
     .dropdown-menu {
       min-width: 80px;
+      font-size: 12px;
+
+      li {
+        span {
+          display: block;
+          padding: 3px 5px;
+          clear: both;
+          font-weight: normal;
+          color: #333333;
+          white-space: nowrap;
+        }
+        span:hover {
+          color: #313030;
+          text-decoration: none;
+          background: #e6e6e6;
+        }
+      }
+    }
+  }
+
+  &-button {
+    display: inline-block;
+    color: black;
+    text-align: center;
+    cursor: pointer;
+    width: 20px;
+    height: 21px;
+    border: solid #d3d3d3 1px;
+    border-radius: 3px;
+    margin-right: 3px;
+
+    &-is-selected {
+      border: solid black 1px;
+    }
+
+    &-icon {
+      font-size: 8px;
+    }
+
+    &-menu {
+      display: none;
+      color: #807f7f;
+      position: absolute;
+
 
       li {
         span {
@@ -61,12 +122,30 @@
           font-size: 11px;
           color: #333333;
           white-space: nowrap;
+
+          .fa-level-down {
+            margin-right: 12px;
+          }
+
+          .fa-plus-square-o {
+            margin-right: 10px;
+          }
         }
         span:hover {
           color: #313030;
           text-decoration: none;
           background: #e6e6e6;
         }
+      }
+
+      &-field {
+        display: inline-block !important;
+        padding: 0px !important;
+        font-weight: bold !important;
+      }
+
+      &-is-visible {
+        display: block;
       }
     }
   }

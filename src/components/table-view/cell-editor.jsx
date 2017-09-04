@@ -13,6 +13,11 @@ const AddFieldButton = require('./add-field-button');
 // const util = require('util');
 
 /**
+ * BEM BASE
+ */
+const BEM_BASE = 'table-view-cell-editor';
+
+/**
  * The document value class.
  */
 const VALUE_CLASS = 'editable-element-value';
@@ -36,11 +41,7 @@ class CellEditor extends React.Component {
 
     if (this.element === undefined) {
       this.wasEmpty = true;
-      let key = this.props.column.colDef.headerName;
-      if (key === '$New Field') {
-        // TODO: adding a new field
-        key = '';
-      }
+      const key = this.props.column.colDef.headerName;
       let type = this.props.column.colDef.headerComponentParams.bsonType;
       if (type === 'mixed') {
         type = 'Undefined';
@@ -190,56 +191,82 @@ class CellEditor extends React.Component {
   }
 
   /**
+   * Render the field name if the element is being added.
+   *
+   * @returns {React.Component} The component.
+   */
+  renderFieldName() {
+    if (this.element.key === '') {
+      return (
+        <input
+          type="text"
+          style={{ width: `100px` }}
+          className={`${BEM_BASE}-field-name`}
+          onChange={this.handleChange.bind(this)}
+          // onKeyDown={this.handleKeyDown.bind(this)}
+          onPaste={this.handlePaste.bind(this)}
+          value={this.editor().value(true)}/>
+
+      );
+    }
+    return null;
+  }
+
+  /**
    * Render the types column.
    *
    * @returns {React.Component} The component.
    */
   renderTypes() {
     return (
-      <Types element={this.element} className="table-view-cell-editor"/>
+      <Types element={this.element} className={BEM_BASE}/>
     );
   }
 
   /**
-   * Render the input field.
+   * Render the input field if the element is not an object or an array.
    *
    * @returns {React.Component} The component.
    */
   renderInput() {
     if (this.element.currentType !== 'Object' && this.element.currentType !== 'Array') {
-      const length = 120; // TODO: styles
+      const length = 100; // TODO: styles
       return (
-        <span className={this.wrapperStyle()}>
-          <Tooltip
-            id={this.element.uuid}
-            className="editable-element-value-tooltip"
-            border
-            getContent={() => { return this.element.invalidTypeMessage; }}/>
-          <input
-            data-tip=""
-            data-for={this.element.uuid}
-            ref={(c) => {this._node = c;}}
-            type="text"
-            style={{ width: `${length}px` }}
-            className={this.style()}
-            onChange={this.handleChange.bind(this)}
-            // onKeyDown={this.handleKeyDown.bind(this)}
-            onPaste={this.handlePaste.bind(this)}
-            value={this.editor().value(true)}/>
-        </span>
+        <div className={`${BEM_BASE}-input`}>
+          <span className={this.wrapperStyle()}>
+            <Tooltip
+              id={this.element.uuid}
+              className="editable-element-value-tooltip"
+              border
+              getContent={() => { return this.element.invalidTypeMessage; }}/>
+            <input
+              data-tip=""
+              data-for={this.element.uuid}
+              ref={(c) => {this._node = c;}}
+              type="text"
+              style={{ width: `${length}px`}}
+              className={this.style()}
+              onChange={this.handleChange.bind(this)}
+              // onKeyDown={this.handleKeyDown.bind(this)}
+              onPaste={this.handlePaste.bind(this)}
+              value={this.editor().value(true)}/>
+          </span>
+        </div>
       );
     }
     return null;
   }
 
-  renderDrillDown() {
+  /**
+   * Render the "expand" button if the element is an array or object.
+   *
+   * @returns {React.Component} The component.
+   */
+  renderExpand() {
     if (this.element.currentType === 'Object' || this.element.currentType === 'Array') {
       return (
-        <div
-          className="table-view-button"
-          onClick={this.handleDrillDown}
-        >
-          <FontAwesome name="forward" className="table-view-cell-editor-button-icon"/>
+        <div className={`${BEM_BASE}-button`} onClick={this.handleDrillDown}>
+          <FontAwesome name="forward" className={`${BEM_BASE}-button-icon`}/>
         </div>
       );
     }
@@ -248,20 +275,17 @@ class CellEditor extends React.Component {
 
   /**
    * Render the add field/delete field buttons. If the element is an object or
-   * an array, provide a "drill down" button.
+   * an array, provide a "expand" button.
    *
    * @returns {React.Component} The component.
    */
   renderActions() {
     return (
-      <span className="table-view-cell-editor-actions">
-        {this.renderDrillDown()}
+      <span className={`${BEM_BASE}-actions`}>
+        {this.renderExpand()}
         <AddFieldButton element={this.element} />
-        <div
-        className="table-view-button"
-        onClick={this.handleRemoveField.bind(this)}
-        >
-          <FontAwesome name="trash" className="table-view-cell-editor-button-icon"/>
+        <div className={`${BEM_BASE}-button`} onClick={this.handleRemoveField.bind(this)}>
+          <FontAwesome name="trash" className={`${BEM_BASE}-button-icon`}/>
         </div>
       </span>
     );
@@ -269,7 +293,8 @@ class CellEditor extends React.Component {
 
   render() {
     return (
-      <div className="table-view-cell-editor">
+      <div className={BEM_BASE}>
+        {this.renderFieldName()}
         {this.renderInput()}
         {this.renderTypes()}
         {this.renderActions()}
