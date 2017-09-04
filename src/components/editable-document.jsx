@@ -321,8 +321,14 @@ class EditableDocument extends React.Component {
   handleEdit() {
     marky.mark('EditableDocument - Edit');
     this.setState({
-      editing: true,
-      renderSize: INITIAL_FIELD_LIMIT
+      editing: true
+      // renderSize: INITIAL_FIELD_LIMIT
+      // Scenario - User has clicked "Show 1000 more fields"
+      // (perhaps several times), then enters edit mode
+      // (by double-click or the mouse-hover + edit button).
+      // TODO: Need a loading spinner here, preserving the user's current state
+      // TODO: ... (and focus if they double-clicked on a field to edit it)
+      // TODO: ... is probably more valuable than raw performance here.
     }, () => {
       marky.stop('EditableDocument - Edit');
     });
