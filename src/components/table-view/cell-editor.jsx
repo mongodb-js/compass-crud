@@ -285,7 +285,9 @@ class CellEditor extends React.Component {
     return (
       <span className={`${BEM_BASE}-actions`}>
         {this.renderExpand()}
-        <AddFieldButton element={this.element} displace={displace}/>
+        <AddFieldButton {...this.props}
+          displace={displace}
+        />
         <div className={`${BEM_BASE}-button`} onClick={this.handleRemoveField.bind(this)}>
           <FontAwesome name="trash" className={`${BEM_BASE}-button-icon`}/>
         </div>
@@ -316,7 +318,8 @@ CellEditor.propTypes = {
   value: PropTypes.any,
   column: PropTypes.any,
   node: PropTypes.any,
-  api: PropTypes.any
+  api: PropTypes.any,
+  columnApi: PropTypes.any
 };
 
 CellEditor.displayName = 'CellEditor';

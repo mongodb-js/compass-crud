@@ -26,10 +26,12 @@ class DocumentListTableView extends React.Component {
     this.createRowData = this.createRowData.bind(this);
     this.addEditingFooter = this.addEditingFooter.bind(this);
     this.onRowClicked = this.onRowClicked.bind(this);
+    this.addHeader = this.addHeader.bind(this);
 
     this.gridOptions = {
       context: {
-        column_width: 150
+        column_width: 150,
+        addHeader: this.addHeader
       },
       onRowClicked: this.onRowClicked,
       // onCellClicked: this.onCellClicked.bind(this)
@@ -137,6 +139,41 @@ class DocumentListTableView extends React.Component {
     this.gridApi.updateRowData({add: [newData], addIndex: rowIndex + 1});
   }
 
+
+  addHeader(key, type, isEditable) {
+    return {
+      headerName: key,
+      valueGetter: function(params) {
+        return params.data.hadronDocument.get(key);
+      },
+      valueSetter: function(params) {
+        return (params.oldValue === undefined && params.newValue !== undefined);
+      },
+
+      headerComponentFramework: HeaderComponent,
+      headerComponentParams: {
+        isRowNumber: false,
+        bsonType: type
+      },
+
+      cellRendererFramework: CellRenderer,
+      cellRendererParams: {},
+
+      editable: function(params) {
+        if (!isEditable || params.node.data.state === 'deleting') {
+          return false;
+        }
+        if (params.node.data.hadronDocument.get(key) === undefined) {
+          return true;
+        }
+        return params.node.data.hadronDocument.get(key).isValueEditable();
+      },
+
+      cellEditorFramework: CellEditor,
+      cellEditorParams: {}
+    };
+  }
+
   /**
    * Define all the columns in table and their renderer components.
    *
@@ -146,6 +183,8 @@ class DocumentListTableView extends React.Component {
     const headers = {};
     // const width = this.gridOptions.context.column_width;
     const isEditable = this.props.isEditable;
+
+    const addHeader = this.addHeader;
 
     headers.hadronRowNumber = {
       headerName: 'Row',
@@ -158,38 +197,7 @@ class DocumentListTableView extends React.Component {
 
     for (let i = 0; i < this.props.docs.length; i++) {
       _.map(this.props.docs[i], function(val, key) {
-        headers[key] = {
-          headerName: key,
-          // width: width, TODO: prevents horizontal scrolling
-          valueGetter: function(params) {
-            return params.data.hadronDocument.get(key);
-          },
-          valueSetter: function(params) {
-            return (params.oldValue === undefined && params.newValue !== undefined);
-          },
-
-          headerComponentFramework: HeaderComponent,
-          headerComponentParams: {
-            isRowNumber: false,
-            bsonType: TypeChecker.type(val)
-          },
-
-          cellRendererFramework: CellRenderer,
-          cellRendererParams: {},
-
-          editable: function(params) {
-            if (!isEditable || params.node.data.state === 'deleting') {
-              return false;
-            }
-            if (params.node.data.hadronDocument.get(key) === undefined) {
-              return true;
-            }
-            return params.node.data.hadronDocument.get(key).isValueEditable();
-          },
-
-          cellEditorFramework: CellEditor,
-          cellEditorParams: {}
-        };
+        headers[key] = addHeader(key, TypeChecker.type(val), isEditable);
       });
     }
     return Object.values(headers);

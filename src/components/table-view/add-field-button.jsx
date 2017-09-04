@@ -3,6 +3,7 @@ const PropTypes = require('prop-types');
 const FontAwesome = require('react-fontawesome');
 const outsideClickable = require('react-click-outside');
 const getComponent = require('hadron-react-bson');
+const _ = require('lodash');
 
 /**
  * The BEM base style name for the element.
@@ -62,6 +63,10 @@ class AddFieldButton extends React.Component {
   constructor(props) {
     super(props);
     this.state = { menu: false };
+
+    if (props.value === undefined) {
+      this.empty = true;
+    }
   }
 
   componentDidMount() {
@@ -84,7 +89,7 @@ class AddFieldButton extends React.Component {
    */
   handleClick() {
   // Provide menu for _id because it's top-level, but not for any potential children.
-    if (this.props.element.isParentEditable()) {
+    if (this.empty || this.props.value.isParentEditable()) {
       this.setState({menu: !this.state.menu});
     }
   }
@@ -95,7 +100,7 @@ class AddFieldButton extends React.Component {
    * @param {Object} event    The DOM event
    */
   handleKeyPress(event) {
-    if (event.key === 'Enter' && this.props.element.isParentEditable()) {
+    if (event.key === 'Enter' && this.props.value.isParentEditable()) {
       this.setState({menu: !this.state.menu});
     }
   }
@@ -111,15 +116,27 @@ class AddFieldButton extends React.Component {
    * When clicking on a hotspot we append or remove on the parent.
    */
   handleAddFieldClick() {
-    this.props.element.next();
+    // this.props.value.next();
     this.setState({ menu: false });
+
+    // const newColDef = this.props.context.addHeader();
+
+    const columns = this.props.columnApi.getAllColumns();
+
+    const colDefs = _.map(columns, function(col) {
+      return col.colDef;
+    });
+
+    // colDefs.push(newColDef);
+    this.props.api.setColumnDefs(colDefs);
+    this.props.api.stopEditing();
   }
 
   /**
    * When clicking on an expandable element to append a child.
    */
   handleAddChildClick() {
-    this.props.element.insertPlaceholder();
+    this.props.value.insertPlaceholder();
     this.setState({ menu: false });
   }
 
@@ -130,7 +147,7 @@ class AddFieldButton extends React.Component {
    * @returns {Boolean} If the element is an object.
    */
   isElementObject() {
-    return this.props.element.currentType === 'Object';
+    return !this.empty && this.props.value.currentType === 'Object';
   }
 
   /**
@@ -139,7 +156,7 @@ class AddFieldButton extends React.Component {
    * @returns {Boolean} If the element is an array.
    */
   isElementArray() {
-    return this.props.element.currentType === 'Array';
+    return !this.empty && this.props.value.currentType === 'Array';
   }
 
   /**
@@ -148,8 +165,8 @@ class AddFieldButton extends React.Component {
    * @returns {Boolean} If the parent element is an array.
    */
   isParentArray() {
-    return !this.props.element.parent.isRoot() &&
-        this.props.element.parent.currentType === 'Array';
+    return !this.empty && !this.props.value.parent.isRoot() &&
+        this.props.value.parent.currentType === 'Array';
   }
 
   /**
@@ -168,7 +185,7 @@ class AddFieldButton extends React.Component {
    * @returns {React.Component} The component.
    */
   renderArrayItem() {
-    if (this.isElementArray() && this.props.element.isValueEditable()) {
+    if (this.isElementArray() && this.props.value.isValueEditable()) {
       return this.renderMenuItem(
         ADD_CHILD_ICON,
         ARRAY_TEXT,
@@ -199,10 +216,13 @@ class AddFieldButton extends React.Component {
    * @returns {React.Component} The value component.
    */
   renderValue() {
-    const component = getComponent(this.props.element.currentType);
+    if (this.empty) {
+      return null;
+    }
+    const component = getComponent(this.props.value.currentType);
     return React.createElement(
       component,
-      { type: this.props.element.currentType, value: this.props.element.currentValue }
+      { type: this.props.value.currentType, value: this.props.value.currentValue }
     );
   }
 
@@ -214,11 +234,14 @@ class AddFieldButton extends React.Component {
    * @returns {String} The field name or value if an array element.
    */
   renderIdentifier() {
+    if (this.empty) {
+      return this.props.column.colDef.headerName;
+    }
     // this case is already handled in renderDefaultItem()
     if (this.isParentArray() && (this.isElementObject() || this.isElementArray())) {
-      return this.props.element.currentType;
+      return this.props.value.currentType;
     }
-    return this.props.element.currentKey || this.renderValue();
+    return this.props.value.currentKey || this.renderValue();
   }
 
   /**
@@ -249,7 +272,7 @@ class AddFieldButton extends React.Component {
    * @returns {React.Component} The component.
    */
   renderObjectItem() {
-    if (this.isElementObject() && this.props.element.isValueEditable()) {
+    if (this.isElementObject() && this.props.value.isValueEditable()) {
       return this.renderMenuItem(
         ADD_CHILD_ICON,
         OBJECT_TEXT,
@@ -298,8 +321,12 @@ class AddFieldButton extends React.Component {
 AddFieldButton.displayName = 'AddFieldButton';
 
 AddFieldButton.propTypes = {
-  element: PropTypes.object.isRequired,
-  displace: PropTypes.number.isRequired
+  value: PropTypes.object,
+  displace: PropTypes.number.isRequired,
+  columnApi: PropTypes.any.isRequired,
+  api: PropTypes.any.isRequired,
+  context: PropTypes.any.isRequired,
+  column: PropTypes.any.isRequired
 };
 
 module.exports = outsideClickable(AddFieldButton);
