@@ -15,7 +15,7 @@ describe('<ExpansionBar />', () => {
     let showSize;
     let spy;
 
-    context('when initialSize === everythingSize', () => {
+    context('when initialSize === totalSize', () => {
       before(() => {
         const size = 8;
         const props = {
@@ -37,7 +37,7 @@ describe('<ExpansionBar />', () => {
       });
     });
 
-    context('when initialSize === renderSize and renderSize < everythingSize', () => {
+    context('when initialSize === renderSize and renderSize < totalSize', () => {
       before(() => {
         showSize = 2;
         const size = 3;
@@ -60,7 +60,7 @@ describe('<ExpansionBar />', () => {
       });
     });
 
-    context('when initialSize < renderSize < everythingSize', () => {
+    context('when initialSize < renderSize < totalSize', () => {
       before(() => {
         const props = {
           initialSize: 3,
@@ -86,7 +86,7 @@ describe('<ExpansionBar />', () => {
       });
     });
 
-    context('when initialSize < renderSize < everythingSize and disableHideButton', () => {
+    context('when initialSize < renderSize < totalSize and disableHideButton', () => {
       before(() => {
         const props = {
           disableHideButton: true,
@@ -112,7 +112,7 @@ describe('<ExpansionBar />', () => {
       });
     });
 
-    context('when initialSize < renderSize and renderSize === everythingSize', () => {
+    context('when initialSize < renderSize and renderSize === totalSize', () => {
       before(() => {
         const size = 8;
         const props = {
