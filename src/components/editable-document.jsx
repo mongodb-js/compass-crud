@@ -263,12 +263,10 @@ class EditableDocument extends React.Component {
     this.doc = EditableDocument.loadDocument(doc);
     this.subscribeToDocumentEvents();
     setTimeout(() => {
-      if (this.onHideScrollIntoView) {
-        const ref = this.onHideScrollIntoView;
-        if (typeof(ref.scrollIntoView) === 'function') {
-          // Avoid loading more documents on clicking the Update button
-          ref.scrollIntoView();
-        }
+      const ref = this.onHideScrollIntoView;
+      if (ref) {
+        // Avoid loading more documents on clicking the Update button
+        ref.scrollIntoView();
       }
       this.setState({
         editing: false,
@@ -292,12 +290,10 @@ class EditableDocument extends React.Component {
    */
   handleCancel() {
     marky.mark('EditableDocument - Cancel');
-    if (this.onHideScrollIntoView) {
-      const ref = this.onHideScrollIntoView;
-      if (typeof(ref.scrollIntoView) === 'function') {
-        // Avoid loading more documents on clicking the Cancel button
-        ref.scrollIntoView();
-      }
+    const ref = this.onHideScrollIntoView;
+    if (ref) {
+      // Avoid loading more documents on clicking the Cancel button
+      ref.scrollIntoView();
     }
     this.setState({ editing: false, renderSize: INITIAL_FIELD_LIMIT }, () => {
       marky.stop('EditableDocument - Cancel');
@@ -315,13 +311,11 @@ class EditableDocument extends React.Component {
    * Handles document deletion.
    */
   handleDelete() {
-    if (this.onHideScrollIntoView) {
-      const ref = this.onHideScrollIntoView;
-      if (typeof(ref.scrollIntoView) === 'function') {
-        // Avoid loading more documents on clicking the Delete button,
-        // with 1000+ fields expanded
-        ref.scrollIntoView();
-      }
+    const ref = this.onHideScrollIntoView;
+    if (ref) {
+      // Avoid loading more documents on clicking the Delete button,
+      // with 1000+ fields expanded
+      ref.scrollIntoView();
     }
     this.setState({
       deleting: true,
