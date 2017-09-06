@@ -125,7 +125,7 @@ class AddFieldButton extends React.Component {
       this.props.node.data.hadronDocument.insertEnd('$new', 'Value');
     }
 
-    Actions.addColumn(this.props.column.colId, this.props.node.childIndex);
+    Actions.addColumn(this.props.column.getColDef().colId, this.props.node.childIndex);
   }
 
   /**
@@ -231,7 +231,7 @@ class AddFieldButton extends React.Component {
    */
   renderIdentifier() {
     if (this.empty) {
-      return this.props.column.colDef.headerName;
+      return this.props.column.getColDef().headerName;
     }
     // this case is already handled in renderDefaultItem()
     if (this.isParentArray() && (this.isElementObject() || this.isElementArray())) {

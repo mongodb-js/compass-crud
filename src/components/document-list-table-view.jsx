@@ -38,8 +38,6 @@ class DocumentListTableView extends React.Component {
       // onCellClicked: this.onCellClicked.bind(this)
       rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
     };
-
-    this.columnHeaders = this.createColumnHeaders();
   }
 
   componentDidMount() {
@@ -198,24 +196,30 @@ class DocumentListTableView extends React.Component {
    */
   modifyColumns(columnId, rowNum) {
     /* Have to calculate the index of the neighbor column */
+    const columns = this.columnApi.getAllColumns();
+
     let i = 0;
-    while (i < this.columnHeaders.length) {
-      if (this.columnHeaders[i].headerName === columnId) {
+    while (i < columns.length) {
+      if (columns[i].getColDef().colId === columnId) {
         break;
       }
       i++;
     }
 
+    const columnHeaders = _.map(columns, function(col) {
+      return col.getColDef();
+    });
+
     if (rowNum === -1) {
       /* Remove column */
-      this.columnHeaders.splice(i, 1);
+      columnHeaders.splice(i, 1);
     } else {
       /* Add new column */
       const newColDef = this.getColDef('$new', '', this.props.isEditable);
-      this.columnHeaders.splice(i + 1, 0, newColDef);
+      columnHeaders.splice(i + 1, 0, newColDef);
     }
 
-    this.gridApi.setColumnDefs(this.columnHeaders);
+    this.gridApi.setColumnDefs(columnHeaders);
 
     if (rowNum !== -1) {
       this.gridApi.startEditingCell({rowIndex: rowNum, colKey: '$new'});
@@ -294,7 +298,7 @@ class DocumentListTableView extends React.Component {
         <div style={containerStyle}>
           <AgGridReact
             // properties
-            columnDefs={this.columnHeaders}
+            columnDefs={this.createColumnHeaders()}
             gridOptions={this.gridOptions}
 
             isFullWidthCell={(rowNode)=>{return rowNode.data.isFooter;}}

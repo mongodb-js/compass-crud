@@ -42,10 +42,11 @@ class CellEditor extends React.Component {
     this.wasEmpty = false;
     this.newField = false;
 
+    /* If there was no value in the cell */
     if (this.element === undefined) {
       this.wasEmpty = true;
-      const key = this.props.column.colDef.headerName;
-      let type = this.props.column.colDef.headerComponentParams.bsonType;
+      const key = this.props.column.getColDef().headerName;
+      let type = this.props.column.getColDef().headerComponentParams.bsonType;
       if (type === 'mixed') {
         type = 'Undefined';
       }
@@ -53,6 +54,7 @@ class CellEditor extends React.Component {
       const value = TypeChecker.cast(null, type);
       this.element.edit(value);
     } else {
+      /* If this column has just been added */
       this.newField = (this.props.value.currentKey === '$new');
     }
 
@@ -104,17 +106,18 @@ class CellEditor extends React.Component {
       const key = this.state.fieldName;
 
       if (this.element.isDuplicateKey(key) || key.includes('$') || key.includes(' ')) {
-        // TODO: handle duplicates
         this.element.revert();
-        // TODO: remove column here or in cancel?
         Actions.removeColumn('$new');
         return false;
       }
+
+      /* Rename the element within HadronDocument */
       this.element.rename(key);
       this.props.value.rename(key);
+      this.element.key = key;
 
+      /* Rename the column + update its definition */
       const colDef = this.props.column.getColDef();
-
       colDef.headerName = key;
       colDef.colId = key;
       colDef.valueGetter = function(params) {
@@ -130,6 +133,12 @@ class CellEditor extends React.Component {
         }
         return params.node.data.hadronDocument.get(key).isValueEditable();
       };
+
+      /* TODO: should we update column.* as well to be safe?
+         Not needed if everywhere we access columns through .getColDef() but
+         if somewhere internally they don't do that, will have outdated values.
+         Docs: https://www.ag-grid.com/javascript-grid-column-definitions
+       */
 
       this.props.api.refreshHeader();
     }
