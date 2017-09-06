@@ -101,6 +101,7 @@ class CellEditor extends React.Component {
    */
   isCancelAfterEnd() {
     this.editor().complete();
+
     /* If this is a new field, need to update the colDef with the key name */
     if (this.newField) {
       const key = this.state.fieldName;
@@ -113,8 +114,6 @@ class CellEditor extends React.Component {
 
       /* Rename the element within HadronDocument */
       this.element.rename(key);
-      this.props.value.rename(key);
-      this.element.key = key;
 
       /* Rename the column + update its definition */
       const colDef = this.props.column.getColDef();
