@@ -30,6 +30,7 @@ class DocumentListTableView extends React.Component {
     this.createColumnHeaders = this.createColumnHeaders.bind(this);
     this.createRowData = this.createRowData.bind(this);
     this.addEditingFooter = this.addEditingFooter.bind(this);
+    this.addDeletingFooter = this.addDeletingFooter.bind(this);
     this.onRowDoubleClicked = this.onRowDoubleClicked.bind(this);
     this.createColumnHeader = this.createColumnHeader.bind(this);
     this.updateHeaders = this.updateHeaders.bind(this);
@@ -39,6 +40,7 @@ class DocumentListTableView extends React.Component {
       context: {
         column_width: 150,
         onRowDoubleClicked: this.onRowDoubleClicked,
+        addDeletingFooter: this.addDeletingFooter,
         removeFooter: this.removeFooter
       },
       onRowDoubleClicked: this.onRowDoubleClicked,
@@ -123,39 +125,30 @@ class DocumentListTableView extends React.Component {
    * row directly above. The row will be a full-width row that has the same
    * hadron-document as the "data" row above.
    *
-   * @param {RowNode} rowNode - The RowNode for the row that was clicked on.
+   * @param {RowNode} node - The RowNode for the row that was clicked on.
    * @param {object} data - The data for the row that was clicked on. Will be a
    *  HadronDocument with some metadata.
    * @param {number} rowIndex - Index of the row clicked on.
    */
-  addDeletingFooter(rowNode, data, rowIndex) {
-    if (data.isFooter || data.state === 'deleting') {
-      return;
-    } else if (data.hasFooter) {
-      /* If bar exists and is in editing mode, set this row deleting and also
-       * this rows' footer's state to deleting. */
+  addDeletingFooter(node, data, rowIndex) {
+    if (this.props.isEditable) {
+      if (data.isFooter || data.hasFooter) {
+        return;
+      }
 
-      data.state = 'deleting';
-      const rowId = data.hadronDocument.get('_id').value.toString() + '1';
+      /* Add deleting row below this row */
+      node.data.hasFooter = true;
+      node.data.state = 'deleting';
+      this.gridApi.refreshCells({rowNodes: [node], columns: ['$rowActions'], force: true});
 
-      const footerNode = this.gridApi.getRowNode(rowId);
-      footerNode.data.state = 'deleting';
-
-      /* rerender footer */
-      this.gridApi.redrawRows([footerNode]);
-      return;
+      const newData = {
+        hadronDocument: data.hadronDocument,
+        hasFooter: false,
+        isFooter: true,
+        state: 'deleting'
+      };
+      this.gridApi.updateRowData({add: [newData], addIndex: rowIndex + 1});
     }
-
-    /* Add deleting row below this row */
-    rowNode.data.hasFooter = true;
-    rowNode.data.state = 'deleting';
-    const newData = {
-      hadronDocument: data.hadronDocument,
-      hasFooter: false,
-      isFooter: true,
-      state: 'deleting'
-    };
-    this.gridApi.updateRowData({add: [newData], addIndex: rowIndex + 1});
   }
 
   /**

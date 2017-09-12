@@ -24,6 +24,11 @@ class RowActionsRenderer extends React.Component {
 
   handleRemove() {
     console.log('handling delete button for row #' + this.props.value.rowNumber);
+    this.props.context.addDeletingFooter(
+      this.props.node,
+      this.props.data,
+      this.props.node.rowIndex
+    );
   }
   handleClone() {
     console.log('handling clone button for row #' + this.props.value.rowNumber);
