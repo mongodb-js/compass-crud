@@ -288,7 +288,7 @@ class DocumentListTableView extends React.Component {
       headerName: 'Row',
       field: 'rowNumber',
       colId: '$rowNumber', // TODO: make sure user can't get duplicate
-      width: 20,
+      width: 24,
       pinned: 'left',
       headerComponentFramework: HeaderComponent,
       headerComponentParams: {
@@ -383,34 +383,27 @@ class DocumentListTableView extends React.Component {
    * @returns {React.Component} The component.
    */
   render() {
-    const containerStyle = {
-      height: 1000,
-      width: 1200
-    };
-
     return (
-      <div>
+      <div className="ag-parent">
         <StoreConnector store={BreadcrumbStore}>
           <BreadcrumbComponent/>
         </StoreConnector>
-        <div style={containerStyle}>
-          <AgGridReact
-            // properties
-            columnDefs={this.createColumnHeaders()}
-            gridOptions={this.gridOptions}
+        <AgGridReact
+          // properties
+          columnDefs={this.createColumnHeaders()}
+          gridOptions={this.gridOptions}
 
-            isFullWidthCell={(rowNode)=>{return rowNode.data.isFooter;}}
-            fullWidthCellRendererFramework={FullWidthCellRenderer}
+          isFullWidthCell={(rowNode)=>{return rowNode.data.isFooter;}}
+          fullWidthCellRendererFramework={FullWidthCellRenderer}
 
-            rowData={this.createRowData()}
-            getRowNodeId={function(data) {
-              const fid = data.isFooter ? '1' : '0';
-              return data.hadronDocument.get('_id').value.toString() + fid;
-            }}
-            // events
-            onGridReady={this.onGridReady.bind(this)}
+          rowData={this.createRowData()}
+          getRowNodeId={function(data) {
+            const fid = data.isFooter ? '1' : '0';
+            return data.hadronDocument.get('_id').value.toString() + fid;
+          }}
+          // events
+          onGridReady={this.onGridReady.bind(this)}
         />
-        </div>
       </div>
     );
   }
