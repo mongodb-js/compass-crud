@@ -122,15 +122,14 @@ class DocumentListTableView extends React.Component {
   removeFooter(data) {
     const rowId = data.hadronDocument.get('_id').value.toString() + '0';
     const api = this.gridApi;
-
     const dataNode = api.getRowNode(rowId);
     setTimeout(function() {
       dataNode.data.hasFooter = false;
       dataNode.data.state = null;
       api.refreshCells({rowNodes: [dataNode], columns: ['$rowActions'], force: true});
       api.updateRowData({remove: [data]});
+      api.clearFocusedCell();
     }, 0);
-    this.gridApi.clearFocusedCell();
   }
 
   /**
