@@ -40,7 +40,7 @@ class DocumentListTableView extends React.Component {
         addFooter: this.addFooter,
         removeFooter: this.removeFooter
       },
-      onRowDoubleClicked: this.onRowDoubleClicked.bind(this),
+      onCellDoubleClicked: this.onCellDoubleClicked.bind(this),
       onCellClicked: this.onCellClicked.bind(this),
       rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
     };
@@ -80,7 +80,7 @@ class DocumentListTableView extends React.Component {
    *     node {RowNode} - the RowNode for the row in question
    *     data {*} - the user provided data for the row in question
    */
-  onRowDoubleClicked(event) {
+  onCellDoubleClicked(event) {
     this.addFooter(event.node, event.data, 'editing');
   }
 
@@ -122,16 +122,15 @@ class DocumentListTableView extends React.Component {
   removeFooter(data) {
     const rowId = data.hadronDocument.get('_id').value.toString() + '0';
     const api = this.gridApi;
-
     const dataNode = api.getRowNode(rowId);
     setTimeout(function() {
       dataNode.data.hasFooter = false;
       dataNode.data.state = null;
       api.refreshCells({rowNodes: [dataNode], columns: ['$rowActions'], force: true});
       api.updateRowData({remove: [data]});
+      api.clearFocusedCell();
     }, 0);
   }
-
 
   /**
    * Add a column to the grid to the right of the column with colId.
@@ -217,6 +216,7 @@ class DocumentListTableView extends React.Component {
   modifyColumns(params) {
     if ('add' in params) {
       this.addColumn(params.add.colId);
+      this.gridApi.setFocusedCell(params.add.rowIndex, '$new');
       this.gridApi.startEditingCell({rowIndex: params.add.rowIndex, colKey: '$new'});
     }
     if ('remove' in params) {
@@ -288,6 +288,8 @@ class DocumentListTableView extends React.Component {
       headerName: 'Row',
       field: 'rowNumber',
       colId: '$rowNumber', // TODO: make sure user can't get duplicate
+      width: 24,
+      pinned: 'left',
       headerComponentFramework: HeaderComponent,
       headerComponentParams: {
         hide: true
@@ -381,34 +383,27 @@ class DocumentListTableView extends React.Component {
    * @returns {React.Component} The component.
    */
   render() {
-    const containerStyle = {
-      height: 1000,
-      width: 1200
-    };
-
     return (
-      <div>
+      <div className="ag-parent">
         <StoreConnector store={BreadcrumbStore}>
           <BreadcrumbComponent/>
         </StoreConnector>
-        <div style={containerStyle}>
-          <AgGridReact
-            // properties
-            columnDefs={this.createColumnHeaders()}
-            gridOptions={this.gridOptions}
+        <AgGridReact
+          // properties
+          columnDefs={this.createColumnHeaders()}
+          gridOptions={this.gridOptions}
 
-            isFullWidthCell={(rowNode)=>{return rowNode.data.isFooter;}}
-            fullWidthCellRendererFramework={FullWidthCellRenderer}
+          isFullWidthCell={(rowNode)=>{return rowNode.data.isFooter;}}
+          fullWidthCellRendererFramework={FullWidthCellRenderer}
 
-            rowData={this.createRowData()}
-            getRowNodeId={function(data) {
-              const fid = data.isFooter ? '1' : '0';
-              return data.hadronDocument.get('_id').value.toString() + fid;
-            }}
-            // events
-            onGridReady={this.onGridReady.bind(this)}
+          rowData={this.createRowData()}
+          getRowNodeId={function(data) {
+            const fid = data.isFooter ? '1' : '0';
+            return data.hadronDocument.get('_id').value.toString() + fid;
+          }}
+          // events
+          onGridReady={this.onGridReady.bind(this)}
         />
-        </div>
       </div>
     );
   }

@@ -17,6 +17,11 @@ const BEM_BASE = 'table-view-cell-editor-button';
 const MENU_CLASS = `${BEM_BASE}-menu`;
 
 /**
+ * The drop down option class.
+ */
+const DROP_DOWN_OPTION_CLASS = `${MENU_CLASS}-option`;
+
+/**
  * The field name class.
  */
 const FIELD_NAME_CLASS = `${MENU_CLASS}-field`;
@@ -82,7 +87,7 @@ class AddFieldButton extends React.Component {
    * @returns {String} The class name.
    */
   divClassName() {
-    return this.state.menu ? `${BEM_BASE} ${BEM_BASE}-is-selected` : BEM_BASE;
+    return this.state.menu ? `${BEM_BASE} ${BEM_BASE}-is-selected btn btn-default btn-xs` : `${BEM_BASE} btn btn-default btn-xs`;
   }
 
   /**
@@ -253,7 +258,7 @@ class AddFieldButton extends React.Component {
   renderMenuItem(iconClassName, text, handler, testId) {
     return (
       <li onClick={handler} data-test-id={testId}>
-        <span>
+        <span className={DROP_DOWN_OPTION_CLASS}>
           <i className={iconClassName} />
           {text}
           <span className={FIELD_NAME_CLASS}>{this.renderIdentifier()}</span>

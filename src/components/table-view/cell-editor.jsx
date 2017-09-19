@@ -19,6 +19,11 @@ const AddFieldButton = require('./add-field-button');
 const BEM_BASE = 'table-view-cell-editor';
 
 /**
+ * The document field class.
+ */
+const FIELD_CLASS = 'editable-element-field';
+
+/**
  * The document value class.
  */
 const VALUE_CLASS = 'editable-element-value';
@@ -167,14 +172,6 @@ class CellEditor extends React.Component {
     }
   }
 
-  /**
-   * Determines if the editor can take up more space than just 1 cell.
-   * @returns {boolean}
-   */
-  isPopup() {
-    return true;
-  }
-
   focus() {
     // TODO: why this?
     setTimeout(() => {
@@ -245,9 +242,9 @@ class CellEditor extends React.Component {
    * @returns {String} The key style.
    */
   styleField(input) {
-    let base = `${BEM_BASE}-field-name`;
+    let base = `${FIELD_CLASS}`;
     if (input) {
-      base = `${base}-input`;
+      base = `${base}`;
       if (this.element.isDuplicateKey(this.state.fieldName)) {
         base = `${base}-is-duplicate`;
       }
@@ -285,14 +282,15 @@ class CellEditor extends React.Component {
   renderFieldName() {
     if (this.newField) {
       return (
-        <div className={this.styleField()}>
-          <input
-            type="text"
-            style={{ width: '100px' }}
-            onChange={this.handleFieldNameChange.bind(this)}
-            className={this.styleField(true)}
-            value={this.state.fieldName}
-            placeholder="Field Name"/>
+        <div className={`${BEM_BASE}-input ${BEM_BASE}-input-field`}>
+          <span className={`${BEM_BASE}-input-field-inner`}>
+            <input
+              type="text"
+              onChange={this.handleFieldNameChange.bind(this)}
+              className={this.styleField(true)}
+              value={this.state.fieldName}
+              placeholder="Field Name"/>
+          </span>
         </div>
       );
     }
@@ -306,7 +304,7 @@ class CellEditor extends React.Component {
    */
   renderTypes() {
     return (
-      <Types element={this.element} className={BEM_BASE}/>
+      <Types element={this.element} className={`${BEM_BASE}-types btn btn-default btn-xs`}/>
     );
   }
 
@@ -339,7 +337,7 @@ class CellEditor extends React.Component {
               value={this.editor().value(true)}
               placeholder="Value"/>
           </span>
-        </div>
+      </div>
       );
     }
     return null;
@@ -353,8 +351,8 @@ class CellEditor extends React.Component {
   renderExpand() {
     if (this.element.currentType === 'Object' || this.element.currentType === 'Array') {
       return (
-        <div className={`${BEM_BASE}-button`} onClick={this.handleDrillDown}>
-          <FontAwesome name="forward" className={`${BEM_BASE}-button-icon`}/>
+        <div className={`${BEM_BASE}-button btn btn-default btn-xs`} onClick={this.handleDrillDown}>
+          <FontAwesome name="expand" className={`${BEM_BASE}-button-icon`}/>
         </div>
       );
     }
@@ -377,7 +375,7 @@ class CellEditor extends React.Component {
           <AddFieldButton {...this.props}
             displace={displace}
           />
-          <div className={`${BEM_BASE}-button`}
+          <div className={`${BEM_BASE}-button btn btn-default btn-xs`}
                onClick={this.handleRemoveField.bind(this)}>
             <FontAwesome name="trash" className={`${BEM_BASE}-button-icon`}/>
           </div>
@@ -388,16 +386,13 @@ class CellEditor extends React.Component {
   }
 
   render() {
-    let width = 258;
     let displace = 211;
-    if (this.newField) {
-      width = 316;
-    } else if (this.element.currentType === 'Object' || this.element.currentType === 'Array') {
-      width = 170;
+    if (this.element.currentType === 'Object' || this.element.currentType === 'Array') {
       displace = 120;
     }
+
     return (
-      <div className={BEM_BASE} style={{width: `${width}px`}}>
+      <div className={BEM_BASE}>
         {this.renderFieldName()}
         {this.renderInput()}
         {this.renderTypes()}
