@@ -201,6 +201,9 @@ class DocumentListTableView extends React.Component {
     for (const element of node.data.hadronDocument.elements) {
       Actions.elementRemoved(element.currentKey, oid, true);
     }
+
+    /* Update the toolbar */
+    Actions.documentRemoved();
   }
 
   /**
@@ -381,9 +384,10 @@ class DocumentListTableView extends React.Component {
    *
    * @param {Error} error - Any error that happened.
    * @param {Object} doc - The raw document that was inserted.
+   * @param {boolean} clone - If the document was cloned, don't add row.
    */
-  handleInsert(error, doc) {
-    if (!error) {
+  handleInsert(error, doc, clone) {
+    if (!error && !clone) {
       this.insertRow(doc, 0, 1, false);
     }
   }
