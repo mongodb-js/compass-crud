@@ -30,7 +30,7 @@ const MIXED = 'Mixed';
 /**
  * Represents the table view of the documents tab.
  */
-class DocumentListTableView extends React.Component {
+class DocumentTableView extends React.Component {
   constructor(props) {
     super(props);
     this.createColumnHeaders = this.createColumnHeaders.bind(this);
@@ -51,14 +51,14 @@ class DocumentListTableView extends React.Component {
     this.unsubscribeGridStore = GridStore.listen(this.modifyColumns.bind(this));
     this.unsubscribeInsert = InsertDocumentStore.listen(this.handleInsert.bind(this));
     this.unsubscribeReset = ResetDocumentListStore.listen(this.handleReset.bind(this));
-    this.unsubscribeLoadMore = PageChangedStore.listen(this.handlePageChange.bind(this));
+    this.unsubscribePageChanged = PageChangedStore.listen(this.handlePageChange.bind(this));
   }
 
   componentWillUnmount() {
     this.unsubscribeGridStore();
-    this.unsubscribeLoadMore();
-    this.unsubscribeReset();
     this.unsubscribeInsert();
+    this.unsubscribeReset();
+    this.unsubscribePageChanged();
   }
 
   createGrid() {
@@ -76,7 +76,7 @@ class DocumentListTableView extends React.Component {
       rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
     };
 
-    const gridProps = {
+    const gridProperties = {
       columnDefs: this.createColumnHeaders(),
       gridOptions: this.gridOptions,
 
@@ -95,10 +95,14 @@ class DocumentListTableView extends React.Component {
 
     return React.createElement(
       AgGridReact,
-      gridProps,
+      gridProperties,
     );
   }
 
+  /**
+   * AG-Grid lifecycle method. This is called when the grid has loaded.
+   * @param {Object} params - a reference to the gridAPI and the columnAPI.
+   */
   onGridReady(params) {
     this.gridApi = params.api;
     this.columnApi = params.columnApi;
@@ -180,7 +184,8 @@ class DocumentListTableView extends React.Component {
   }
 
   /**
-   * A row has either been deleted or updated successfully.
+   * A row has either been deleted or updated successfully. Deletes both the footer
+   * and the document row.
    *
    * @param {RowNode} node - The RowNode of the footer of the document that is being removed.
    */
@@ -593,11 +598,11 @@ class DocumentListTableView extends React.Component {
   }
 }
 
-DocumentListTableView.propTypes = {
+DocumentTableView.propTypes = {
   docs: PropTypes.array.isRequired,
   isEditable: PropTypes.bool.isRequired
 };
 
-DocumentListTableView.displayName = 'DocumentListTableView';
+DocumentTableView.displayName = 'DocumentTableView';
 
-module.exports = DocumentListTableView;
+module.exports = DocumentTableView;
