@@ -5,6 +5,7 @@ const PropTypes = require('prop-types');
 const Actions = require('../../actions');
 const DocumentFooter = require('../document-footer');
 const RemoveDocumentFooter = require('../remove-document-footer');
+const ClonedDocumentFooter = require('../cloned-document-footer');
 
 /**
  * The delete error message.
@@ -13,7 +14,7 @@ const DELETE_ERROR = new Error('Cannot delete documents that do not have an _id 
 
 /**
  * The custom full-width cell renderer that renders the update/cancel bar
- * in the table view. Can either be a deleting or an editing footer.
+ * in the table view. Can either be a deleting, editing, or cloned footer.
  *
  */
 class FullWidthCellRenderer extends React.Component {
@@ -28,12 +29,13 @@ class FullWidthCellRenderer extends React.Component {
 
     // Actions need to be scoped to the single document component and not
     // global singletons.
-    this.actions = Reflux.createActions([ 'update', 'remove', 'cancelRemove' ]);
+    this.actions = Reflux.createActions([ 'update', 'remove', 'cancelRemove', 'insert' ]);
 
     // The update store needs to be scoped to a document and not a global
     // singleton.
     this.updateStore = this.createUpdateStore(this.actions);
     this.removeStore = this.createRemoveStore(this.actions);
+    this.insertStore = this.createInsertStore(this.actions);
   }
 
   /**
@@ -42,6 +44,7 @@ class FullWidthCellRenderer extends React.Component {
   componentDidMount() {
     this.unsubscribeUpdate = this.updateStore.listen(this.handleStoreUpdate.bind(this));
     this.unsubscribeRemove = this.removeStore.listen(this.handleStoreRemove.bind(this));
+    this.unsubscribeInsert = this.insertStore.listen(this.handleStoreInsert.bind(this));
   }
 
   /**
@@ -50,6 +53,52 @@ class FullWidthCellRenderer extends React.Component {
   componentWillUnmount() {
     this.unsubscribeUpdate();
     this.unsubscribeRemove();
+    this.unsubscribeInsert();
+  }
+
+  /**
+   * Create the scoped insert store for cloned documents.
+   *
+   * @param {Action} actions - The component reflux actions.
+   *
+   * @returns {Store} The scoped store.
+   */
+  createInsertStore(actions) {
+    return Reflux.createStore({
+
+      /**
+       * Initialize the store.
+       */
+      init: function() {
+        this.ns = global.hadronApp.appRegistry.getStore('App.NamespaceStore').ns;
+        this.listenTo(actions.insert, this.insert);
+      },
+
+      /**
+       * Insert the document in the database.
+       *
+       * @param {Object} object - The new document.
+       */
+      insert: function(object) {
+        global.hadronApp.dataService.insertOne(
+          this.ns,
+          object,
+          {},
+          this.handleResult
+        );
+      },
+
+      /**
+       * Handle the result from the driver.
+       *
+       * @param {Error} error - The error.
+       *
+       * @returns {Object} The trigger event.
+       */
+      handleResult: function(error) {
+        return (error) ? this.trigger(false, error) : this.trigger(true);
+      }
+    });
   }
 
   /**
@@ -171,6 +220,12 @@ class FullWidthCellRenderer extends React.Component {
     }
   }
 
+  handleStoreInsert(success) {
+    if (success) {
+      this.handleUpdateSuccess(this.props.data.hadronDocument.generateObject());
+    }
+  }
+
   /**
    * Handle a successful update.
    *
@@ -219,6 +274,10 @@ class FullWidthCellRenderer extends React.Component {
     this.props.context.removeFooter(this.props.node);
   }
 
+  handleCancelClone() {
+    this.props.context.handleRemove(this.props.node);
+  }
+
   render() {
     if (this.state.mode === 'editing') {
       return (
@@ -227,6 +286,16 @@ class FullWidthCellRenderer extends React.Component {
           updateStore={this.updateStore}
           actions={this.actions}
           cancelHandler={this.handleCancelUpdate.bind(this)}
+        />
+      );
+    }
+    if (this.state.mode === 'cloned') {
+      return (
+        <ClonedDocumentFooter
+          doc={this.doc}
+          insertStore={this.insertStore}
+          actions={this.actions}
+          cancelHandler={this.handleCancelClone.bind(this)}
         />
       );
     }
