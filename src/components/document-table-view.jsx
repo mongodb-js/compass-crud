@@ -333,7 +333,7 @@ class DocumentTableView extends React.Component {
    */
   modifyColumns(params) {
     if ('add' in params) {
-      this.addColumn(params.add.colId);
+      this.addColumn(params.add.colId, null, null);
       this.gridApi.setFocusedCell(params.add.rowIndex, '$new');
       this.gridApi.startEditingCell({rowIndex: params.add.rowIndex, colKey: '$new'});
     }
