@@ -142,17 +142,24 @@ class CellRenderer extends React.Component {
 
   renderValidCell() {
     let className = VALUE_BASE;
+    let element = '';
     if (this.element.isAdded()) {
       className = `${className} ${VALUE_BASE}-${ADDED}`;
     } else if (this.element.isEdited()) {
       className = `${className} ${VALUE_BASE}-${EDITED}`;
     }
 
-    const component = getComponent(this.element.currentType);
-    const element = React.createElement(
-      component,
-      { type: this.props.value.currentType, value: this.element.currentValue }
-    );
+    if (this.element.currentType === 'Object') {
+      element = `{${this.element.elements.size}}`;
+    } else if (this.element.currentType === 'Array') {
+      element = `[${this.element.elements.size}]`;
+    } else {
+      const component = getComponent(this.element.currentType);
+      element = React.createElement(
+        component,
+        {type: this.props.value.currentType, value: this.element.currentValue}
+      );
+    }
 
     return (
       <div className={className}>
