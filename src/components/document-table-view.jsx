@@ -232,20 +232,17 @@ class DocumentTableView extends React.Component {
    *
    * @param {String} colId - The new column will be inserted after the column
    * with colId.
+   * @param {String} headerName - The field of a new columnfrom insert document dialog
+   * @param {String} colType - The type of a new column from document insert dialog
    */
   addColumn(colId, headerName, colType) {
     let isNewColumn = false;
     if (headerName && colType) isNewColumn = true;
-    // TODO see where else addColumn is called from and add null arguments
-    // pass in null for inserted rows, pass in headerName from inserted rows
     const columnHeaders = _.map(this.columnApi.getAllColumns(), function(col) {
-      // If the headerName passed in is not in the current list of columns, it's new
-      // const colHeaderName = col.colDef.headerName
-      // if (colHeaderName === headerName) {
-      //   console.log(col.colDef.headerName, ':', headerName)
-      //   console.log("Headers match, it's not a new column")
-      //   isNewColumn = false;
-      // }
+      // Q: because I'm skipping all _id fields, we don't check new columns
+      // here, and just check if a headerName and colType were passed in
+      // There was some funny stuff happening with the undefined column pinned
+      // to the right, but maybe a better way around that?
       return col.getColDef();
     });
 
@@ -257,17 +254,13 @@ class DocumentTableView extends React.Component {
       i++;
     }
 
-    // if adding new columns from an insert, we know the header name and we can
-    // just add to the end rather than splicing
     let newColDef = {};
-
+    // Newly added columns are always editable.
     if (isNewColumn) {
-      console.log('This is a new column', headerName);
       newColDef = this.createColumnHeader(headerName, colType, true);
       columnHeaders.push(newColDef);
     } else {
-      console.log('This column exists');
-      newColDef = this.createColumnHeader('$new', '', true); // Newly added columns are always editable.
+      newColDef = this.createColumnHeader('$new', '', true);
       columnHeaders.splice(i + 1, 0, newColDef);
     }
 
@@ -410,17 +403,13 @@ class DocumentTableView extends React.Component {
    * @param {boolean} clone - If the document was cloned, don't add row.
    */
   handleInsert(error, doc, clone) {
-    // console.log('handle insert', doc)
-    // coming from insert dialog (insert row called from many places)
     if (!error && !clone) {
-      // for every element in the doc call addColumn to see if it is a new field name
       Object.keys(doc).forEach((key) => {
         // Q: can we use doc._bsontype
-        // Can we just skip '_id'
+        // Q: Just skipping _id directly here
         if (key === '_id') return;
         this.addColumn(null, key, TypeChecker.type(doc[key]));
       });
-      // TODO for every element in the doc call typeChecker and pass type to addColumn(null, colName, colType)
       this.insertRow(doc, 0, 1, false);
     }
   }
