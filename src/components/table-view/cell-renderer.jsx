@@ -118,6 +118,10 @@ class CellRenderer extends React.Component {
     this.element.revert();
   }
 
+  handleExpand(event) {
+    event.stopPropagation();
+  }
+
   handleClicked() {
     if (this.props.node.data.state === 'editing' || this.props.node.data.state === 'cloned') {
       this.props.api.startEditingCell({
@@ -179,10 +183,22 @@ class CellRenderer extends React.Component {
     );
   }
 
+  renderExpand(canExpand) {
+    if (!canExpand) {
+      return null;
+    }
+    return (
+      <div className={'table-view-cell-circle-button'} onClick={this.handleExpand.bind(this)}>
+        <span className={'fa fa-expand'} aria-hidden />
+      </div>
+    );
+  }
+
   render() {
     let element;
     let className = BEM_BASE;
     let canUndo = false;
+    let canExpand = false;
 
     if (this.isEmpty || this.isDeleted) {
       element = 'No field';
@@ -204,11 +220,13 @@ class CellRenderer extends React.Component {
         className = `${className}-${ADDED}`;
         canUndo = true;
       }
+      canExpand = (this.element.currentType === 'Object' || this.element.currentType === 'Array');
     }
 
     return (
       <div className={className} onClick={this.handleClicked.bind(this)}>
         {this.renderUndo(canUndo)}
+        {this.renderExpand(canExpand)}
         {element}
       </div>
     );
