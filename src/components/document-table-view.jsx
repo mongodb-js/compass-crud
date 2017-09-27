@@ -154,18 +154,17 @@ class DocumentTableView extends React.Component {
    * @param {RowNode} node - The RowNode of the footer that is being removed.
    */
   removeFooter(node) {
-    const api = this.gridApi;
     /* rowId is the document row */
     const rowId = node.data.hadronDocument.get('_id').value.toString() + '0';
-    const dataNode = api.getRowNode(rowId);
+    const dataNode = this.gridApi.getRowNode(rowId);
 
     setTimeout(function() {
       /* This data gets reset twice if being called from handleUpdate */
       dataNode.data.hasFooter = false;
       dataNode.data.state = null;
-      api.refreshCells({rowNodes: [dataNode], columns: ['$rowActions'], force: true});
-      api.updateRowData({remove: [node.data]});
-      api.clearFocusedCell();
+      this.gridApi.refreshCells({rowNodes: [dataNode], columns: ['$rowActions'], force: true});
+      this.gridApi.updateRowData({remove: [node.data]});
+      this.gridApi.clearFocusedCell();
     }, 0);
   }
 
@@ -176,19 +175,18 @@ class DocumentTableView extends React.Component {
    * @param {RowNode} node - The RowNode of the footer of the document that is being removed.
    */
   handleRemove(node) {
-    const api = this.gridApi;
     const oid = node.data.hadronDocument.get('_id').value.toString();
 
     /* rowId is the document row */
     const rowId = oid + '0';
-    const dataNode = api.getRowNode(rowId);
+    const dataNode = this.gridApi.getRowNode(rowId);
 
     /* Update the row numbers */
     this.updateRowNumbers(dataNode.data.rowNumber, false);
 
     /* Update the grid */
     setTimeout(function() {
-      api.updateRowData({remove: [dataNode.data]});
+      this.gridApi.updateRowData({remove: [dataNode.data]});
     }, 0);
 
     /* Remove the footer */
@@ -210,20 +208,18 @@ class DocumentTableView extends React.Component {
    * @param {Object} data - The new data of the row that has been updated.
    */
   handleUpdate(data) {
-    const api = this.gridApi;
-
     const rowId = data._id + '0';
-    const dataNode = api.getRowNode(rowId);
+    const dataNode = this.gridApi.getRowNode(rowId);
     const rowNumber = dataNode.data.rowNumber;
 
     const newData = this.createRowData([data])[0];
     newData.rowNumber = rowNumber; // Keep old line number
 
     dataNode.setData(newData);
-    api.redrawRows({rowNodes: [dataNode]});
+    this.gridApi.redrawRows({rowNodes: [dataNode]});
 
     const footerRowId = data._id + '1';
-    const footerNode = api.getRowNode(footerRowId);
+    const footerNode = this.gridApi.getRowNode(footerRowId);
     this.removeFooter(footerNode);
   }
 
