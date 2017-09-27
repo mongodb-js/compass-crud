@@ -179,7 +179,7 @@ class CellRenderer extends React.Component {
   renderUndo(canUndo, canExpand) {
     let undoButtonClass = `${BUTTON_CLASS}`;
     if (canUndo && canExpand) {
-      undoButtonClass = `${undoButtonClass} ${undoButtonClass}-left`
+      undoButtonClass = `${undoButtonClass} ${undoButtonClass}-left`;
     }
 
     if (!canUndo) {
