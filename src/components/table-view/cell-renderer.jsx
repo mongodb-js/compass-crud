@@ -53,6 +53,10 @@ const INVALID = 'is-invalid';
  * The deleted constant.
  */
 const DELETED = 'is-deleted';
+/**
+ * The button button.
+ */
+const BUTTON_CLASS = 'table-view-cell-circle-button';
 
 
 /**
@@ -172,12 +176,17 @@ class CellRenderer extends React.Component {
     );
   }
 
-  renderUndo(canUndo) {
+  renderUndo(canUndo, canExpand) {
+    let undoButtonClass = `${BUTTON_CLASS}`;
+    if (canUndo && canExpand) {
+      undoButtonClass = `${undoButtonClass} ${undoButtonClass}-left`
+    }
+
     if (!canUndo) {
       return null;
     }
     return (
-      <div className={'table-view-cell-circle-button'} onClick={this.handleUndo.bind(this)}>
+      <div className={`${undoButtonClass}`} onClick={this.handleUndo.bind(this)}>
         <span className={'fa fa-rotate-left'} aria-hidden />
       </div>
     );
@@ -225,7 +234,7 @@ class CellRenderer extends React.Component {
 
     return (
       <div className={className} onClick={this.handleClicked.bind(this)}>
-        {this.renderUndo(canUndo)}
+        {this.renderUndo(canUndo, canExpand)}
         {this.renderExpand(canExpand)}
         {element}
       </div>
