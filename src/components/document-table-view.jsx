@@ -236,13 +236,7 @@ class DocumentTableView extends React.Component {
    * @param {String} colType - The type of a new column from document insert dialog
    */
   addColumn(colId, headerName, colType) {
-    let isNewColumn = false;
-    if (headerName && colType) isNewColumn = true;
     const columnHeaders = _.map(this.columnApi.getAllColumns(), function(col) {
-      // Q: because I'm skipping all _id fields, we don't check new columns
-      // here, and just check if a headerName and colType were passed in
-      // There was some funny stuff happening with the undefined column pinned
-      // to the right, but maybe a better way around that?
       return col.getColDef();
     });
 
@@ -251,18 +245,15 @@ class DocumentTableView extends React.Component {
       if (columnHeaders[i].colId === colId) {
         break;
       }
+      if (columnHeaders[i].colId === headerName) {
+        return;
+      }
       i++;
     }
 
-    let newColDef = {};
     // Newly added columns are always editable.
-    if (isNewColumn) {
-      newColDef = this.createColumnHeader(headerName, colType, true);
-      columnHeaders.push(newColDef);
-    } else {
-      newColDef = this.createColumnHeader('$new', '', true);
-      columnHeaders.splice(i + 1, 0, newColDef);
-    }
+    const newColDef = this.createColumnHeader(headerName, colType, true);
+    columnHeaders.splice(i + 1, 0, newColDef);
 
     this.gridApi.setColumnDefs(columnHeaders);
   }
@@ -326,7 +317,7 @@ class DocumentTableView extends React.Component {
    */
   modifyColumns(params) {
     if ('add' in params) {
-      this.addColumn(params.add.colId, null, null);
+      this.addColumn(params.add.colId, '$new', '');
       this.gridApi.setFocusedCell(params.add.rowIndex, '$new');
       this.gridApi.startEditingCell({rowIndex: params.add.rowIndex, colKey: '$new'});
     }
@@ -405,9 +396,6 @@ class DocumentTableView extends React.Component {
   handleInsert(error, doc, clone) {
     if (!error && !clone) {
       Object.keys(doc).forEach((key) => {
-        // Q: can we use doc._bsontype
-        // Q: Just skipping _id directly here
-        if (key === '_id') return;
         this.addColumn(null, key, TypeChecker.type(doc[key]));
       });
       this.insertRow(doc, 0, 1, false);
