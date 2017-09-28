@@ -165,7 +165,7 @@ class DocumentTableView extends React.Component {
       this.gridApi.refreshCells({rowNodes: [dataNode], columns: ['$rowActions'], force: true});
       this.gridApi.updateRowData({remove: [node.data]});
       this.gridApi.clearFocusedCell();
-    }, 0);
+    }.bind(this), 0);
   }
 
   /**
@@ -187,7 +187,7 @@ class DocumentTableView extends React.Component {
     /* Update the grid */
     setTimeout(function() {
       this.gridApi.updateRowData({remove: [dataNode.data]});
-    }, 0);
+    }.bind(this), 0);
 
     /* Remove the footer */
     this.removeFooter(node);
