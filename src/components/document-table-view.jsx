@@ -158,14 +158,21 @@ class DocumentTableView extends React.Component {
     const rowId = node.data.hadronDocument.get('_id').value.toString() + '0';
     const dataNode = this.gridApi.getRowNode(rowId);
 
-    setTimeout(function() {
-      /* This data gets reset twice if being called from handleUpdate */
-      dataNode.data.hasFooter = false;
-      dataNode.data.state = null;
-      this.gridApi.refreshCells({rowNodes: [dataNode], columns: ['$rowActions'], force: true});
-      this.gridApi.updateRowData({remove: [node.data]});
-      this.gridApi.clearFocusedCell();
-    }.bind(this), 0);
+    // setTimeout(function() {
+    //   /* This data gets reset twice if being called from handleUpdate */
+    //   dataNode.data.hasFooter = false;
+    //   dataNode.data.state = null;
+    //   this.gridApi.refreshCells({rowNodes: [dataNode], columns: ['$rowActions'], force: true});
+    //   this.gridApi.updateRowData({remove: [node.data]});
+    //   this.gridApi.clearFocusedCell();
+    // }.bind(this), 0);
+
+    dataNode.data.hasFooter = false;
+    dataNode.data.state = null;
+    this.gridApi.refreshCells({rowNodes: [dataNode], columns: ['$rowActions'], force: true});
+    this.gridApi.clearFocusedCell();
+
+    this.gridApi.updateRowData({remove: [node.data]});
   }
 
   /**
@@ -185,9 +192,9 @@ class DocumentTableView extends React.Component {
     this.updateRowNumbers(dataNode.data.rowNumber, false);
 
     /* Update the grid */
-    setTimeout(function() {
-      this.gridApi.updateRowData({remove: [dataNode.data]});
-    }.bind(this), 0);
+    // setTimeout(function() {
+    //   this.gridApi.updateRowData({remove: [dataNode.data]});
+    // }.bind(this), 0);
 
     /* Remove the footer */
     this.removeFooter(node);
@@ -199,6 +206,9 @@ class DocumentTableView extends React.Component {
 
     /* Update the toolbar */
     Actions.documentRemoved();
+    // we want this to come last, but without making it a callback to something
+    // the only way to garauntee it is setTimeout
+    this.gridApi.updateRowData({remove: [dataNode.data]});
   }
 
   /**
