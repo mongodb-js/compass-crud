@@ -186,8 +186,8 @@ class Toolbar extends React.Component {
       return null;
     }
 
-    const prev_button_disabled = this.state.page === 0;
-    const next_button_disabled = 20 * (this.state.page + 1) >= this.state.count;
+    const prevButtonDisabled = this.state.page === 0;
+    const nextButtonDisabled = 20 * (this.state.page + 1) >= this.state.count;
 
     return (
       <div className={PAGINATION_CLASS}>
@@ -197,7 +197,7 @@ class Toolbar extends React.Component {
           className={`btn btn-default btn-xs ${PAGINATION_CLASS}-button ${PAGINATION_CLASS}-button-left`}
           iconClassName="fa fa-chevron-left"
           animatingIconClassName="fa fa-spinner fa-spin"
-          disabled={prev_button_disabled}
+          disabled={prevButtonDisabled}
         />
         <AnimatedIconTextButton
           clickHandler={this.handleNextPage.bind(this)}
@@ -205,7 +205,7 @@ class Toolbar extends React.Component {
           className={`btn btn-default btn-xs ${PAGINATION_CLASS}-button ${PAGINATION_CLASS}-button-right`}
           iconClassName="fa fa-chevron-right"
           animatingIconClassName="fa fa-spinner fa-spin"
-          disabled={next_button_disabled}
+          disabled={nextButtonDisabled}
         />
       </div>
     );
