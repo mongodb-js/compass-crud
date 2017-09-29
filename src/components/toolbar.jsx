@@ -24,6 +24,7 @@ const ACTION_BAR_CLASS = `${BASE_CLASS}-action-bar`;
 const CONTAINER_CLASS = `${ACTION_BAR_CLASS}-container`;
 const MESSAGE_CLASS = `${ACTION_BAR_CLASS}-message`;
 const REFRESH_CLASS = `${ACTION_BAR_CLASS}-refresh`;
+const PAGINATION_CLASS = `${ACTION_BAR_CLASS}-pagination`;
 const VIEW_SWITCHER_CLASS = `${ACTION_BAR_CLASS}-view-switcher`;
 
 /**
@@ -185,25 +186,38 @@ class Toolbar extends React.Component {
       return null;
     }
 
-    // TODO: use firstPage and lastPage to determine if the buttons should be disabled.
-    // const lastPage = 20 * (this.state.page + 1) >= this.state.count;
-    // const firstPage = this.state.page === 0;
+    const firstPage = this.state.page === 0;
+    const lastPage = 20 * (this.state.page + 1) >= this.state.count;
+
+    if (firstPage) {
+      this.prev_button_disabled = true;
+    } else {
+      this.prev_button_disabled = false;
+    }
+
+    if (lastPage) {
+      this.next_button_disabled = true;
+    } else {
+      this.next_button_disabled = false;
+    }
 
     return (
-      <div className={REFRESH_CLASS}>
-        <AnimatedIconTextButton
+      <div className={PAGINATION_CLASS}>
+      <AnimatedIconTextButton
           clickHandler={this.handlePrevPage.bind(this)}
           stopAnimationListenable={PageChangedStore}
-          className="btn btn-default btn-xs sampling-message-refresh-documents"
-          iconClassName="fa fa-angle-left"
+          className={`btn btn-default btn-xs ${PAGINATION_CLASS}-button ${PAGINATION_CLASS}-button-left`}
+          iconClassName="fa fa-chevron-left"
           animatingIconClassName="fa fa-spinner fa-spin"
+          disabled={this.prev_button_disabled}
         />
         <AnimatedIconTextButton
           clickHandler={this.handleNextPage.bind(this)}
           stopAnimationListenable={PageChangedStore}
-          className="btn btn-default btn-xs sampling-message-refresh-documents"
-          iconClassName="fa fa-angle-right"
+          className={`btn btn-default btn-xs ${PAGINATION_CLASS}-button ${PAGINATION_CLASS}-button-right`}
+          iconClassName="fa fa-chevron-right"
           animatingIconClassName="fa fa-spinner fa-spin"
+          disabled={this.next_button_disabled}
         />
       </div>
     );
