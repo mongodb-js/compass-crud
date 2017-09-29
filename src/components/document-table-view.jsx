@@ -3,7 +3,6 @@ const PropTypes = require('prop-types');
 const {AgGridReact} = require('ag-grid-react');
 const _ = require('lodash');
 
-const TypeChecker = require('hadron-type-checker');
 const HadronDocument = require('hadron-document');
 const ObjectId = require('bson').ObjectId;
 const mongodbns = require('mongodb-ns');
@@ -42,9 +41,12 @@ class DocumentTableView extends React.Component {
     this.addFooter = this.addFooter.bind(this);
     this.handleClone = this.handleClone.bind(this);
 
-    this.state = { docs: props.docs, index: 1 };
     this.collection = mongodbns(props.ns).collection;
-    this.AGGrid = this.createGrid();
+    this.hadronDocs = this.initHadronDocs(props.docs);
+    this.path = '';
+    this.index = 1;
+
+    this.AGGrid = this.createGrid(this.hadronDocs, this.index);
   }
 
   componentDidMount() {
@@ -61,10 +63,28 @@ class DocumentTableView extends React.Component {
     this.unsubscribePageChanged();
   }
 
-  createGrid() {
+  /**
+   * Initialize the list of HadronDocuments to track changes.
+   *
+   * @param {Array} docs - List of JSON objects.
+   *
+   * @returns {Array} - List of HadronDocuments.
+   */
+  initHadronDocs(docs) {
+    return docs.map((doc) => { return new HadronDocument(doc); });
+  }
+
+  /**
+   * Generate an AG-Grid instance.
+   *
+   * @param {Array} hadronDocs - The list of HadronDocuments.
+   * @param {Number} index - The document to start the page on.
+   *
+   * @returns {Object} The AG-Grid instance
+   */
+  createGrid(hadronDocs, index) {
     this.gridOptions = {
       context: {
-        column_width: 150,
         addFooter: this.addFooter,
         removeFooter: this.removeFooter,
         handleUpdate: this.handleUpdate,
@@ -76,7 +96,7 @@ class DocumentTableView extends React.Component {
     };
 
     const gridProperties = {
-      columnDefs: this.createColumnHeaders(),
+      columnDefs: this.createColumnHeaders(hadronDocs),
       gridOptions: this.gridOptions,
 
       isFullWidthCell: function(rowNode) {
@@ -84,10 +104,10 @@ class DocumentTableView extends React.Component {
       },
       fullWidthCellRendererFramework: FullWidthCellRenderer,
 
-      rowData: this.createRowData(this.state.docs),
+      rowData: this.createRowData(hadronDocs, index),
       getRowNodeId: function(data) {
         const fid = data.isFooter ? '1' : '0';
-        return data.hadronDocument.get('_id').value.toString() + fid;
+        return data.hadronDocument.getId().toString() + fid;
       },
       onGridReady: this.onGridReady.bind(this)
     };
@@ -415,8 +435,9 @@ class DocumentTableView extends React.Component {
    */
   handlePageChange(error, documents, start) {
     if (!error) {
-      this.setState({docs: documents, index: start});
-      this.AGGrid = this.createGrid();
+      this.hadronDocs = this.initHadronDocs(documents);
+      this.index = start;
+      this.AGGrid = this.createGrid(this.hadronDocs, this.index);
       this.forceUpdate();
     }
   }
@@ -486,13 +507,14 @@ class DocumentTableView extends React.Component {
    * Third, get the displayed type for the headers of each of the field columns.
    * Last, add the document level actions column that is pinned to the right.
    *
+   * @param {Array} hadronDocs - The list of HadronDocuments.
+   *
    * @returns {object} the ColHeaders, which is a list of colDefs.
    */
-  createColumnHeaders() {
+  createColumnHeaders(hadronDocs) {
     const headers = {};
     const headerTypes = {};
     const isEditable = this.props.isEditable;
-    const docs = this.state.docs;
 
     const addHeader = this.createColumnHeader;
 
@@ -509,16 +531,17 @@ class DocumentTableView extends React.Component {
     };
 
     /* Make column definitions + track type for header components */
-    for (let i = 0; i < docs.length; i++) {
-      _.map(docs[i], function(val, key) {
-        const type = TypeChecker.type(val);
+    for (let i = 0; i < hadronDocs.length; i++) {
+      for (const element of hadronDocs[i].elements) {
+        const key = element.currentKey;
+        const type = element.currentType;
         headers[key] = addHeader(key, type, isEditable);
 
         if (!(key in headerTypes)) {
           headerTypes[key] = {};
         }
-        headerTypes[key][docs[i]._id.toString()] = type;
-      });
+        headerTypes[key][hadronDocs[i].getId().toString()] = type;
+      }
     }
 
     /* Set header types correctly in GridStore */
@@ -570,16 +593,16 @@ class DocumentTableView extends React.Component {
    * Create data for each document row. Contains a HadronDocument and some
    * metadata.
    *
-   * @param {Array} documents - A list of JSON documents.
+   * @param {Array} documents - A list of HadronDocuments.
+   * @param {Number} index - The index of the first document of the page.
    *
    * @returns {Array} A list of HadronDocument wrappers.
    */
-  createRowData(documents) {
-    const index = this.state.index;
-    return _.map(documents, function(val, i) {
+  createRowData(documents, index) {
+    return _.map(documents, function(doc, i) {
       return {
         /* The same doc is shared between a document row and it's footer */
-        hadronDocument: new HadronDocument(val),
+        hadronDocument: doc,
         /* Is this row an footer row or document row? */
         isFooter: false,
         /* If this is a document row, does it already have a footer? */
