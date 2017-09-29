@@ -17,6 +17,7 @@ const BreadcrumbStore = require('../stores/breadcrumb-store');
 
 const BreadcrumbComponent = require('./breadcrumb');
 const CellRenderer = require('./table-view/cell-renderer');
+const RowNumberRenderer = require('./table-view/row-number-renderer');
 const FullWidthCellRenderer = require('./table-view/full-width-cell-renderer');
 const RowActionsRenderer = require('./table-view/row-actions-renderer');
 const HeaderComponent = require('./table-view/header-cell-renderer');
@@ -42,12 +43,27 @@ class DocumentTableView extends React.Component {
     this.addFooter = this.addFooter.bind(this);
     this.handleClone = this.handleClone.bind(this);
 
-    this.collection = mongodbns(props.ns).collection;
-    this.hadronDocs = this.initHadronDocs(props.docs);
-    this.path = '';
-    this.index = 1;
+    this.sharedGridProperties = {
+      gridOptions: {
+        context: {
+          addFooter: this.addFooter,
+          removeFooter: this.removeFooter,
+          handleUpdate: this.handleUpdate,
+          handleRemove: this.handleRemove,
+          handleClone: this.handleClone
+        },
+        onCellDoubleClicked: this.onCellDoubleClicked.bind(this),
+        rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
+      },
+      onGridReady: this.onGridReady.bind(this),
+      isFullWidthCell: function(rowNode) {
+        return rowNode.data.isFooter;
+      },
+      fullWidthCellRendererFramework: FullWidthCellRenderer
+    };
 
-    this.AGGrid = this.createGrid(this.hadronDocs, this.index);
+    this.collection = mongodbns(props.ns).collection;
+    this.hadronDocs = [];
   }
 
   componentDidMount() {
@@ -186,8 +202,13 @@ class DocumentTableView extends React.Component {
     const dataNode = this.gridApi.getRowNode(rowId);
     const rowNumber = dataNode.data.rowNumber;
 
-    const newData = this.createRowData([data])[0];
-    newData.rowNumber = rowNumber; // Keep old line number
+    const newData = {
+      hadronDocument: new HadronDocument(data),
+      isFooter: false,
+      hasFooter: false,
+      state: null,
+      rowNumber: rowNumber
+    };
 
     dataNode.setData(newData);
     this.gridApi.redrawRows({rowNodes: [dataNode]});
@@ -333,9 +354,13 @@ class DocumentTableView extends React.Component {
    */
   insertRow(doc, index, lineNumber, edit) {
     /* Create the new data */
-    const data = this.createRowData([doc])[0];
-    data.rowNumber = lineNumber;
-    data.state = edit ? 'cloned' : null;
+    const data = {
+      hadronDocument: new HadronDocument(doc),
+      isFooter: false,
+      hasFooter: false,
+      state: edit ? 'cloned' : null,
+      rowNumber: lineNumber
+    };
 
     /* Update row numbers */
     this.updateRowNumbers(lineNumber, true);
@@ -394,8 +419,7 @@ class DocumentTableView extends React.Component {
   handlePageChange(error, documents, start) {
     if (!error) {
       this.hadronDocs = this.initHadronDocs(documents);
-      this.index = start;
-      this.AGGrid = this.createGrid(this.hadronDocs, this.index);
+      this.AGGrid = this.createGrid(this.hadronDocs, start);
       this.forceUpdate();
     }
   }
@@ -423,26 +447,68 @@ class DocumentTableView extends React.Component {
    *  document {HadronDocument} - The document that we're drilling down into.
    */
   handleBreadcrumbChange(params) {
-    console.log('breadcrumb changed to');
-    console.log(params);
+    if (params.path.length === 0) {
+      this.AGGrid = this.createGrid(this.hadronDocs, 1);
+    } else if (params.types[params.types.length - 1] === 'Object') {
+      this.AGGrid = this.createObjectGrid(params.document, params.path);
+    }
+    this.forceUpdate();
+  }
+
+  /**
+   * Go through and add modified footers to documents that are edited.
+   */
+  addFooters() {
+    /* Add footers for modified rows */
+    this.gridApi.forEachNodeAfterFilterAndSort((node) => {
+      if (node.data.hadronDocument.isModified()) {
+        this.addFooter(node, node.data, 'editing');
+      }
+    });
+  }
+
+  createObjectIdHeader() {
+    return {
+      headerName: '_id',
+      colId: '$_id',
+      valueGetter: function(params) {
+        return params.data.hadronDocument.get('_id');
+      },
+      headerComponentFramework: HeaderComponent,
+      headerComponentParams: {
+        hide: false,
+        bsonType: 'ObjectId'
+      },
+      cellRendererFramework: CellRenderer,
+      editable: false,
+      cellEditorFramework: CellEditor,
+      pinned: 'left'
+    };
   }
 
   /**
    * Create a single column header given a field name, a type, and if it's editable.
    * TODO: Use AG-Grid's default column headers.
    *
-   * @param {String} key - The field name.
    * @param {String} type - The type of the column.
    * @param {boolean} isEditable - If the column is read-only.
+   * @param {Array} path - The list of path segments, including the key of this
+   * column. Will always have at least 1 element.
    *
    * @returns {Object} A column definition for this header.
    */
-  createColumnHeader(key, type, isEditable) {
+  createColumnHeader(type, isEditable, path) {
     return {
-      headerName: key,
-      colId: key,
+      headerName: path[path.length - 1],
+      colId: path[path.length - 1],
       valueGetter: function(params) {
-        return params.data.hadronDocument.get(key);
+        let element = params.data.hadronDocument.get(path[0]);
+        let i = 1;
+        while (i < path.length) {
+          element = element.get(path[i]);
+          i++;
+        }
+        return element;
       },
       valueSetter: function(params) {
         if (params.oldValue === undefined && params.newValue === undefined) {
@@ -464,10 +530,17 @@ class DocumentTableView extends React.Component {
         if (!isEditable || params.node.data.state === 'deleting') {
           return false;
         }
-        if (params.node.data.hadronDocument.get(key) === undefined) {
+        let element = params.node.data.hadronDocument.get(path[0]);
+        let i = 1;
+        while (i < path.length) {
+          element = element.get(path[i]);
+          i++;
+        }
+
+        if (element === undefined) {
           return true;
         }
-        return params.node.data.hadronDocument.get(key).isValueEditable();
+        return element.isValueEditable();
       },
 
       cellEditorFramework: CellEditor,
@@ -483,10 +556,11 @@ class DocumentTableView extends React.Component {
    * Last, add the document level actions column that is pinned to the right.
    *
    * @param {Array} hadronDocs - The list of HadronDocuments.
+   * @param {Array} path - The list of path segments. Empty when top-level.
    *
    * @returns {object} the ColHeaders, which is a list of colDefs.
    */
-  createColumnHeaders(hadronDocs) {
+  createColumnHeaders(hadronDocs, path) {
     const headers = {};
     const headerTypes = {};
     const isEditable = this.props.isEditable;
@@ -502,15 +576,25 @@ class DocumentTableView extends React.Component {
       headerComponentFramework: HeaderComponent,
       headerComponentParams: {
         hide: true
-      }
+      },
+      cellRendererFramework: RowNumberRenderer
     };
 
     /* Make column definitions + track type for header components */
     for (let i = 0; i < hadronDocs.length; i++) {
-      for (const element of hadronDocs[i].elements) {
+      let topLevel = hadronDocs[i];
+
+      /* Get the top-level element/document in the view */
+      let j = 0;
+      while (j < path.length) {
+        topLevel = topLevel.get(path[j]);
+        j++;
+      }
+
+      for (const element of topLevel.elements) {
         const key = element.currentKey;
         const type = element.currentType;
-        headers[key] = addHeader(key, type, isEditable);
+        headers[key] = addHeader(type, isEditable, [].concat(path, [key]));
 
         if (!(key in headerTypes)) {
           headerTypes[key] = {};
@@ -555,7 +639,9 @@ class DocumentTableView extends React.Component {
       },
 
       cellRendererFramework: RowActionsRenderer,
-      cellRendererParams: {},
+      cellRendererParams: {
+        nested: (path.length !== 0)
+      },
       editable: false,
       pinned: 'right'
     });
@@ -590,17 +676,25 @@ class DocumentTableView extends React.Component {
     });
   }
 
-  addFooters() {
-    /* Add footers for modified rows */
-    for (let i = 0; i < this.hadronDocs.length; i++) {
-      const doc = this.hadronDocs[i];
-      if (doc.isModified()) {
-        /* rowId is the document row */
-        const rowId = doc.getId().toString() + '0';
-        const dataNode = this.gridApi.getRowNode(rowId);
-        this.addFooter(dataNode, dataNode.data, 'editing');
+  createObjectGrid(document, path) {
+    const headers = this.createColumnHeaders([document], path);
+    headers.push(this.createObjectIdHeader());
+
+    const gridProperties = {
+      columnDefs: headers,
+      rowData: this.createRowData([document], 1),
+      getRowNodeId: function(data) {
+        const fid = data.isFooter ? '1' : '0';
+        return data.hadronDocument.getId().toString() + fid;
       }
-    }
+    };
+
+    Object.assign(gridProperties, this.sharedGridProperties);
+
+    return React.createElement(
+      AgGridReact,
+      gridProperties,
+    );
   }
 
   /**
@@ -612,34 +706,16 @@ class DocumentTableView extends React.Component {
    * @returns {Object} The AG-Grid instance
    */
   createGrid(hadronDocs, index) {
-    this.gridOptions = {
-      context: {
-        addFooter: this.addFooter,
-        removeFooter: this.removeFooter,
-        handleUpdate: this.handleUpdate,
-        handleRemove: this.handleRemove,
-        handleClone: this.handleClone
-      },
-      onCellDoubleClicked: this.onCellDoubleClicked.bind(this),
-      rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
-    };
-
     const gridProperties = {
-      columnDefs: this.createColumnHeaders(hadronDocs),
-      gridOptions: this.gridOptions,
-
-      isFullWidthCell: function(rowNode) {
-        return rowNode.data.isFooter;
-      },
-      fullWidthCellRendererFramework: FullWidthCellRenderer,
-
+      columnDefs: this.createColumnHeaders(hadronDocs, []),
       rowData: this.createRowData(hadronDocs, index),
       getRowNodeId: function(data) {
         const fid = data.isFooter ? '1' : '0';
         return data.hadronDocument.getId().toString() + fid;
-      },
-      onGridReady: this.onGridReady.bind(this)
+      }
     };
+
+    Object.assign(gridProperties, this.sharedGridProperties);
 
     return React.createElement(
       AgGridReact,

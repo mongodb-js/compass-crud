@@ -18,6 +18,7 @@ const BreadcrumbStore = Reflux.createStore( {
     this.path = [];
     this.types = [];
     this.collection = '';
+    this.doc = null;
 
     this.listenTo(Actions.pathChanged, this.pathChanged.bind(this));
     this.listenTo(Actions.drillDown, this.drillDown.bind(this));
@@ -40,7 +41,7 @@ const BreadcrumbStore = Reflux.createStore( {
    */
   onCollectionChanged(namespace) {
     const nsobj = mongodbns(namespace);
-    this.trigger({collection: nsobj.collection, path: [], types: []});
+    this.trigger({collection: nsobj.collection, path: [], types: [], document: this.doc});
   },
 
   /**
@@ -52,7 +53,7 @@ const BreadcrumbStore = Reflux.createStore( {
   pathChanged(path, types) {
     this.path = path;
     this.types = types;
-    this.trigger({path: this.path, types: this.types});
+    this.trigger({path: this.path, types: this.types, document: this.doc});
   },
 
   /**
@@ -64,7 +65,8 @@ const BreadcrumbStore = Reflux.createStore( {
   drillDown(document, element) {
     this.path.push(element.currentKey);
     this.types.push(element.currentType);
-    this.trigger({path: this.path, types: this.types, document: document});
+    this.doc = document;
+    this.trigger({path: this.path, types: this.types, document: this.doc});
   }
 
 });
