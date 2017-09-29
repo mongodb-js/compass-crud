@@ -586,6 +586,19 @@ class DocumentTableView extends React.Component {
     });
   }
 
+  addFooters() {
+    /* Add footers for modified rows */
+    for (let i = 0; i < this.hadronDocs.length; i++) {
+      const doc = this.hadronDocs[i];
+      if (doc.isModified()) {
+        /* rowId is the document row */
+        const rowId = doc.getId().toString() + '0';
+        const dataNode = this.gridApi.getRowNode(rowId);
+        this.addFooter(dataNode, dataNode.data, 'editing');
+      }
+    }
+  }
+
   /**
    * Generate an AG-Grid instance for a top-level view.
    *
