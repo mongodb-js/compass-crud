@@ -122,7 +122,7 @@ class CellRenderer extends React.Component {
 
   handleDrillDown(event) {
     event.stopPropagation();
-    Actions.drillDown(this.element.currentKey, this.element.currentType);
+    Actions.drillDown(this.props.node.data.hadronDocument, this.element);
   }
 
   handleClicked() {

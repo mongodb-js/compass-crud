@@ -209,7 +209,7 @@ class CellEditor extends React.Component {
   }
 
   handleDrillDown() {
-    Actions.drillDown(this.element.currentKey, this.element.currentType);
+    Actions.drillDown(this.props.node.data.hadronDocument, this.element);
   }
 
   handleChange(event) {

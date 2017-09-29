@@ -413,10 +413,14 @@ class DocumentTableView extends React.Component {
   /**
    * When the BreadcrumbStore changes, update the grid.
    *
+   * TODO: When multi-doc expand is implemented, can drop the 'document' param
+   * and just trigger with the path.
+   *
    * @param {Object} params - Can contain collection, path, and/or types.
    *  collection {String} - The collection name.
    *  path {Array} - The array of field names/indexes.
    *  types {Array} - The array of types for each segment of the path array.
+   *  document {HadronDocument} - The document that we're drilling down into.
    */
   handleBreadcrumbChange(params) {
     console.log('breadcrumb changed to');

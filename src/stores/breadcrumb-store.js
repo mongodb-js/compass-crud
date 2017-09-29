@@ -58,13 +58,13 @@ const BreadcrumbStore = Reflux.createStore( {
   /**
    * The user has drilled down into a new element.
    *
-   * @param {String} segment - The name of the new fieldname.
-   * @param {BSONType} type - The type of the segment.
+   * @param {HadronDocument} document - The parent document.
+   * @param {Element} element - The element being drilled into.
    */
-  drillDown(segment, type) {
-    this.path.push(segment);
-    this.types.push(type);
-    this.trigger({path: this.path, types: this.types});
+  drillDown(document, element) {
+    this.path.push(element.currentKey);
+    this.types.push(element.currentType);
+    this.trigger({path: this.path, types: this.types, document: document});
   }
 
 });
