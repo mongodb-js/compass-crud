@@ -13,6 +13,7 @@ const GridStore = require('../stores/grid-store');
 const InsertDocumentStore = require('../stores/insert-document-store');
 const ResetDocumentListStore = require('../stores/reset-document-list-store');
 const PageChangedStore = require('../stores/page-changed-store');
+const BreadcrumbStore = require('../stores/breadcrumb-store');
 
 const BreadcrumbComponent = require('./breadcrumb');
 const CellRenderer = require('./table-view/cell-renderer');
@@ -54,6 +55,7 @@ class DocumentTableView extends React.Component {
     this.unsubscribeInsert = InsertDocumentStore.listen(this.handleInsert.bind(this));
     this.unsubscribeReset = ResetDocumentListStore.listen(this.handleReset.bind(this));
     this.unsubscribePageChanged = PageChangedStore.listen(this.handlePageChange.bind(this));
+    this.unsubscribeBreadcrumbStore = BreadcrumbStore.listen(this.handleBreadcrumbChange.bind(this));
   }
 
   componentWillUnmount() {
@@ -72,50 +74,6 @@ class DocumentTableView extends React.Component {
    */
   initHadronDocs(docs) {
     return docs.map((doc) => { return new HadronDocument(doc); });
-  }
-
-  /**
-   * Generate an AG-Grid instance.
-   *
-   * @param {Array} hadronDocs - The list of HadronDocuments.
-   * @param {Number} index - The document to start the page on.
-   *
-   * @returns {Object} The AG-Grid instance
-   */
-  createGrid(hadronDocs, index) {
-    this.gridOptions = {
-      context: {
-        addFooter: this.addFooter,
-        removeFooter: this.removeFooter,
-        handleUpdate: this.handleUpdate,
-        handleRemove: this.handleRemove,
-        handleClone: this.handleClone
-      },
-      onCellDoubleClicked: this.onCellDoubleClicked.bind(this),
-      rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
-    };
-
-    const gridProperties = {
-      columnDefs: this.createColumnHeaders(hadronDocs),
-      gridOptions: this.gridOptions,
-
-      isFullWidthCell: function(rowNode) {
-        return rowNode.data.isFooter;
-      },
-      fullWidthCellRendererFramework: FullWidthCellRenderer,
-
-      rowData: this.createRowData(hadronDocs, index),
-      getRowNodeId: function(data) {
-        const fid = data.isFooter ? '1' : '0';
-        return data.hadronDocument.getId().toString() + fid;
-      },
-      onGridReady: this.onGridReady.bind(this)
-    };
-
-    return React.createElement(
-      AgGridReact,
-      gridProperties,
-    );
   }
 
   /**
@@ -453,6 +411,19 @@ class DocumentTableView extends React.Component {
   }
 
   /**
+   * When the BreadcrumbStore changes, update the grid.
+   *
+   * @param {Object} params - Can contain collection, path, and/or types.
+   *  collection {String} - The collection name.
+   *  path {Array} - The array of field names/indexes.
+   *  types {Array} - The array of types for each segment of the path array.
+   */
+  handleBreadcrumbChange(params) {
+    console.log('breadcrumb changed to');
+    console.log(params);
+  }
+
+  /**
    * Create a single column header given a field name, a type, and if it's editable.
    * TODO: Use AG-Grid's default column headers.
    *
@@ -613,6 +584,50 @@ class DocumentTableView extends React.Component {
         rowNumber: i + index
       };
     });
+  }
+
+  /**
+   * Generate an AG-Grid instance for a top-level view.
+   *
+   * @param {Array} hadronDocs - The list of HadronDocuments.
+   * @param {Number} index - The document to start the page on.
+   *
+   * @returns {Object} The AG-Grid instance
+   */
+  createGrid(hadronDocs, index) {
+    this.gridOptions = {
+      context: {
+        addFooter: this.addFooter,
+        removeFooter: this.removeFooter,
+        handleUpdate: this.handleUpdate,
+        handleRemove: this.handleRemove,
+        handleClone: this.handleClone
+      },
+      onCellDoubleClicked: this.onCellDoubleClicked.bind(this),
+      rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
+    };
+
+    const gridProperties = {
+      columnDefs: this.createColumnHeaders(hadronDocs),
+      gridOptions: this.gridOptions,
+
+      isFullWidthCell: function(rowNode) {
+        return rowNode.data.isFooter;
+      },
+      fullWidthCellRendererFramework: FullWidthCellRenderer,
+
+      rowData: this.createRowData(hadronDocs, index),
+      getRowNodeId: function(data) {
+        const fid = data.isFooter ? '1' : '0';
+        return data.hadronDocument.getId().toString() + fid;
+      },
+      onGridReady: this.onGridReady.bind(this)
+    };
+
+    return React.createElement(
+      AgGridReact,
+      gridProperties,
+    );
   }
 
   /**
