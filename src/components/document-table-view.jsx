@@ -218,6 +218,8 @@ class DocumentTableView extends React.Component {
     const footerRowId = data._id + '1';
     const footerNode = this.gridApi.getRowNode(footerRowId);
     this.removeFooter(footerNode);
+
+    Actions.cleanCols();
   }
 
   /**
