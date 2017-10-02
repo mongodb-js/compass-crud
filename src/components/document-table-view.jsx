@@ -6,6 +6,7 @@ const _ = require('lodash');
 const HadronDocument = require('hadron-document');
 const ObjectId = require('bson').ObjectId;
 const mongodbns = require('mongodb-ns');
+const TypeChecker = require('hadron-type-checker');
 
 const Actions = require('../actions');
 
