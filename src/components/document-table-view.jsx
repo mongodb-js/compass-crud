@@ -245,7 +245,7 @@ class DocumentTableView extends React.Component {
     }
 
     // Newly added columns are always editable.
-    const newColDef = this.createColumnHeader(headerName, colType, true);
+    const newColDef = this.createColumnHeader(colType, true, [headerName]);
     columnHeaders.splice(i + 1, 0, newColDef);
 
     this.gridApi.setColumnDefs(columnHeaders);
