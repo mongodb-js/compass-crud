@@ -133,7 +133,7 @@ const GridStore = Reflux.createStore( {
       if (oldType === MIXED) {
         this.setShowing(key);
       } else {
-        this.showing[key] = MIXED;
+        this.showing[key] = (Object.keys(this.columns[key]).length === 1) ? type : MIXED;
       }
       if (oldType !== this.showing[key]) {
         const params = {updateHeaders: {showing: {}}};
