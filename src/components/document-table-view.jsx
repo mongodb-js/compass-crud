@@ -3,10 +3,10 @@ const PropTypes = require('prop-types');
 const {AgGridReact} = require('ag-grid-react');
 const _ = require('lodash');
 
+const TypeChecker = require('hadron-type-checker');
 const HadronDocument = require('hadron-document');
 const ObjectId = require('bson').ObjectId;
 const mongodbns = require('mongodb-ns');
-const TypeChecker = require('hadron-type-checker');
 
 const Actions = require('../actions');
 
@@ -65,6 +65,7 @@ class DocumentTableView extends React.Component {
 
     this.collection = mongodbns(props.ns).collection;
     this.hadronDocs = [];
+    this.start = 1;
   }
 
   componentDidMount() {
@@ -411,6 +412,7 @@ class DocumentTableView extends React.Component {
 
   /**
    * The documents have changed due to a refresh or load next/previous page.
+   * Also need to call pathChanged because going to a new page resets the path.
    *
    * @param {Object} error - Error when trying to load more documents.
    * @param {Array} documents - The next batch of documents.
@@ -420,8 +422,8 @@ class DocumentTableView extends React.Component {
   handlePageChange(error, documents, start) {
     if (!error) {
       this.hadronDocs = this.initHadronDocs(documents);
-      this.AGGrid = this.createGrid(this.hadronDocs, start);
-      this.forceUpdate();
+      this.start = start;
+      Actions.pathChanged([], []);
     }
   }
 
@@ -449,10 +451,10 @@ class DocumentTableView extends React.Component {
    */
   handleBreadcrumbChange(params) {
     if (params.path.length === 0) {
-      this.AGGrid = this.createGrid(this.hadronDocs, 1);
+      this.AGGrid = this.createGrid(this.hadronDocs, this.start);
     } else if (params.types[params.types.length - 1] === 'Object') {
       this.AGGrid = this.createObjectGrid(params.document, params.path);
-    }
+    } // TODO: Array
     this.forceUpdate();
   }
 
