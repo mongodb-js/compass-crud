@@ -458,6 +458,10 @@ class DocumentTableView extends React.Component {
       this.AGGrid = this.createObjectGrid(params.document, params.path);
     } // TODO: Array
     this.forceUpdate();
+    // TODO: Figure out onGridReady
+    if (this.gridApi) {
+      this.addFooters();
+    }
   }
 
   /**
