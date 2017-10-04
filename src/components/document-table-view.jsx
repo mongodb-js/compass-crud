@@ -228,10 +228,11 @@ class DocumentTableView extends React.Component {
    *
    * @param {String} colId - The new column will be inserted after the column
    * with colId.
-   * @param {String} headerName - The field of a new columnfrom insert document dialog
+   * @param {String} headerName - The field of a new column from insert document dialog
    * @param {String} colType - The type of a new column from document insert dialog
+   * @param {Array} path - The series of field names. Empty at top-level.
    */
-  addColumn(colId, headerName, colType) {
+  addColumn(colId, headerName, colType, path) {
     const columnHeaders = _.map(this.columnApi.getAllColumns(), function(col) {
       return col.getColDef();
     });
@@ -248,7 +249,7 @@ class DocumentTableView extends React.Component {
     }
 
     // Newly added columns are always editable.
-    const newColDef = this.createColumnHeader(colType, true, [headerName]);
+    const newColDef = this.createColumnHeader(colType, true, [].concat(path, [headerName]));
     columnHeaders.splice(i + 1, 0, newColDef);
 
     this.gridApi.setColumnDefs(columnHeaders);
@@ -305,6 +306,7 @@ class DocumentTableView extends React.Component {
    *    params.add.colId - The columnId that the new column will be added next to.
    *    params.add.rowIndex - The index of row which added the new column. Required
    *      so that we can open up the new field for editing.
+   *    params.add.path - An array of field names. Will be empty for top level.
    *   Deleting columns:
    *    params.remove.colIds - The array of columnIds to be deleted.
    *   Updating headers:
@@ -313,7 +315,7 @@ class DocumentTableView extends React.Component {
    */
   modifyColumns(params) {
     if ('add' in params) {
-      this.addColumn(params.add.colId, '$new', '');
+      this.addColumn(params.add.colId, '$new', '', params.add.path);
       this.gridApi.setFocusedCell(params.add.rowIndex, '$new');
       this.gridApi.startEditingCell({rowIndex: params.add.rowIndex, colKey: '$new'});
     }
@@ -393,10 +395,10 @@ class DocumentTableView extends React.Component {
    * @param {Object} doc - The raw document that was inserted.
    * @param {boolean} clone - If the document was cloned, don't add row.
    */
-  handleInsert(error, doc, clone) {
+  handleInsert(error, doc, clone) { // TODO: handle nested insert
     if (!error && !clone) {
       Object.keys(doc).forEach((key) => {
-        this.addColumn(null, key, TypeChecker.type(doc[key]));
+        this.addColumn(null, key, TypeChecker.type(doc[key]), []);
       });
       this.insertRow(doc, 0, 1, false);
     }
@@ -453,7 +455,6 @@ class DocumentTableView extends React.Component {
    *  document {HadronDocument} - The document that we're drilling down into.
    */
   handleBreadcrumbChange(params) {
-    console.log('BREADCRUMB CHANGE');
     if (params.path.length === 0) {
       this.AGGrid = this.createGrid(this.hadronDocs, this.start);
     } else if (params.types[params.types.length - 1] === 'Object') {
@@ -513,10 +514,6 @@ class DocumentTableView extends React.Component {
       headerName: path[path.length - 1],
       colId: path[path.length - 1],
       valueGetter: function(params) {
-        console.log('in valueGetter: params=');
-        console.log(params);
-        console.log('\tpath=');
-        console.log(path);
         return params.data.hadronDocument.getChild(path);
       },
       valueSetter: function(params) {

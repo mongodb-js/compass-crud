@@ -162,8 +162,8 @@ const GridStore = Reflux.createStore( {
     }
   },
 
-  addColumn: function(columnBefore, rowIndex) {
-    this.trigger({add: {colId: columnBefore, rowIndex: rowIndex}});
+  addColumn: function(columnBefore, rowIndex, path) {
+    this.trigger({add: {colId: columnBefore, rowIndex: rowIndex, path: path}});
   },
 
   removeColumn: function(colId) {

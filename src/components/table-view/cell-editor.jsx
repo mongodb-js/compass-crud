@@ -62,7 +62,13 @@ class CellEditor extends React.Component {
       if (type === 'mixed') {
         type = 'Undefined';
       }
-      this.element = this.props.node.data.hadronDocument.insertEnd(key, ''); // TODO: add to correct element
+
+      let parent = this.props.node.data.hadronDocument;
+      if (this.props.context.path.length) {
+        parent = parent.getChild(this.props.context.path);
+      }
+
+      this.element = parent.insertEnd(key, ''); // TODO: add to correct element
       const value = TypeChecker.cast(null, type);
       this.element.edit(value);
     } else {
@@ -127,6 +133,7 @@ class CellEditor extends React.Component {
     /* If this is a new field, need to update the colDef with the key name */
     if (this.newField) {
       const key = this.state.fieldName;
+      const path = [].concat(this.props.context.path, [key]);
 
       /* Cancel and remove the column if the key was unedited or a duplicate */
       if (key === '' || this.isDuplicateKey(key)) {
@@ -141,7 +148,7 @@ class CellEditor extends React.Component {
       /* Rename the column + update its definition */
       const colDef = this.props.column.getColDef();
       colDef.valueGetter = function(params) {
-        return params.data.hadronDocument.get(key); // TODO: should have path not key
+        return params.data.hadronDocument.getChild(path);
       };
       colDef.headerName = key;
       colDef.colId = key;
@@ -149,10 +156,10 @@ class CellEditor extends React.Component {
         if (params.node.data.state === 'deleting') {
           return false;
         }
-        if (params.node.data.hadronDocument.get(key) === undefined) {
+        if (params.node.data.hadronDocument.getChild(path) === null) {
           return true;
         }
-        return params.node.data.hadronDocument.get(key).isValueEditable();
+        return params.node.data.hadronDocument.getChild(path).isValueEditable();
       };
 
       /* Update the grid store so we know what type this element is. This
@@ -453,7 +460,8 @@ CellEditor.propTypes = {
   column: PropTypes.any,
   node: PropTypes.any,
   api: PropTypes.any,
-  columnApi: PropTypes.any
+  columnApi: PropTypes.any,
+  context: PropTypes.any
 };
 
 CellEditor.displayName = 'CellEditor';
