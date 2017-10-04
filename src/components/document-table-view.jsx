@@ -179,6 +179,9 @@ class DocumentTableView extends React.Component {
     /* Update the row numbers */
     this.updateRowNumbers(dataNode.data.rowNumber, false);
 
+    /* Update this.hadronDocs */
+    this.hadronDocs.splice(dataNode.data.rowNumber - this.start, 1);
+
     /* Remove the footer */
     this.removeFooter(node);
 
@@ -212,6 +215,9 @@ class DocumentTableView extends React.Component {
       state: null,
       rowNumber: rowNumber
     };
+
+    /* Update this.hadronDocs */
+    this.hadronDocs[newData.rowNumber - this.start] = newData.hadronDocument;
 
     dataNode.setData(newData);
     this.gridApi.redrawRows({rowNodes: [dataNode]});
@@ -265,16 +271,13 @@ class DocumentTableView extends React.Component {
       return col.getColDef();
     });
 
-    const indexes = [];
+    const newCols = [];
     for (let i = 0; i < columnHeaders.length; i++) {
-      if (colIds.includes(columnHeaders[i].colId)) {
-        indexes.push(i);
+      if (!colIds.includes(columnHeaders[i].colId)) {
+        newCols.push(columnHeaders[i]);
       }
     }
-    for (let i = 0; i < indexes.length; i++) {
-      columnHeaders.splice(indexes[i], 1);
-    }
-    this.gridApi.setColumnDefs(columnHeaders);
+    this.gridApi.setColumnDefs(newCols);
   }
 
   /**
@@ -369,6 +372,9 @@ class DocumentTableView extends React.Component {
       rowNumber: lineNumber
     };
 
+    /* Update this.hadronDocs */
+    this.hadronDocs.splice(lineNumber - this.start, 0, data.hadronDocument);
+
     /* Update row numbers */
     this.updateRowNumbers(lineNumber, true);
 
@@ -455,6 +461,9 @@ class DocumentTableView extends React.Component {
    *  document {HadronDocument} - The document that we're drilling down into.
    */
   handleBreadcrumbChange(params) {
+    console.log('breadcrumb change, params=');
+    console.log(params);
+
     if (params.path.length === 0) {
       this.AGGrid = this.createGrid(this.hadronDocs, this.start);
     } else if (params.types[params.types.length - 1] === 'Object') {
@@ -533,14 +542,7 @@ class DocumentTableView extends React.Component {
       cellRendererParams: {},
 
       editable: function(params) {
-        if (!isEditable || params.node.data.state === 'deleting') {
-          return false;
-        }
-        const element = params.node.data.hadronDocument.getChild(path);
-        if (element === null) {
-          return true;
-        }
-        return element.isValueEditable();
+        return (isEditable && params.node.data.state !== 'deleting');
       },
 
       cellEditorFramework: CellEditor,
@@ -725,6 +727,7 @@ class DocumentTableView extends React.Component {
     };
 
     Object.assign(gridProperties, this.sharedGridProperties);
+    gridProperties.gridOptions.context.path = [];
 
     return React.createElement(
       AgGridReact,
