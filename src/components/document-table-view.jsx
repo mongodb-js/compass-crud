@@ -51,7 +51,8 @@ class DocumentTableView extends React.Component {
           removeFooter: this.removeFooter,
           handleUpdate: this.handleUpdate,
           handleRemove: this.handleRemove,
-          handleClone: this.handleClone
+          handleClone: this.handleClone,
+          path: []
         },
         onCellDoubleClicked: this.onCellDoubleClicked.bind(this),
         rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
@@ -117,7 +118,7 @@ class DocumentTableView extends React.Component {
   /**
    * Add a row to the table that represents the update/cancel footer for the
    * row directly above. The row will be a full-width row that has the same
-   * hadron-document as the "document row" above.
+   * hadron-document as the 'document row' above.
    *
    * @param {RowNode} node - The RowNode for the document row.
    * @param {object} data - The data for the document row.
@@ -452,6 +453,7 @@ class DocumentTableView extends React.Component {
    *  document {HadronDocument} - The document that we're drilling down into.
    */
   handleBreadcrumbChange(params) {
+    console.log('BREADCRUMB CHANGE');
     if (params.path.length === 0) {
       this.AGGrid = this.createGrid(this.hadronDocs, this.start);
     } else if (params.types[params.types.length - 1] === 'Object') {
@@ -511,13 +513,11 @@ class DocumentTableView extends React.Component {
       headerName: path[path.length - 1],
       colId: path[path.length - 1],
       valueGetter: function(params) {
-        let element = params.data.hadronDocument.get(path[0]);
-        let i = 1;
-        while (i < path.length) {
-          element = element.get(path[i]);
-          i++;
-        }
-        return element;
+        console.log('in valueGetter: params=');
+        console.log(params);
+        console.log('\tpath=');
+        console.log(path);
+        return params.data.hadronDocument.getChild(path);
       },
       valueSetter: function(params) {
         if (params.oldValue === undefined && params.newValue === undefined) {
@@ -539,14 +539,8 @@ class DocumentTableView extends React.Component {
         if (!isEditable || params.node.data.state === 'deleting') {
           return false;
         }
-        let element = params.node.data.hadronDocument.get(path[0]);
-        let i = 1;
-        while (i < path.length) {
-          element = element.get(path[i]);
-          i++;
-        }
-
-        if (element === undefined) {
+        const element = params.node.data.hadronDocument.getChild(path);
+        if (element === null) {
           return true;
         }
         return element.isValueEditable();
@@ -591,13 +585,11 @@ class DocumentTableView extends React.Component {
 
     /* Make column definitions + track type for header components */
     for (let i = 0; i < hadronDocs.length; i++) {
+      /* Get the top-level element/document in the view */
       let topLevel = hadronDocs[i];
 
-      /* Get the top-level element/document in the view */
-      let j = 0;
-      while (j < path.length) {
-        topLevel = topLevel.get(path[j]);
-        j++;
+      if (path.length > 0) {
+        topLevel = topLevel.getChild(path);
       }
 
       for (const element of topLevel.elements) {
@@ -685,6 +677,14 @@ class DocumentTableView extends React.Component {
     });
   }
 
+  /**
+   * Create a table for a nested object.
+   *
+   * @param {HadronDocument} document - The document of the element being viewed.
+   * @param {Array} path - An array of field names. Never empty.
+   *
+   * @returns {AgGridReact} - An AG-Grid component.
+   */
   createObjectGrid(document, path) {
     const headers = this.createColumnHeaders([document], path);
     headers.push(this.createObjectIdHeader());
@@ -699,6 +699,9 @@ class DocumentTableView extends React.Component {
     };
 
     Object.assign(gridProperties, this.sharedGridProperties);
+
+    /* Cell renderers/editors/etc need to know the path */
+    gridProperties.gridOptions.context.path = path;
 
     return React.createElement(
       AgGridReact,

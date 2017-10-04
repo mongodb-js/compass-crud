@@ -221,11 +221,11 @@ class CellRenderer extends React.Component {
       canUndo = true;
     } else {
       element = this.renderValidCell();
-      if (this.element.isEdited()) {
-        className = `${className}-${EDITED}`;
-        canUndo = true;
-      } else if (this.element.isAdded()) {
+      if (this.element.isAdded()) {
         className = `${className}-${ADDED}`;
+        canUndo = true;
+      } else if (this.element.isModified()) {
+        className = `${className}-${EDITED}`;
         canUndo = true;
       }
       canExpand = (this.element.currentType === 'Object' || this.element.currentType === 'Array');

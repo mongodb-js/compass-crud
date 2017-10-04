@@ -62,7 +62,7 @@ class CellEditor extends React.Component {
       if (type === 'mixed') {
         type = 'Undefined';
       }
-      this.element = this.props.node.data.hadronDocument.insertEnd(key, '');
+      this.element = this.props.node.data.hadronDocument.insertEnd(key, ''); // TODO: add to correct element
       const value = TypeChecker.cast(null, type);
       this.element.edit(value);
     } else {
@@ -141,7 +141,7 @@ class CellEditor extends React.Component {
       /* Rename the column + update its definition */
       const colDef = this.props.column.getColDef();
       colDef.valueGetter = function(params) {
-        return params.data.hadronDocument.get(key);
+        return params.data.hadronDocument.get(key); // TODO: should have path not key
       };
       colDef.headerName = key;
       colDef.colId = key;
