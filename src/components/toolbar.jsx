@@ -232,8 +232,8 @@ class Toolbar extends React.Component {
             <div className={VIEW_SWITCHER_CLASS}>
               <ViewSwitcher
                 label="View"
-                buttonLabels={['List', 'Table']}
-                iconClassNames={['fa fa-list-ul', 'fa fa-table']}
+                buttonLabels={['List']}
+                iconClassNames={['fa fa-list-ul']}
                 activeButton={this.props.activeDocumentView}
                 onClick={this.switchDocumentView.bind(this)} />
             </div>
