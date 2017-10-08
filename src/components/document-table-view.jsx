@@ -180,7 +180,12 @@ class DocumentTableView extends React.Component {
     this.updateRowNumbers(dataNode.data.rowNumber, false);
 
     /* Update this.hadronDocs */
-    this.hadronDocs.splice(dataNode.data.rowNumber - this.start, 1);
+    for (let i = 0; i < this.hadronDocs.length; i++) {
+      if (this.hadronDocs[i].getId() === node.data.hadronDocument.getId()) {
+        this.hadronDocs.splice(i, 1);
+        break;
+      }
+    }
 
     /* Remove the footer */
     this.removeFooter(node);
@@ -217,7 +222,12 @@ class DocumentTableView extends React.Component {
     };
 
     /* Update this.hadronDocs */
-    this.hadronDocs[newData.rowNumber - this.start] = newData.hadronDocument;
+    for (let i = 0; i < this.hadronDocs.length; i++) {
+      if (this.hadronDocs[i].getId().toString() === data._id.toString()) {
+        this.hadronDocs[i] = newData.hadronDocument;
+        break;
+      }
+    }
 
     dataNode.setData(newData);
     this.gridApi.redrawRows({rowNodes: [dataNode]});
@@ -373,7 +383,7 @@ class DocumentTableView extends React.Component {
     };
 
     /* Update this.hadronDocs */
-    this.hadronDocs.splice(lineNumber - this.start, 0, data.hadronDocument);
+    this.hadronDocs.splice(0, 0, data.hadronDocument);
 
     /* Update row numbers */
     this.updateRowNumbers(lineNumber, true);
@@ -461,9 +471,6 @@ class DocumentTableView extends React.Component {
    *  document {HadronDocument} - The document that we're drilling down into.
    */
   handleBreadcrumbChange(params) {
-    console.log('breadcrumb change, params=');
-    console.log(params);
-
     if (params.path.length === 0) {
       this.AGGrid = this.createGrid(this.hadronDocs, this.start);
     } else if (params.types[params.types.length - 1] === 'Object') {
