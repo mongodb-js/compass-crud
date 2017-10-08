@@ -67,6 +67,7 @@ class DocumentTableView extends React.Component {
     this.collection = mongodbns(props.ns).collection;
     this.hadronDocs = [];
     this.start = 1;
+    this.topLevel = true;
   }
 
   componentDidMount() {
@@ -385,22 +386,24 @@ class DocumentTableView extends React.Component {
     /* Update this.hadronDocs */
     this.hadronDocs.splice(0, 0, data.hadronDocument);
 
-    /* Update row numbers */
-    this.updateRowNumbers(lineNumber, true);
+    if (this.topLevel) {
+      /* Update row numbers */
+      this.updateRowNumbers(lineNumber, true);
 
-    /* Update grid API */
-    this.gridApi.updateRowData({add: [data], addIndex: index});
+      /* Update grid API */
+      this.gridApi.updateRowData({add: [data], addIndex: index});
 
-    /* Update the headers */
-    for (const element of data.hadronDocument.elements) {
-      Actions.elementAdded(element.currentKey, element.currentType, doc._id);
-    }
+      /* Update the headers */
+      for (const element of data.hadronDocument.elements) {
+        Actions.elementAdded(element.currentKey, element.currentType, doc._id);
+      }
 
-    if (edit) {
-      /* Add a footer */
-      const rowId = doc._id.toString() + '0';
-      const node = this.gridApi.getRowNode(rowId);
-      this.addFooter(node, node.data, 'cloned');
+      if (edit) {
+        /* Add a footer */
+        const rowId = doc._id.toString() + '0';
+        const node = this.gridApi.getRowNode(rowId);
+        this.addFooter(node, node.data, 'cloned');
+      }
     }
   }
 
@@ -472,10 +475,15 @@ class DocumentTableView extends React.Component {
    */
   handleBreadcrumbChange(params) {
     if (params.path.length === 0) {
+      this.topLevel = true;
       this.AGGrid = this.createGrid(this.hadronDocs, this.start);
     } else if (params.types[params.types.length - 1] === 'Object') {
+      this.topLevel = false;
       this.AGGrid = this.createObjectGrid(params.document, params.path);
-    } // TODO: Array
+    } else if (params.types[params.types.length - 1] === 'Array') {
+      this.topLevel = false;
+      console.log('expanding array'); // TODO
+    }
     this.forceUpdate();
     // TODO: Figure out onGridReady
     if (this.gridApi) {
