@@ -76,9 +76,8 @@ class CellEditor extends React.Component {
       if (this.element.currentKey !== '$new') {
         this.setState({fieldName: this.element.currentKey});
       }
-      /* If this column has just been added, or the user has re-opened a field
-       * that has been added but not updated to the DB. */
-      this.newField = (this.props.value.key === '$new');
+      /* If this column has just been added */
+      this.newField = (this.props.value.currentKey === '$new');
     }
 
     this.oldType = this.element.currentType;

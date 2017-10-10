@@ -141,8 +141,13 @@ class AddFieldButton extends React.Component {
    * When clicking on an expandable element to append a child.
    */
   handleAddChildClick() {
-    this.props.value.insertPlaceholder();
     this.setState({ menu: false });
+    Actions.drillDown(this.props.node.data.hadronDocument, this.props.value);
+
+    this.props.value.insertEnd('$new', '');
+
+    const path = [].concat(this.props.context.path, [this.props.value.currentKey]);
+    Actions.addColumn(null, 0, path);
   }
 
 
