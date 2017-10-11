@@ -658,7 +658,18 @@ class DocumentTableView extends React.Component {
         nested: (path.length !== 0)
       },
       editable: false,
-      pinned: 'right'
+      pinned: 'right',
+      width: 5,
+      cellStyle: function() {
+        let left = 30;
+        for (let i = 0; i < columnHeaders.length - 2; i++) {
+          left = left + 200;
+          if (left > window.innerWidth) {
+            left = window.innerWidth - 95;
+          }
+        }
+        return {left: `${left}px`, 'position': 'fixed', width: 0};
+      }
     });
 
     /* Return the updated column definitions */
