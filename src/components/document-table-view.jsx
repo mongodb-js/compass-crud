@@ -76,6 +76,7 @@ class DocumentTableView extends React.Component {
     this.unsubscribeReset = ResetDocumentListStore.listen(this.handleReset.bind(this));
     this.unsubscribePageChanged = PageChangedStore.listen(this.handlePageChange.bind(this));
     this.unsubscribeBreadcrumbStore = BreadcrumbStore.listen(this.handleBreadcrumbChange.bind(this));
+    window.addEventListener('resize', this.handleResize.bind(this));
   }
 
   componentWillUnmount() {
@@ -103,6 +104,13 @@ class DocumentTableView extends React.Component {
   onGridReady(params) {
     this.gridApi = params.api;
     this.columnApi = params.columnApi;
+  }
+
+  /**
+   * Re-renders the document actions column  when the browser window is resized.
+   */
+  handleResize() {
+    this.gridApi.refreshCells({columns: ['$rowActions'], force: true});
   }
 
   /**
@@ -659,17 +667,7 @@ class DocumentTableView extends React.Component {
       },
       editable: false,
       pinned: 'right',
-      width: 5,
-      cellStyle: function() {
-        let left = 30;
-        for (let i = 0; i < columnHeaders.length - 2; i++) {
-          left = left + 200;
-          if (left > window.innerWidth) {
-            left = window.innerWidth - 95;
-          }
-        }
-        return {left: `${left}px`, 'position': 'fixed', width: 0};
-      }
+      width: 1
     });
 
     /* Return the updated column definitions */

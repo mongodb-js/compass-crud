@@ -63,8 +63,20 @@ class RowActionsRenderer extends React.Component {
       return null;
     }
 
+    /**
+     * Logic dynamically updates the position of the actions panel, but prevents it from breaking off the viewpoint of the screen.
+     */
+    let left = 30;
+    const columnHeaders = this.props.columnApi.getAllColumns();
+    for (let i = 0; i < columnHeaders.length - 2; i++) {
+      left = left + 200;
+      if (left > window.innerWidth) {
+        left = window.innerWidth - 95;
+      }
+    }
+
     return (
-      <div className={BEM_BASE}>
+      <div className={BEM_BASE} style={{left: `${left}px`}}>
         <div className={`${BEM_BASE}-panel`}>
         <IconButton
           title="Edit Document"
@@ -80,6 +92,7 @@ class RowActionsRenderer extends React.Component {
 
 RowActionsRenderer.propTypes = {
   api: PropTypes.any,
+  columnApi: PropTypes.any,
   value: PropTypes.any,
   node: PropTypes.any,
   context: PropTypes.any,
