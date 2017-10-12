@@ -43,6 +43,7 @@ class DocumentTableView extends React.Component {
     this.handleUpdate = this.handleUpdate.bind(this);
     this.addFooter = this.addFooter.bind(this);
     this.handleClone = this.handleClone.bind(this);
+    this.updateWidth = this.updateWidth.bind(this);
 
     this.sharedGridProperties = {
       gridOptions: {
@@ -55,7 +56,8 @@ class DocumentTableView extends React.Component {
           path: []
         },
         onCellDoubleClicked: this.onCellDoubleClicked.bind(this),
-        rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
+        rowHeight: 28,  // .document-footer row needs 28px, ag-grid default is 25px
+        getRowStyle: this.updateWidth
       },
       onGridReady: this.onGridReady.bind(this),
       isFullWidthCell: function(rowNode) {
@@ -496,6 +498,24 @@ class DocumentTableView extends React.Component {
     // TODO: Figure out onGridReady
     if (this.gridApi) {
       this.addFooters();
+    }
+  }
+
+  /**
+   * Set the width of the document footer based on the width of the columns.
+   * If there are more columns than can displayed, set the width to 100%.
+   */
+  updateWidth(params) {
+    if (params.node.data.state === 'editing' || params.node.data.state === 'deleting' || params.node.data.state === 'cloned') {
+      let width = 30;
+      const columnHeaders = this.columnApi.getAllColumns();
+      for (let i = 0; i < columnHeaders.length - 2; i++) {
+        width = width + 200;
+      }
+      if (width > window.innerWidth) {
+        return {width: '100%'};
+      } 
+      return {width: `${width}px`};
     }
   }
 

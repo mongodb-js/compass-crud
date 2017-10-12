@@ -66,7 +66,7 @@ class RowActionsRenderer extends React.Component {
     /**
      * Logic dynamically updates the position of the actions panel, but prevents it from breaking off the viewpoint of the screen.
      */
-    let left = 30;
+    let left = 40;
     const columnHeaders = this.props.columnApi.getAllColumns();
     for (let i = 0; i < columnHeaders.length - 2; i++) {
       left = left + 200;
