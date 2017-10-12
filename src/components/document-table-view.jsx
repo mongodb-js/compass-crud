@@ -514,7 +514,7 @@ class DocumentTableView extends React.Component {
       }
       if (width > window.innerWidth) {
         return {width: '100%'};
-      } 
+      }
       return {width: `${width}px`};
     }
   }
