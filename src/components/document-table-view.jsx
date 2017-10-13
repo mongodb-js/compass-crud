@@ -508,11 +508,12 @@ class DocumentTableView extends React.Component {
   updateWidth(params) {
     if (params.node.data.state === 'editing' || params.node.data.state === 'deleting' || params.node.data.state === 'cloned') {
       let width = 30;
-      const columnHeaders = this.columnApi.getAllColumns();
-      for (let i = 0; i < columnHeaders.length - 2; i++) {
+      const allColumns = this.columnApi.getAllColumns();
+      const newColumn = this.columnApi.getColumn('$new');
+      for (let i = 0; i < allColumns.length - 2; i++) {
         width = width + 200;
       }
-      if (width > window.innerWidth) {
+      if (width > window.innerWidth || newColumn) {
         return {width: '100%'};
       }
       return {width: `${width}px`};
@@ -527,7 +528,7 @@ class DocumentTableView extends React.Component {
     this.gridApi.forEachNodeAfterFilterAndSort((node) => {
       if (node.data.hadronDocument.isModified()) {
         this.addFooter(node, node.data, 'editing');
-      }
+      } 
     });
   }
 
