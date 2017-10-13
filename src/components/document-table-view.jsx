@@ -528,7 +528,7 @@ class DocumentTableView extends React.Component {
     this.gridApi.forEachNodeAfterFilterAndSort((node) => {
       if (node.data.hadronDocument.isModified()) {
         this.addFooter(node, node.data, 'editing');
-      } 
+      }
     });
   }
 
