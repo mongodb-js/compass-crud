@@ -56,6 +56,7 @@ class DocumentTableView extends React.Component {
           path: []
         },
         onCellDoubleClicked: this.onCellDoubleClicked.bind(this),
+        onBodyScroll: this.onBodyScroll.bind(this),
         rowHeight: 28,  // .document-footer row needs 28px, ag-grid default is 25px
         getRowStyle: this.updateWidth
       },
@@ -109,9 +110,20 @@ class DocumentTableView extends React.Component {
   }
 
   /**
-   * Re-renders the document actions column  when the browser window is resized.
+   * Re-renders the document actions column when the browser window is resized.
    */
   handleResize() {
+    this.gridApi.refreshCells({columns: ['$rowActions'], force: true});
+  }
+
+  /**
+   * Repositions the pinned column, which contains the document actions, based on the pixel range of the table body.
+   * Also re-renders the document actions column when the table body is scrolled.
+   */
+  onBodyScroll() {
+    const verticalRange = this.gridApi.getVerticalPixelRange();
+    const rightColumn = document.getElementsByClassName('ag-pinned-right-cols-container')[0];
+    rightColumn.style.bottom = `${verticalRange.top}px`;
     this.gridApi.refreshCells({columns: ['$rowActions'], force: true});
   }
 
