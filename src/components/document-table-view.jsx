@@ -576,6 +576,7 @@ class DocumentTableView extends React.Component {
         bsonType: 'ObjectId'
       },
       cellRendererFramework: CellRenderer,
+      cellRendererParams: {isOid: true},
       editable: false,
       cellEditorFramework: CellEditor,
       pinned: 'left'
