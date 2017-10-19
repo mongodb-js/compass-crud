@@ -43,7 +43,7 @@ class DocumentTableView extends React.Component {
     this.handleUpdate = this.handleUpdate.bind(this);
     this.addFooter = this.addFooter.bind(this);
     this.handleClone = this.handleClone.bind(this);
-
+    this.updateWidth = this.updateWidth.bind(this);
     this.sharedGridProperties = {
       gridOptions: {
         context: {
@@ -55,7 +55,9 @@ class DocumentTableView extends React.Component {
           path: []
         },
         onCellDoubleClicked: this.onCellDoubleClicked.bind(this),
-        rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
+        rowHeight: 28,  // .document-footer row needs 28px, ag-grid default is 25px
+        onBodyScroll: this.onBodyScroll.bind(this),
+        getRowStyle: this.updateWidth
       },
       onGridReady: this.onGridReady.bind(this),
       isFullWidthCell: function(rowNode) {
@@ -85,6 +87,7 @@ class DocumentTableView extends React.Component {
     this.unsubscribeReset = ResetDocumentListStore.listen(this.handleReset.bind(this));
     this.unsubscribePageChanged = PageChangedStore.listen(this.handlePageChange.bind(this));
     this.unsubscribeBreadcrumbStore = BreadcrumbStore.listen(this.handleBreadcrumbChange.bind(this));
+    window.addEventListener('resize', this.handleResize.bind(this));
   }
 
   componentWillUnmount() {
@@ -112,6 +115,24 @@ class DocumentTableView extends React.Component {
   onGridReady(params) {
     this.gridApi = params.api;
     this.columnApi = params.columnApi;
+  }
+
+  /**
+   * Re-renders the document actions column when the browser window is resized.
+   */
+  handleResize() {
+    this.gridApi.refreshCells({columns: ['$rowActions'], force: true});
+  }
+
+  /**
+   * Repositions the pinned column, which contains the document actions, based on the pixel range of the table body.
+   * Also re-renders the document actions column when the table body is scrolled.
+   */
+  onBodyScroll() {
+    const verticalRange = this.gridApi.getVerticalPixelRange();
+    const rightColumn = document.getElementsByClassName('ag-pinned-right-cols-container')[0];
+    rightColumn.style.bottom = `${verticalRange.top}px`;
+    this.gridApi.refreshCells({columns: ['$rowActions'], force: true});
   }
 
   /**
@@ -510,6 +531,25 @@ class DocumentTableView extends React.Component {
   }
 
   /**
+   * Set the width of the document footer based on the width of the columns.
+   * If there are more columns than can displayed, set the width to 100%.
+   */
+  updateWidth(params) {
+    if (params.node.data.state === 'editing' || params.node.data.state === 'deleting' || params.node.data.state === 'cloned') {
+      let width = 30;
+      const allColumns = this.columnApi.getAllColumns();
+      const newColumn = this.columnApi.getColumn('$new');
+      for (let i = 0; i < allColumns.length - 2; i++) {
+        width = width + 200;
+      }
+      if (width > window.innerWidth || newColumn) {
+        return {width: '100%'};
+      }
+      return {width: `${width}px`};
+    }
+  }
+
+  /**
    * Go through and add modified footers to documents that are edited.
    */
   addFooters() {
@@ -680,7 +720,8 @@ class DocumentTableView extends React.Component {
         nested: (path.length !== 0)
       },
       editable: false,
-      pinned: 'right'
+      pinned: 'right',
+      width: '1'
     });
 
     /* Return the updated column definitions */

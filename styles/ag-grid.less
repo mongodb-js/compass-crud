@@ -18,6 +18,7 @@
 		background: #F5F6F7;
     	padding: 2px 0 2px 0;
 		box-shadow: 0 2px 10px 0 rgba(0,0,0,0.10), inset 0 -1px 0 0 #D7D7D7;
+		z-index: 5;
 
 		&-cell {
 			padding: 3px 5px;
@@ -57,11 +58,20 @@
 		box-sizing: border-box;
 		background-color: white;
 		border-bottom: 0.5px solid #E0E0E0;
+		border-right: 0.5px solid #E0E0E0;	
+
+		&-hover {
+			background-color: #f5f6f7;
+		}
+
+		&-focus {
+			background-color: white;
+ 		}
 	}
 
 	&-full-width-row {
 		height: 56px!important;
-	    background: transparent;
+	    background: white;
 	    border: 1px solid #5CAEEB;
 	    border-radius: 2px;
 	    margin-top: -28px;
@@ -84,6 +94,34 @@
 	&-popup-editor {
 		outline: 0;
 	}
+	&-header-viewport {
+		margin-right: 0;
+	}
+	&-pinned-right-cols {
+		&-container {
+			z-index: 4;
+			width: 0!important;
+			.ag {
+				&-row {
+					border: 0;
+				}
+				&-cell {
+					border: 0;
+				}
+			}
+		}
+		&-viewport {
+			width: 0!important;
+		}
+	}
+	&-body-viewport {
+		&-wrapper {
+			margin-right: 0!important;	
+		}
+    	.ag-cell:last-child {
+    		border: 0;
+    	}
+    }
 }
 .table-view-row-number-cell {
 	display: flex;
