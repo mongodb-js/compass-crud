@@ -721,7 +721,7 @@ class DocumentTableView extends React.Component {
       },
       editable: false,
       pinned: 'right',
-      width: '1'
+      width: 1
     });
 
     /* Return the updated column definitions */
