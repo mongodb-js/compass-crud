@@ -130,6 +130,7 @@ class DocumentTableView extends React.Component {
    */
   onBodyScroll() {
     const verticalRange = this.gridApi.getVerticalPixelRange();
+    console.log(verticalRange);
     const rightColumn = document.getElementsByClassName('ag-pinned-right-cols-container')[0];
     rightColumn.style.bottom = `${verticalRange.top}px`;
     this.gridApi.refreshCells({columns: ['$rowActions'], force: true});

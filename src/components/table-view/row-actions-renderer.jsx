@@ -66,14 +66,15 @@ class RowActionsRenderer extends React.Component {
     /**
      * Logic dynamically updates the position of the actions panel, but prevents it from breaking off the viewpoint of the screen.
      */
-    let left = 40;
     const columnHeaders = this.props.columnApi.getAllColumns();
     const tableLength = document.getElementById('borderLayout_eRootPanel').offsetWidth;
+    const sidebarLength = document.getElementsByClassName('compass-sidebar')[0].offsetWidth;
+    let left = 40 + sidebarLength;
     for (let i = 0; i < columnHeaders.length - 2; i++) {
       left = left + 200;
       if (left > tableLength) {
         if (this.props.context.path.length === 0) {
-          left = tableLength - 70;
+          left = tableLength - 50;
         } else {
           left = tableLength - 5;
         }
