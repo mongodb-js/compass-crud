@@ -68,13 +68,14 @@ class RowActionsRenderer extends React.Component {
      */
     let left = 40;
     const columnHeaders = this.props.columnApi.getAllColumns();
+    const tableLength = document.getElementById('borderLayout_eRootPanel').offsetWidth;
     for (let i = 0; i < columnHeaders.length - 2; i++) {
       left = left + 200;
-      if (left > window.innerWidth) {
+      if (left > tableLength) {
         if (this.props.context.path.length === 0) {
-          left = window.innerWidth - 95;
+          left = tableLength - 70;
         } else {
-          left = window.innerWidth - 30;
+          left = tableLength - 5;
         }
       }
     }

@@ -539,10 +539,11 @@ class DocumentTableView extends React.Component {
       let width = 30;
       const allColumns = this.columnApi.getAllColumns();
       const newColumn = this.columnApi.getColumn('$new');
+      const tableLength = document.getElementById('borderLayout_eRootPanel').offsetWidth;
       for (let i = 0; i < allColumns.length - 2; i++) {
         width = width + 200;
       }
-      if (width > window.innerWidth || newColumn) {
+      if (width > tableLength || newColumn) {
         return {width: '100%'};
       }
       return {width: `${width}px`};
