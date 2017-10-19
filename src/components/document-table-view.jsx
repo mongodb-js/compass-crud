@@ -664,7 +664,7 @@ class DocumentTableView extends React.Component {
         topLevel = topLevel.getChild(path);
       }
 
-      if (topLevel === undefined) {
+      if (topLevel === undefined || topLevel === null) {
         continue;
       }
 
