@@ -68,8 +68,7 @@ class RowActionsRenderer extends React.Component {
      */
     const columnHeaders = this.props.columnApi.getAllColumns();
     const tableLength = document.getElementById('borderLayout_eRootPanel').offsetWidth;
-    const sidebarLength = document.getElementsByClassName('compass-sidebar')[0].offsetWidth;
-    let left = 40 + sidebarLength;
+    let left = 290;
     for (let i = 0; i < columnHeaders.length - 2; i++) {
       left = left + 200;
       if (left > tableLength) {
@@ -82,7 +81,7 @@ class RowActionsRenderer extends React.Component {
     }
 
     return (
-      <div className={BEM_BASE} style={{left: `${left}px`}}>
+      <div className={BEM_BASE}>
         <div className={`${BEM_BASE}-panel`}>
         <IconButton
           title="Edit Document"
