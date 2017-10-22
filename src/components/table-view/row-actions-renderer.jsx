@@ -62,23 +62,9 @@ class RowActionsRenderer extends React.Component {
     if (this.props.value.state === 'editing' || this.props.value.state === 'deleting' || this.props.value.state === 'cloned') {
       return null;
     }
-
     /**
      * Logic dynamically updates the position of the actions panel, but prevents it from breaking off the viewpoint of the screen.
      */
-    const columnHeaders = this.props.columnApi.getAllColumns();
-    const tableLength = document.getElementById('borderLayout_eRootPanel').offsetWidth;
-    let left = 290;
-    for (let i = 0; i < columnHeaders.length - 2; i++) {
-      left = left + 200;
-      if (left > tableLength) {
-        if (this.props.context.path.length === 0) {
-          left = tableLength - 50;
-        } else {
-          left = tableLength - 5;
-        }
-      }
-    }
 
     return (
       <div className={BEM_BASE}>
