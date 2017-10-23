@@ -232,16 +232,8 @@ class CellRenderer extends React.Component {
       canExpand = (this.element.currentType === 'Object' || this.element.currentType === 'Array');
     }
 
-    let style = {};
-
-    if (this.isOid) {
-      style = {
-        'border-right': '5px solid #4EAFE9'
-      };
-    }
-
     return (
-      <div className={className} onClick={this.handleClicked.bind(this)} style={style}>
+      <div className={className} onClick={this.handleClicked.bind(this)}>
         {this.renderUndo(canUndo, canExpand)}
         {this.renderExpand(canExpand)}
         {element}
