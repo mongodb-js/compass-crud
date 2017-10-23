@@ -20,9 +20,12 @@
 		box-shadow: 0 2px 10px 0 rgba(0,0,0,0.10), inset 0 -1px 0 0 #D7D7D7;
 		z-index: 5;
 		&-cell {
-			padding: 3px 5px;
 			border-right: 0.5px solid #E0E0E0;
-		}
+      padding: 3px 7px;	
+    }
+    &-container {
+      position: static;
+    }
 		&-breadcrumb {
 			&-home-icon {
 				margin-right: 5px;
@@ -32,20 +35,20 @@
 			}
 			&-tab {
 				height: 25px;
-		    padding: 4px 10px;
-		    font-weight: bold;
-		    font-size: 12px;
-		    text-overflow: ellipsis;
-		    overflow: hidden;
-		    display: block;
-		    white-space: nowrap;
-		    background-color: #F5F6F7;
-		    border-radius: 3px 3px 0 0;
-		    box-shadow: 0 -1px 6px 0 rgba(0, 0, 0, 0.15);
-		    cursor: pointer;
-		    &-active {
-		    	border-left: 5px solid #4EAFE9;
-		    }
+			    padding: 4px 10px;
+			    font-weight: bold;
+			    font-size: 12px;
+			    text-overflow: ellipsis;
+			    overflow: hidden;
+			    display: block;
+			    white-space: nowrap;
+			    background-color: #F5F6F7;
+			    border-radius: 3px 3px 0 0;
+			    box-shadow: 0 -1px 6px 0 rgba(0, 0, 0, 0.15);
+			    cursor: pointer;
+			    &-active {
+			    	border-left: 5px solid #4EAFE9;
+			    }
 			}
 		}
 		&-viewport {
@@ -118,6 +121,9 @@
       }
 		}
 	}
+  &-pinned-left-header {
+    position: absolute;
+  }
 	&-body-viewport {
 		width: calc(~"100% + 100px");
   }

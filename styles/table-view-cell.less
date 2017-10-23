@@ -38,8 +38,15 @@
     overflow: hidden;
     white-space: nowrap;
 
-    .element-value-is-string {
-      white-space: nowrap;
+    .element-value {
+      &-is-string {
+        white-space: nowrap;
+      }
+      &-is-objectid {
+        &::before, &::after  {
+          content: '';
+        }
+      }
     }
   }
 
@@ -106,5 +113,12 @@
     justify-content: center;
     color: #A2A0A0;
     padding-top: 5px;
+  }
+
+  &-header {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: left;
   }
 }
