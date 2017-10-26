@@ -6,6 +6,7 @@ const Actions = require('../../actions');
 const DocumentFooter = require('../document-footer');
 const RemoveDocumentFooter = require('../remove-document-footer');
 const ClonedDocumentFooter = require('../cloned-document-footer');
+const DataServiceStore = require('../../stores/data-service-store');
 
 /**
  * The delete error message.
@@ -72,6 +73,16 @@ class FullWidthCellRenderer extends React.Component {
       init: function() {
         this.ns = global.hadronApp.appRegistry.getStore('App.NamespaceStore').ns;
         this.listenTo(actions.insert, this.insert);
+        this.listenTo(DataServiceStore, this.setDataService.bind(this));
+      },
+
+      /**
+       * Set the data service on this store.
+       *
+       * @param {DataService} dataService - The data service.
+       */
+      setDataService(dataService) {
+        this.dataService = dataService;
       },
 
       /**
@@ -80,7 +91,7 @@ class FullWidthCellRenderer extends React.Component {
        * @param {Object} object - The new document.
        */
       insert: function(object) {
-        global.hadronApp.dataService.insertOne(
+        this.dataService.insertOne(
           this.ns,
           object,
           {},
@@ -120,6 +131,16 @@ class FullWidthCellRenderer extends React.Component {
       init: function() {
         this.ns = global.hadronApp.appRegistry.getStore('App.NamespaceStore').ns;
         this.listenTo(actions.update, this.update);
+        this.listenTo(DataServiceStore, this.setDataService.bind(this));
+      },
+
+      /**
+       * Set the data service on this store.
+       *
+       * @param {DataService} dataService - The data service.
+       */
+      setDataService(dataService) {
+        this.dataService = dataService;
       },
 
       /**
@@ -131,7 +152,7 @@ class FullWidthCellRenderer extends React.Component {
        */
       update: function(object) {
         // TODO (@thomasr) this does not work for projections
-        global.hadronApp.dataService.findOneAndReplace(
+        this.dataService.findOneAndReplace(
           this.ns,
           { _id: object._id },
           object,
@@ -170,6 +191,16 @@ class FullWidthCellRenderer extends React.Component {
       init: function() {
         this.ns = global.hadronApp.appRegistry.getStore('App.NamespaceStore').ns;
         this.listenTo(actions.remove, this.remove);
+        this.listenTo(DataServiceStore, this.setDataService.bind(this));
+      },
+
+      /**
+       * Set the data service on this store.
+       *
+       * @param {DataService} dataService - The data service.
+       */
+      setDataService(dataService) {
+        this.dataService = dataService;
       },
 
       /**
@@ -180,7 +211,7 @@ class FullWidthCellRenderer extends React.Component {
       remove: function(object) {
         const id = object.getId();
         if (id) {
-          global.hadronApp.dataService.deleteOne(this.ns, { _id: id }, {}, this.handleResult);
+          this.dataService.deleteOne(this.ns, { _id: id }, {}, this.handleResult);
         } else {
           this.handleResult(DELETE_ERROR);
         }
