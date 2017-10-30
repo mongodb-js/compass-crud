@@ -1,5 +1,6 @@
 const React = require('react');
 const PropTypes = require('prop-types');
+const FontAwesome = require('react-fontawesome');
 
 /**
   Custom cell renderer for the headers.
@@ -10,6 +11,12 @@ class HeaderCellRenderer extends React.Component {
     super(props);
   }
 
+  renderPinnedIcon() {
+    if (this.props.subtable === true) {
+      return <FontAwesome className="fa-thumb-tack table-view-cell-header-icon" name="thumbtack" fixedWidth />;
+    }
+  }
+
   render() {
     if (this.props.hide) {
       return null;
@@ -18,9 +25,11 @@ class HeaderCellRenderer extends React.Component {
     if (this.props.displayName === '$new') {
       displayName = 'New Field';
     }
+
     return (
-      <div className="table-view-header-cell">
+      <div className="table-view-cell-header">
         <b>{displayName}</b> {this.props.bsonType}
+        {this.renderPinnedIcon()}
       </div>
     );
   }
@@ -29,7 +38,8 @@ class HeaderCellRenderer extends React.Component {
 HeaderCellRenderer.propTypes = {
   displayName: PropTypes.any,
   bsonType: PropTypes.string,
-  hide: PropTypes.bool
+  hide: PropTypes.bool,
+  subtable: PropTypes.bool
 };
 
 HeaderCellRenderer.displayName = 'HeaderCellRenderer';

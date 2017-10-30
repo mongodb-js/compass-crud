@@ -1,6 +1,5 @@
 .table-view-cell-editor {
   position: absolute;
-  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -144,10 +143,13 @@
       }
 
       &-option {
-        font-weight: normal;
-        text-transform: none;
-        padding: 4px 8px;
-        white-space: nowrap;
+          display: block;
+          width: inherit;
+          padding: 4px 8px;
+          line-height: 11px;
+          font-weight: normal;
+          text-transform: none;
+          white-space: nowrap;
 
         &:focus, &:hover, &:active { 
           color: white;

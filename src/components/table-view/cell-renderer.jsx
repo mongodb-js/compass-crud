@@ -70,6 +70,7 @@ class CellRenderer extends React.Component {
     this.isEmpty = props.value === undefined || props.value === null;
     this.isDeleted = false;
     this.element = props.value;
+    this.isOid = ( this.props.isOid === true );
 
     this._editors = initEditors(this.element);
   }
@@ -245,7 +246,8 @@ CellRenderer.propTypes = {
   api: PropTypes.any,
   value: PropTypes.any,
   node: PropTypes.any,
-  column: PropTypes.any
+  column: PropTypes.any,
+  isOid: PropTypes.any
 };
 
 CellRenderer.displayName = 'CellRenderer';
