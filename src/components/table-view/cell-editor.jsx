@@ -213,7 +213,7 @@ class CellEditor extends React.Component {
 
   handleDrillDown() {
     this.props.actions.drillDown(this.props.node.data.hadronDocument, this.element);
-    // TODO: close editor?
+    this.props.api.stopEditing();
   }
 
   handleChange(event) {
@@ -342,7 +342,7 @@ class CellEditor extends React.Component {
       return null;
     }
     return (
-      <div onBlur={this.handleTypeChange.bind(this)}>
+      <div className={`${BEM_BASE}-input-types`} onBlur={this.handleTypeChange.bind(this)}>
         <Types element={this.element} className={`${BEM_BASE}-types btn btn-default btn-xs`}/>
       </div>
     );

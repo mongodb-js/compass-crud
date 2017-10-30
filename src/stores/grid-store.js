@@ -44,6 +44,7 @@ const GridStore = Reflux.createStore( {
    * Helper to add/remove elements from the stageRemove object, which tracks
    * if an element is marked as deleted but not actually removed. Needed because
    * we want to delete columns that are empty, but not if something is staged.
+   * this.stagedRemove is a mapping of colId to objectId to boolean.
    *
    * @param {String} key - The column ID.
    * @param {ObjectId} oid - The OID of the document.
@@ -73,7 +74,8 @@ const GridStore = Reflux.createStore( {
    */
   resetColumns(columns) {
     this.showing = {};
-    this.columns = columns;
+    this.stageRemove = {};
+    this.columns = _.cloneDeep(columns);
 
     const columnNames = Object.keys(columns);
     for (let i = 0; i < columnNames.length; i++) {
@@ -188,6 +190,7 @@ const GridStore = Reflux.createStore( {
       delete this.columns[key];
       if (!(key in this.stageRemove)) {
         params.remove = {colIds: [key]};
+        delete this.showing[key];
       }
     } else {
       const oldType = this.showing[key];
