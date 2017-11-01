@@ -73,21 +73,21 @@ const getDataService = function(done) {
   const dSpy = sinon.spy();
   return {
     foarSpy: foarSpy,
-    findOneAndReplace: (ns, filter, obj, prefs, callback) => {
+    findOneAndReplace: (ns, filter, obj, prefs, handleResult) => {
       foarSpy(filter, obj);
-      callback(null, obj);
+      handleResult(null, obj);
       done();
     },
     iSpy: iSpy,
-    insertOne: (ns, obj, prefs, callback) => {
+    insertOne: (ns, obj, prefs, handleResult) => {
       iSpy(obj);
-      callback(null);
+      handleResult(null);
       done();
     },
     dSpy: dSpy,
-    deleteOne: (ns, filter, prefs, callback) => {
+    deleteOne: (ns, filter, prefs, handleResult) => {
       dSpy(filter);
-      callback(null, 1);
+      handleResult(null, 1);
       done();
     }
   };
