@@ -40,7 +40,8 @@ const getRowNode = function(doc, id) {
       hasFooter: false,
       state: null,
       rowNumber: 0
-    }
+    },
+    childIndex: 2
   };
 };
 

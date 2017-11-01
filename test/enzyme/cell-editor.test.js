@@ -206,7 +206,7 @@ describe('<CellEditor />', () => {
       describe('sub-level', () => {
         before((done) => {
           value = rowNode.data.hadronDocument.getChild(['field1', '_id']);
-          context.path = ['field1', '_id'];
+          context.path = ['field1'];
           component = mount(<CellEditor api={api} column={column} node={rowNode}
                                         value={value} actions={actions}
                                         columnApi={columnApi} context={context}/>);
