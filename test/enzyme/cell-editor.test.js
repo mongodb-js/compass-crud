@@ -445,7 +445,7 @@ describe('<CellEditor />', () => {
         });
         it('calls elementAdded action', () => {
           expect(actions.elementAdded.callCount).to.equal(1);
-          expect(actions.elementAdded.alwaysCalledWithExactly('fieldname', 'String', '1'));
+          expect(actions.elementAdded.alwaysCalledWithExactly('fieldname', 'String', '1')).to.equal(true);
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, []);
@@ -480,7 +480,7 @@ describe('<CellEditor />', () => {
         });
         it('calls removeColumn action', () => {
           expect(actions.removeColumn.callCount).to.equal(1);
-          expect(actions.removeColumn.alwaysCalledWithExactly('$new'));
+          expect(actions.removeColumn.alwaysCalledWithExactly('$new')).to.equal(true);
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, []);
@@ -545,7 +545,7 @@ describe('<CellEditor />', () => {
         });
         it('calls removeColumn action', () => {
           expect(actions.removeColumn.callCount).to.equal(1);
-          expect(actions.removeColumn.alwaysCalledWithExactly('$new'));
+          expect(actions.removeColumn.alwaysCalledWithExactly('$new')).to.equal(true);
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, []);

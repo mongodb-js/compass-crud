@@ -60,13 +60,42 @@ const getColumnApi = function(columns) {
 
 const getContext = function(path) {
   return {
-    path: path
+    path: path,
+    removeFooter: sinon.spy(),
+    handleUpdate: sinon.spy(),
+    handleRemove: sinon.spy()
+  };
+};
+
+const getDataService = function(done) {
+  const foarSpy = sinon.spy();
+  const iSpy = sinon.spy();
+  const dSpy = sinon.spy();
+  return {
+    foarSpy: foarSpy,
+    findOneAndReplace: (ns, filter, obj, prefs, callback) => {
+      foarSpy(filter, obj);
+      callback(null, obj);
+      done();
+    },
+    iSpy: iSpy,
+    insertOne: (ns, obj, prefs, callback) => {
+      iSpy(obj);
+      callback(null);
+      done();
+    },
+    dSpy: dSpy,
+    deleteOne: (ns, filter, prefs, callback) => {
+      dSpy(filter);
+      callback(null, 1);
+      done();
+    }
   };
 };
 
 const notCalledExcept = function(spies, except) {
   for (const action in spies) {
-    if (except.indexOf(action) < 0 && action !== 'selectAll') {
+    if (except.indexOf(action) < 0 && action !== 'selectAll' && action !== 'path') {
       expect(spies[action].called).to.equal(false);
     }
   }
@@ -79,5 +108,6 @@ module.exports = {
   getActions: getActions,
   getColumnApi: getColumnApi,
   getContext: getContext,
+  getDataService: getDataService,
   notCalledExcept: notCalledExcept
 };

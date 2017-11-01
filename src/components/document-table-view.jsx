@@ -63,7 +63,8 @@ class DocumentTableView extends React.Component {
       },
       fullWidthCellRendererFramework: FullWidthCellRenderer,
       fullWidthCellRendererParams: {
-        actions: Actions
+        actions: Actions,
+        dataService: ResetDocumentListStore.dataService
       },
       getRowNodeId: function(data) {
         const fid = data.isFooter ? '1' : '0';
