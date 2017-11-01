@@ -63,7 +63,10 @@ const getContext = function(path) {
     path: path,
     removeFooter: sinon.spy(),
     handleUpdate: sinon.spy(),
-    handleRemove: sinon.spy()
+    handleRemove: sinon.spy(),
+    addFooter: sinon.spy(),
+    handleClone: sinon.spy(),
+    handleCopy: sinon.spy()
   };
 };
 
