@@ -173,7 +173,8 @@ describe('<FullWidthCellRenderer />', () => {
             'toTypeChange', 'Int32', '1')).to.equal(true);
         });
         it('does not call other actions', () => {
-          notCalledExcept(actions, ['elementAdded', 'elementRemoved', 'elementTypeChanged']);
+          notCalledExcept(actions,
+            ['elementAdded', 'elementRemoved', 'elementTypeChanged']);
         });
         it('calls cancel on the HadronDocument', () => {
           expect(data.hadronDocument.generateObject()).to.deep.equal({

@@ -21,12 +21,14 @@ describe('<CellRenderer />', () => {
       before((done) => {
         rowNode = getNode({field1: 'value'});
         value = rowNode.data.hadronDocument.get('field1');
-        component = mount(<CellRenderer api={api} column={column} node={rowNode} value={value} actions={actions}/>);
+        component = mount(<CellRenderer api={api} column={column} node={rowNode}
+                                        value={value} actions={actions}/>);
         done();
       });
       it('renders the element type correctly', () => {
         const wrapper = component.find('.table-view-cell');
-        expect(wrapper).to.contain(<div className="element-value element-value-is-string" title="value">"value"</div>);
+        expect(wrapper).to.contain(<div className="element-value element-value-is-string"
+                                        title="value">"value"</div>);
       });
       it('does not render the undo button', () => {
         const wrapper = component.find('.table-view-cell-circle-button');
@@ -43,12 +45,14 @@ describe('<CellRenderer />', () => {
         rowNode = getNode({});
         rowNode.data.hadronDocument.insertEnd('field1', 'value');
         value = rowNode.data.hadronDocument.get('field1');
-        component = mount(<CellRenderer api={api} column={column} node={rowNode} value={value} actions={actions}/>);
+        component = mount(<CellRenderer api={api} column={column} node={rowNode}
+                                        value={value} actions={actions}/>);
         done();
       });
       it('renders the cell as added', () => {
         const wrapper = component.find('.table-view-cell-is-added');
-        expect(wrapper).to.contain(<div className="element-value element-value-is-string" title="value">"value"</div>);
+        expect(wrapper).to.contain(<div className="element-value element-value-is-string"
+                                        title="value">"value"</div>);
       });
       it('renders the undo button', () => {
         const wrapper = component.find('.table-view-cell-circle-button');
@@ -65,12 +69,14 @@ describe('<CellRenderer />', () => {
         rowNode = getNode({field1: 'value'});
         rowNode.data.hadronDocument.get('field1').edit('a new value');
         value = rowNode.data.hadronDocument.get('field1');
-        component = mount(<CellRenderer api={api} column={column} node={rowNode} value={value} actions={actions}/>);
+        component = mount(<CellRenderer api={api} column={column} node={rowNode}
+                                        value={value} actions={actions}/>);
         done();
       });
       it('renders the element as modified', () => {
         const wrapper = component.find('.table-view-cell-is-edited');
-        expect(wrapper).to.contain(<div className="element-value element-value-is-string" title="a new value">"a new value"</div>);
+        expect(wrapper).to.contain(<div className="element-value element-value-is-string"
+                                        title="a new value">"a new value"</div>);
       });
       it('renders the undo button', () => {
         const wrapper = component.find('.table-view-cell-circle-button');
@@ -87,7 +93,8 @@ describe('<CellRenderer />', () => {
         rowNode = getNode({field1: 'value'});
         rowNode.data.hadronDocument.get('field1').remove();
         value = rowNode.data.hadronDocument.get('field1');
-        component = mount(<CellRenderer api={api} column={column} node={rowNode} value={value} actions={actions}/>);
+        component = mount(<CellRenderer api={api} column={column} node={rowNode}
+                                        value={value} actions={actions}/>);
         done();
       });
       it('renders the element as removed', () => {
@@ -107,9 +114,11 @@ describe('<CellRenderer />', () => {
     describe('element is invalid', () => {
       before((done) => {
         rowNode = getNode({field1: 'value'});
-        rowNode.data.hadronDocument.get('field1').setInvalid('invalid', 'String', 'message');
+        rowNode.data.hadronDocument.get('field1').setInvalid(
+          'invalid', 'String', 'message');
         value = rowNode.data.hadronDocument.get('field1');
-        component = mount(<CellRenderer api={api} column={column} node={rowNode} value={value} actions={actions}/>);
+        component = mount(<CellRenderer api={api} column={column} node={rowNode}
+                                        value={value} actions={actions}/>);
         done();
       });
       it('renders the element as invalid', () => {
@@ -126,7 +135,8 @@ describe('<CellRenderer />', () => {
       before((done) => {
         rowNode = getNode({});
         value = undefined;
-        component = mount(<CellRenderer api={api} column={column} node={rowNode} value={value} actions={actions}/>);
+        component = mount(<CellRenderer api={api} column={column} node={rowNode}
+                                        value={value} actions={actions}/>);
         done();
       });
       it('renders the element as empty', () => {
@@ -147,7 +157,8 @@ describe('<CellRenderer />', () => {
       before((done) => {
         rowNode = getNode({field1: {subfield1: 1}});
         value = rowNode.data.hadronDocument.get('field1');
-        component = mount(<CellRenderer api={api} column={column} node={rowNode} value={value} actions={actions}/>);
+        component = mount(<CellRenderer api={api} column={column} node={rowNode}
+                                        value={value} actions={actions}/>);
         done();
       });
       it('renders the element correctly', () => {
@@ -167,9 +178,11 @@ describe('<CellRenderer />', () => {
     describe('element is expandable and modified', () => {
       before((done) => {
         rowNode = getNode({field1: {subfield1: 1}});
-        rowNode.data.hadronDocument.getChild(['field1', 'subfield1']).edit('a new value');
+        rowNode.data.hadronDocument.getChild(
+          ['field1', 'subfield1']).edit('a new value');
         value = rowNode.data.hadronDocument.get('field1');
-        component = mount(<CellRenderer api={api} column={column} node={rowNode} value={value} actions={actions}/>);
+        component = mount(<CellRenderer api={api} column={column} node={rowNode}
+                                        value={value} actions={actions}/>);
         done();
       });
       it('renders the undo button', () => {
@@ -237,7 +250,8 @@ describe('<CellRenderer />', () => {
         });
         it('calls elementRemoved action', () => {
           expect(actions.elementRemoved.callCount).to.equal(1);
-          expect(actions.elementRemoved.alwaysCalledWithExactly('field1', '1')).to.equal(true);
+          expect(actions.elementRemoved.alwaysCalledWithExactly(
+            'field1', '1')).to.equal(true);
           notCalledExcept(actions, ['elementRemoved']);
           notCalledExcept(api, []);
         });
@@ -263,7 +277,8 @@ describe('<CellRenderer />', () => {
         });
         it('calls elementTypeChanged action', () => {
           expect(actions.elementTypeChanged.callCount).to.equal(1);
-          expect(actions.elementTypeChanged.alwaysCalledWithExactly('field1', 'String', '1')).to.equal(true);
+          expect(actions.elementTypeChanged.alwaysCalledWithExactly(
+            'field1', 'String', '1')).to.equal(true);
           notCalledExcept(actions, ['elementTypeChanged']);
           notCalledExcept(api, []);
         });
@@ -291,7 +306,8 @@ describe('<CellRenderer />', () => {
         });
         it('calls elementAdded action', () => {
           expect(actions.elementAdded.callCount).to.equal(1);
-          expect(actions.elementAdded.alwaysCalledWithExactly('field1', 'String', '1')).to.equal(true);
+          expect(actions.elementAdded.alwaysCalledWithExactly(
+            'field1', 'String', '1')).to.equal(true);
           notCalledExcept(actions, ['elementAdded']);
           notCalledExcept(api, []);
         });
@@ -310,14 +326,16 @@ describe('<CellRenderer />', () => {
         actions = getActions();
         rowNode = getNode({field1: {subfield1: 1}});
         value = rowNode.data.hadronDocument.get('field1');
-        component = mount(<CellRenderer api={api} column={column} node={rowNode} value={value} actions={actions}/>);
+        component = mount(<CellRenderer api={api} column={column} node={rowNode}
+                                        value={value} actions={actions}/>);
         const wrapper = component.find('.table-view-cell-circle-button');
         wrapper.simulate('click');
         done();
       });
       it('calls drillDown action', () => {
         expect(actions.drillDown.callCount).to.equal(1);
-        expect(actions.drillDown.alwaysCalledWithExactly(rowNode.data.hadronDocument, value)).to.equal(true);
+        expect(actions.drillDown.alwaysCalledWithExactly(
+          rowNode.data.hadronDocument, value)).to.equal(true);
         notCalledExcept(actions, ['drillDown']);
         notCalledExcept(api, []);
       });
@@ -356,7 +374,9 @@ describe('<CellRenderer />', () => {
       });
       it('clicking starts editing', () => {
         expect(api.startEditingCell.callCount).to.equal(1);
-        expect(api.startEditingCell.alwaysCalledWithExactly({rowIndex: 0, colKey: 'field1'}));
+        expect(api.startEditingCell.alwaysCalledWithExactly({
+          rowIndex: 0, colKey: 'field1'
+        }));
         notCalledExcept(actions, []);
         notCalledExcept(api, ['startEditingCell']);
       });

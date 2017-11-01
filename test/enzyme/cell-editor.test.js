@@ -50,7 +50,8 @@ describe('<CellEditor />', () => {
       });
       it('renders the input field', () => {
         const wrapper = component.find('.table-view-cell-editor');
-        expect(wrapper.find('.editable-element-value-wrapper-is-string')).to.be.present();
+        expect(wrapper.find(
+          '.editable-element-value-wrapper-is-string')).to.be.present();
       });
 
       it('renders the type cast dropdown', () => {
@@ -70,7 +71,8 @@ describe('<CellEditor />', () => {
 
       it('does not render other options', () => {
         const wrapper = component.find('.table-view-cell-editor');
-        expect(wrapper.find('.table-view-cell-editor-input-field-inner')).to.not.be.present();
+        expect(wrapper.find(
+          '.table-view-cell-editor-input-field-inner')).to.not.be.present();
         expect(wrapper.find('.fa-expand')).to.not.be.present();
       });
     });
@@ -87,12 +89,14 @@ describe('<CellEditor />', () => {
       });
       it('renders the fieldname input field', () => {
         const wrapper = component.find('.table-view-cell-editor');
-        expect(wrapper.find('.table-view-cell-editor-input-field-inner')).to.be.present();
+        expect(wrapper.find(
+          '.table-view-cell-editor-input-field-inner')).to.be.present();
       });
 
       it('renders the input field', () => {
         const wrapper = component.find('.table-view-cell-editor');
-        expect(wrapper.find('.editable-element-value-wrapper-is-string')).to.be.present();
+        expect(wrapper.find(
+          '.editable-element-value-wrapper-is-string')).to.be.present();
       });
 
       it('renders the type cast dropdown', () => {
@@ -119,7 +123,8 @@ describe('<CellEditor />', () => {
       });
       it('renders the input field', () => {
         const wrapper = component.find('.table-view-cell-editor');
-        expect(wrapper.find('.editable-element-value-wrapper-is-string')).to.be.present();
+        expect(wrapper.find(
+          '.editable-element-value-wrapper-is-string')).to.be.present();
       });
 
       it('renders the type cast dropdown', () => {
@@ -135,7 +140,8 @@ describe('<CellEditor />', () => {
       it('does not render other options', () => {
         const wrapper = component.find('.table-view-cell-editor');
         expect(wrapper.find('.fa-trash')).to.not.be.present();
-        expect(wrapper.find('.table-view-cell-editor-input-field-inner')).to.not.be.present();
+        expect(wrapper.find(
+          '.table-view-cell-editor-input-field-inner')).to.not.be.present();
         expect(wrapper.find('.fa-expand')).to.not.be.present();
       });
     });
@@ -172,7 +178,8 @@ describe('<CellEditor />', () => {
       it('does not render other options', () => {
         const wrapper = component.find('.table-view-cell-editor');
         expect(wrapper.find('.table-view-cell-editor-input')).to.not.be.present();
-        expect(wrapper.find('.table-view-cell-editor-input-field-inner')).to.not.be.present();
+        expect(wrapper.find(
+          '.table-view-cell-editor-input-field-inner')).to.not.be.present();
       });
     });
 
@@ -198,7 +205,8 @@ describe('<CellEditor />', () => {
           const wrapper = component.find('.table-view-cell-editor');
           expect(wrapper.find('.table-view-cell-editor-types')).to.not.be.present();
           expect(wrapper.find('.table-view-cell-editor-input')).to.not.be.present();
-          expect(wrapper.find('.table-view-cell-editor-input-field-inner')).to.not.be.present();
+          expect(wrapper.find(
+            '.table-view-cell-editor-input-field-inner')).to.not.be.present();
           expect(wrapper.find('.fa-trash')).to.not.be.present();
           expect(wrapper.find('.fa-expand')).to.not.be.present();
         });
@@ -230,7 +238,8 @@ describe('<CellEditor />', () => {
         it('does not render other options', () => {
           const wrapper = component.find('.table-view-cell-editor');
           expect(wrapper.find('.table-view-cell-editor-input')).to.not.be.present();
-          expect(wrapper.find('.table-view-cell-editor-input-field-inner')).to.not.be.present();
+          expect(wrapper.find(
+            '.table-view-cell-editor-input-field-inner')).to.not.be.present();
           expect(wrapper.find('.fa-expand')).to.not.be.present();
         });
       });
@@ -305,7 +314,8 @@ describe('<CellEditor />', () => {
           });
           it('calls elementTypeChanged', () => {
             expect(actions.elementTypeChanged.callCount).to.equal(1);
-            expect(actions.elementTypeChanged.alwaysCalledWithExactly('field1', 'Int32', '1')).to.equal(true);
+            expect(actions.elementTypeChanged.alwaysCalledWithExactly(
+              'field1', 'Int32', '1')).to.equal(true);
           });
           it('does not trigger other actions', () => {
             notCalledExcept(api, ['stopEditing']);
@@ -340,7 +350,8 @@ describe('<CellEditor />', () => {
           });
           it('calls elementTypeChanged', () => {
             expect(actions.elementTypeChanged.callCount).to.equal(1);
-            expect(actions.elementTypeChanged.alwaysCalledWithExactly('field1', 'Date', '1')).to.equal(true);
+            expect(actions.elementTypeChanged.alwaysCalledWithExactly(
+              'field1', 'Date', '1')).to.equal(true);
           });
           it('does not trigger other actions', () => {
             notCalledExcept(api, ['stopEditing']);
@@ -438,14 +449,16 @@ describe('<CellEditor />', () => {
         });
         it('adds a new element to HadronDocument', () => {
           expect(value.currentKey).to.equal('fieldname');
-          expect(rowNode.data.hadronDocument.get('fieldname').currentValue).to.equal('');
+          expect(rowNode.data.hadronDocument.get(
+            'fieldname').currentValue).to.equal('');
         });
         it('renames the column with the fieldname', () => {
           expect(colId.headerName).to.equal('fieldname');
         });
         it('calls elementAdded action', () => {
           expect(actions.elementAdded.callCount).to.equal(1);
-          expect(actions.elementAdded.alwaysCalledWithExactly('fieldname', 'String', '1')).to.equal(true);
+          expect(actions.elementAdded.alwaysCalledWithExactly(
+            'fieldname', 'String', '1')).to.equal(true);
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, []);
@@ -458,7 +471,9 @@ describe('<CellEditor />', () => {
         const rowNode = getNode({});
         const colId = {};
         const column = getColumn('field1', colId);
-        const columnApi = getColumnApi([{getColDef: () => { return {colId: 'fieldname'}; }}]);
+        const columnApi = getColumnApi([{getColDef: () => {
+          return {colId: 'fieldname'};
+        }}]);
         const context = getContext([]);
         rowNode.data.hadronDocument.insertEnd('$new', '');
         const value = rowNode.data.hadronDocument.get('$new');
@@ -545,7 +560,8 @@ describe('<CellEditor />', () => {
         });
         it('calls removeColumn action', () => {
           expect(actions.removeColumn.callCount).to.equal(1);
-          expect(actions.removeColumn.alwaysCalledWithExactly('$new')).to.equal(true);
+          expect(actions.removeColumn.alwaysCalledWithExactly(
+            '$new')).to.equal(true);
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, []);
@@ -569,11 +585,13 @@ describe('<CellEditor />', () => {
         before((done) => {
           mount(<CellEditor api={api} column={column} node={rowNode}
                                               value={value} actions={actions}
-                                              columnApi={columnApi} context={context}/>);
+                                              columnApi={columnApi}
+                                              context={context}/>);
           done();
         });
         it('sets the initial type to what the header has', () => {
-          expect(rowNode.data.hadronDocument.get('field1').currentType).to.equal('Date');
+          expect(rowNode.data.hadronDocument.get(
+            'field1').currentType).to.equal('Date');
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, []);
@@ -594,11 +612,13 @@ describe('<CellEditor />', () => {
         before((done) => {
           mount(<CellEditor api={api} column={column} node={rowNode}
                                               value={value} actions={actions}
-                                              columnApi={columnApi} context={context}/>);
+                                              columnApi={columnApi}
+                                              context={context}/>);
           done();
         });
         it('sets the initial type to what the header has', () => {
-          expect(rowNode.data.hadronDocument.get('field1').currentType).to.equal('Undefined');
+          expect(rowNode.data.hadronDocument.get(
+            'field1').currentType).to.equal('Undefined');
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, []);
@@ -617,14 +637,17 @@ describe('<CellEditor />', () => {
         const context = getContext([]);
         const columnApi = getColumnApi([]);
         before((done) => {
-          const component = mount(<CellEditor api={api} column={column} node={rowNode}
-                                              value={value} actions={actions}
-                                              columnApi={columnApi} context={context}/>);
+          const component = mount(<CellEditor api={api} column={column}
+                                              node={rowNode} value={value}
+                                              actions={actions}
+                                              columnApi={columnApi}
+                                              context={context}/>);
           component.instance().isCancelAfterEnd();
           done();
         });
         it('reverts the element', () => {
-          expect(rowNode.data.hadronDocument.generateObject()).to.deep.equal({_id: '1'});
+          expect(rowNode.data.hadronDocument.generateObject()).to.deep.equal(
+            {_id: '1'});
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, []);
@@ -643,9 +666,11 @@ describe('<CellEditor />', () => {
         const context = getContext([]);
         const columnApi = getColumnApi([]);
         before((done) => {
-          const component = mount(<CellEditor api={api} column={column} node={rowNode}
-                                              value={value} actions={actions}
-                                              columnApi={columnApi} context={context}/>);
+          const component = mount(<CellEditor api={api} column={column}
+                                              node={rowNode} value={value}
+                                              actions={actions}
+                                              columnApi={columnApi}
+                                              context={context}/>);
           const wrapper = component.find('.editable-element-value-is-string');
           wrapper.simulate('change', {target: {value: 'new input'}});
           expect(wrapper.props().value).to.equal('new input');
@@ -657,7 +682,8 @@ describe('<CellEditor />', () => {
         });
         it('calls elementAdded action', () => {
           expect(actions.elementAdded.callCount).to.equal(1);
-          expect(actions.elementAdded.alwaysCalledWithExactly('field1', 'String', '1')).to.equal(true);
+          expect(actions.elementAdded.alwaysCalledWithExactly(
+            'field1', 'String', '1')).to.equal(true);
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, []);
@@ -676,9 +702,11 @@ describe('<CellEditor />', () => {
         const context = getContext(['field', 'subfield']);
         const columnApi = getColumnApi([]);
         before((done) => {
-          const component = mount(<CellEditor api={api} column={column} node={rowNode}
-                                              value={value} actions={actions}
-                                              columnApi={columnApi} context={context}/>);
+          const component = mount(<CellEditor api={api} column={column}
+                                              node={rowNode} value={value}
+                                              actions={actions}
+                                              columnApi={columnApi}
+                                              context={context}/>);
           const wrapper = component.find('.editable-element-value-is-string');
           wrapper.simulate('change', {target: {value: 'new input'}});
           expect(wrapper.props().value).to.equal('new input');
@@ -686,11 +714,13 @@ describe('<CellEditor />', () => {
           done();
         });
         it('updates the HadronDocument correctly nested', () => {
-          expect(rowNode.data.hadronDocument.getChild(['field', 'subfield', 'subsubfield']).currentValue).to.equal('new input');
+          expect(rowNode.data.hadronDocument.getChild(
+            ['field', 'subfield', 'subsubfield']).currentValue).to.equal('new input');
         });
         it('calls elementAdded action', () => {
           expect(actions.elementAdded.callCount).to.equal(1);
-          expect(actions.elementAdded.alwaysCalledWithExactly('subsubfield', 'String', '1')).to.equal(true);
+          expect(actions.elementAdded.alwaysCalledWithExactly(
+            'subsubfield', 'String', '1')).to.equal(true);
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, []);
@@ -707,9 +737,11 @@ describe('<CellEditor />', () => {
       const column = getColumn();
       const columnApi = getColumnApi([]);
       before((done) => {
-        const component = mount(<CellEditor api={api} column={column} node={rowNode}
-                                      value={value} actions={actions}
-                                      columnApi={columnApi} context={context}/>);
+        const component = mount(<CellEditor api={api} column={column}
+                                            node={rowNode} value={value}
+                                            actions={actions}
+                                            columnApi={columnApi}
+                                            context={context}/>);
         const wrapper = component.find('.fa-expand');
         expect(wrapper).to.be.present();
         wrapper.simulate('mousedown');
@@ -717,7 +749,8 @@ describe('<CellEditor />', () => {
       });
       it('calls drillDown action', () => {
         expect(actions.drillDown.callCount).to.equal(1);
-        expect(actions.drillDown.alwaysCalledWithExactly(rowNode.data.hadronDocument, value)).to.equal(true);
+        expect(actions.drillDown.alwaysCalledWithExactly(
+          rowNode.data.hadronDocument, value)).to.equal(true);
       });
       it('calls api.stopEditing()', () => {
         expect(api.stopEditing.callCount).to.equal(1);
