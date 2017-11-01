@@ -127,6 +127,7 @@ class AddFieldButton extends React.Component {
     }
 
     if (!this.empty) {
+      /* Set key to $new even though for arrays, it will be a index */
       parent.insertAfter(this.props.value, '$new', '');
     } else {
       parent.insertEnd('$new', '');

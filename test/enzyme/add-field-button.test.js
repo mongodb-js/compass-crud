@@ -108,64 +108,71 @@ describe('<AddFieldButton />', () => {
     let value;
 
     describe('add next field', () => {
-      describe('when current element is empty', () => {
-        const context = getContext([]);
-        const actions = getActions();
-        before((done) => {
-          rowNode = getNode({field0: 'value'});
-          value = undefined;
-          component = mount(<AddFieldButton api={api} column={column} node={rowNode}
-                                             value={value} actions={actions}
-                                             columnApi={columnApi}
-                                             context={context}/>);
-          const wrapper = component.find({'data-test-id': 'add-field-after'});
-          expect(wrapper).to.be.present();
-          wrapper.simulate('click');
-          done();
+      describe('at the top level', () => {
+        describe('when current element is empty', () => {
+          const context = getContext([]);
+          const actions = getActions();
+          before((done) => {
+            rowNode = getNode({field0: 'value'});
+            value = undefined;
+            component = mount(<AddFieldButton api={api} column={column}
+                                              node={rowNode}
+                                              value={value} actions={actions}
+                                              columnApi={columnApi}
+                                              context={context}/>);
+            const wrapper = component.find({'data-test-id': 'add-field-after'});
+            expect(wrapper).to.be.present();
+            wrapper.simulate('click');
+            done();
+          });
+          it('calls addColumn action', () => {
+            expect(actions.addColumn.callCount).to.equal(1);
+            expect(actions.addColumn.alwaysCalledWithExactly('field1', 2, []));
+            notCalledExcept(actions, ['addColumn']);
+          });
+          it('adds the new element to the end of the element', () => {
+            expect(rowNode.data.hadronDocument.elements.lastElement.currentKey).to.equal('$new');
+          });
         });
-        it('calls addColumn action', () => {
-          expect(actions.addColumn.callCount).to.equal(1);
-          expect(actions.addColumn.alwaysCalledWithExactly('field1', 2, []));
-        });
-        it('adds the new element to the end of the element', () => {
-          expect(rowNode.data.hadronDocument.elements.lastElement.currentKey).to.equal('$new');
+
+        describe('when current element is not empty', () => {
+          const context = getContext([]);
+          const actions = getActions();
+          before((done) => {
+            rowNode = getNode({field1: 'value', field3: 'value3'});
+            value = rowNode.data.hadronDocument.get('field1');
+            component = mount(<AddFieldButton api={api} column={column}
+                                              node={rowNode}
+                                              value={value} actions={actions}
+                                              columnApi={columnApi}
+                                              context={context}/>);
+            const wrapper = component.find({'data-test-id': 'add-field-after'});
+            expect(wrapper).to.be.present();
+            wrapper.simulate('click');
+            done();
+          });
+          it('calls addColumn action', () => {
+            expect(actions.addColumn.callCount).to.equal(1);
+            expect(actions.addColumn.alwaysCalledWithExactly('field1', 2, []));
+            notCalledExcept(actions, ['addColumn']);
+          });
+          it('adds the new element after the current element', () => {
+            expect(value.nextElement.currentKey).to.equal('$new');
+          });
         });
       });
 
-      describe('when current element is not empty', () => {
-        const context = getContext([]);
-        const actions = getActions();
-        before((done) => {
-          rowNode = getNode({field1: 'value', field3: 'value3'});
-          value = rowNode.data.hadronDocument.get('field1');
-          component = mount(<AddFieldButton api={api} column={column} node={rowNode}
-                                             value={value} actions={actions}
-                                             columnApi={columnApi}
-                                             context={context}/>);
-          const wrapper = component.find({'data-test-id': 'add-field-after'});
-          expect(wrapper).to.be.present();
-          wrapper.simulate('click');
-          done();
-        });
-        it('calls addColumn action', () => {
-          expect(actions.addColumn.callCount).to.equal(1);
-          expect(actions.addColumn.alwaysCalledWithExactly('field1', 2, []));
-        });
-        it('adds the new element after the current element', () => {
-          expect(value.nextElement.currentKey).to.equal('$new');
-        });
-      });
-
-      describe('when in nested view', () => {
+      describe('when in nested view of object', () => {
         const context = getContext(['field0']);
         const actions = getActions();
         before((done) => {
           rowNode = getNode({field0: {field1: 'value'}});
           value = rowNode.data.hadronDocument.getChild(['field0', 'field1']);
-          component = mount(<AddFieldButton api={api} column={column} node={rowNode}
-                                             value={value} actions={actions}
-                                             columnApi={columnApi}
-                                             context={context}/>);
+          component = mount(<AddFieldButton api={api} column={column}
+                                            node={rowNode}
+                                            value={value} actions={actions}
+                                            columnApi={columnApi}
+                                            context={context}/>);
           const wrapper = component.find({'data-test-id': 'add-field-after'});
           expect(wrapper).to.be.present();
           wrapper.simulate('click');
@@ -173,7 +180,8 @@ describe('<AddFieldButton />', () => {
         });
         it('calls addColumn action', () => {
           expect(actions.addColumn.callCount).to.equal(1);
-          expect(actions.addColumn.alwaysCalledWithExactly('field1', 2, []));
+          expect(actions.addColumn.alwaysCalledWithExactly('field1', 2, ['field1']));
+          notCalledExcept(actions, ['addColumn']);
         });
         it('adds the new element to the sub element', () => {
           expect(value.nextElement.currentKey).to.equal('$new');
@@ -181,6 +189,64 @@ describe('<AddFieldButton />', () => {
             _id: '1', field0: {field1: 'value', $new: ''}
           });
         });
+      });
+
+      describe('when in nested view of array', () => {
+        describe('adding to the end of the array', () => {
+          const context = getContext(['field0']);
+          const actions = getActions();
+          const arraycolumn = getColumn(1, { headerName: 1 });
+          before((done) => {
+            rowNode = getNode({field0: ['value0', 'value1', 'value2']});
+            value = rowNode.data.hadronDocument.getChild(['field0', 1]);
+            component = mount(<AddFieldButton api={api} column={arraycolumn}
+                                              node={rowNode}
+                                              value={value} actions={actions}
+                                              columnApi={columnApi}
+                                              context={context}/>);
+            const wrapper = component.find({'data-test-id': 'add-field-after'});
+            expect(wrapper).to.be.present();
+            wrapper.simulate('click');
+            done();
+          });
+          it('calls addColumn action', () => {
+            expect(actions.addColumn.callCount).to.equal(1);
+            expect(actions.addColumn.alwaysCalledWithExactly(1, 2, ['field0']));
+            notCalledExcept(actions, ['addColumn']);
+          });
+          it('adds the new element to the sub element', () => {
+            // expect(value.nextElement.currentKey).to.equal('$new');
+            // expect(rowNode.data.hadronDocument.generateObject()).to.deep.equal({
+            //   _id: '1', field0: ['value0', 'value1', '' ,'value2']});
+            // });
+          });
+        });
+        describe('adding to the middle of an array', () => {
+
+        });
+        describe('undo for adding to the middle of an array', () => {
+
+        });
+      });
+    });
+
+    describe('add element to object', () => {
+      describe('at the top level', () => {
+
+      });
+
+      describe('when in nested view', () => {
+
+      });
+    });
+
+    describe('add array element to array', () => {
+      describe('at the top level', () => {
+
+      });
+
+      describe('when in nested view', () => {
+
       });
     });
   });
