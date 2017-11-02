@@ -284,6 +284,7 @@ class FullWidthCellRenderer extends React.Component {
   }
 
   handleCancelClone() {
+    this.props.api.stopEditing();
     this.props.context.handleRemove(this.props.node);
   }
 
@@ -295,6 +296,7 @@ class FullWidthCellRenderer extends React.Component {
           updateStore={this.updateStore}
           actions={this.actions}
           cancelHandler={this.handleCancelUpdate.bind(this)}
+          api = {this.props.api}
         />
       );
     }
@@ -305,6 +307,7 @@ class FullWidthCellRenderer extends React.Component {
           insertStore={this.insertStore}
           actions={this.actions}
           cancelHandler={this.handleCancelClone.bind(this)}
+          api = {this.props.api}
         />
       );
     }
@@ -314,7 +317,9 @@ class FullWidthCellRenderer extends React.Component {
           doc={this.doc}
           removeStore={this.removeStore}
           actions={this.actions}
-          cancelHandler={this.handleCancelDelete.bind(this)}/>
+          cancelHandler={this.handleCancelDelete.bind(this)}
+          api = {this.props.api}
+        />
       );
     }
   }

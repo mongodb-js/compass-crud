@@ -427,7 +427,7 @@ class DocumentTableView extends React.Component {
    * @param {Object} doc - The raw document that was inserted.
    * @param {boolean} clone - If the document was cloned, don't add row.
    */
-  handleInsert(error, doc, clone) { // TODO: handle nested insert
+  handleInsert(error, doc, clone) {
     if (!error && !clone) {
       Object.keys(doc).forEach((key) => {
         this.addColumn(null, key, TypeChecker.type(doc[key]), []);
@@ -481,14 +481,12 @@ class DocumentTableView extends React.Component {
   /**
    * When the BreadcrumbStore changes, update the grid.
    *
-   * TODO: When multi-doc expand is implemented, can drop the 'document' param
    * and just trigger with the path.
    *
    * @param {Object} params - Can contain collection, path, and/or types.
    *  collection {String} - The collection name.
    *  path {Array} - The array of field names/indexes.
    *  types {Array} - The array of types for each segment of the path array.
-   *  document {HadronDocument} - The document that we're drilling down into.
    */
   handleBreadcrumbChange(params) {
     if (params.path.length === 0) {
@@ -620,7 +618,7 @@ class DocumentTableView extends React.Component {
     headers.hadronRowNumber = {
       headerName: 'Row',
       field: 'rowNumber',
-      colId: '$rowNumber', // TODO: make sure user can't get duplicate
+      colId: '$rowNumber',
       width: 30,
       pinned: 'left',
       headerComponentFramework: HeaderComponent,

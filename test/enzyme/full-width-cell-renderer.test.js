@@ -213,6 +213,9 @@ describe('<FullWidthCellRenderer />', () => {
             rowNode)).to.equal(true);
           notCalledExcept(context, ['handleRemove']);
         });
+        it('calls api.stopEditing()', () => {
+          expect(api.stopEditing.callCount).to.equal(1);
+        });
       });
       describe('delete', () => {
         const api = getApi();
@@ -269,6 +272,9 @@ describe('<FullWidthCellRenderer />', () => {
           expect(wrapper).to.be.present();
           wrapper.simulate('click');
         });
+        it('calls api.stopEditing()', () => {
+          expect(api.stopEditing.callCount).to.equal(1);
+        });
         it('calls findOneAndReplace on DataService', () => {
           expect(ds.foarSpy.callCount).to.equal(1);
           expect(ds.foarSpy.alwaysCalledWith(
@@ -312,6 +318,9 @@ describe('<FullWidthCellRenderer />', () => {
           expect(wrapper).to.be.present();
           wrapper.simulate('click');
         });
+        it('calls api.stopEditing()', () => {
+          expect(api.stopEditing.callCount).to.equal(1);
+        });
         it('calls insertOne on DataService', () => {
           expect(ds.iSpy.callCount).to.equal(1);
           expect(ds.iSpy.alwaysCalledWith(
@@ -350,6 +359,9 @@ describe('<FullWidthCellRenderer />', () => {
           });
           expect(wrapper).to.be.present();
           wrapper.simulate('click');
+        });
+        it('calls api.stopEditing()', () => {
+          expect(api.stopEditing.callCount).to.equal(1);
         });
         it('calls deleteOne on DataService', () => {
           expect(ds.dSpy.callCount).to.equal(1);

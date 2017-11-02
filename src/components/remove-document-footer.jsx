@@ -87,6 +87,9 @@ class RemoveDocumentFooter extends React.Component {
    * Handle the user clicking the update button.
    */
   handleRemove() {
+    if (this.props.api) {
+      this.props.api.stopEditing();
+    }
     this.setState({ mode: PROGRESS, message: UPDATING });
     this.actions.remove(this.doc);
   }
@@ -158,7 +161,8 @@ RemoveDocumentFooter.propTypes = {
   doc: PropTypes.object.isRequired,
   actions: PropTypes.object.isRequired,
   removeStore: PropTypes.object.isRequired,
-  cancelHandler: PropTypes.func.isRequired
+  cancelHandler: PropTypes.func.isRequired,
+  api: PropTypes.any
 };
 
 module.exports = RemoveDocumentFooter;
