@@ -201,7 +201,7 @@ class CellEditor extends React.Component {
         return this.props.api.stopEditing();
       }
 
-      if (this.newField || this.element.isAdded()) {
+      if (this.newField || this.element.isAdded()) { /* new field not possible */
         this.props.actions.elementRemoved(this.element.currentKey, oid);
       } else {
         this.props.actions.elementMarkRemoved(this.element.currentKey, oid);

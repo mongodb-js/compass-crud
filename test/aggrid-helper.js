@@ -2,6 +2,13 @@ const HadronDocument = require('hadron-document');
 const sinon = require('sinon');
 const chai = require('chai');
 const expect = chai.expect;
+const ObjectId = require('bson').ObjectId;
+
+const NUM_DOCS = 20;
+const expectedDocs = [];
+for (let i = 0; i < 60; i++ ) {
+  expectedDocs.push({_id: new ObjectId(), x: i.toString()});
+}
 
 const getApi = function() {
   return {
@@ -96,6 +103,31 @@ const getDataService = function(done) {
   };
 };
 
+const checkPageRange = function(error, documents, start, end, page,
+                                expectedPage, skip, limit) {
+  expect(error).to.equal(null);
+  expect(page).to.equal(expectedPage);
+
+  const startingDocument = (NUM_DOCS * page) + skip;
+
+  let nextPageSize = NUM_DOCS;
+  if (startingDocument + nextPageSize > expectedDocs.length) {
+    nextPageSize = expectedDocs.length - startingDocument;
+  }
+  if (limit !== 0 && startingDocument + nextPageSize > limit) {
+    nextPageSize = startingDocument + nextPageSize - limit;
+  }
+  const endingDocument = startingDocument + nextPageSize;
+
+  expect(documents.length).to.equal(nextPageSize);
+  expect(documents[0]).to.deep.equal(expectedDocs[startingDocument]);
+  expect(documents[nextPageSize - 1]).to.deep.equal(expectedDocs[endingDocument - 1]);
+
+  /* 1-indexed */
+  expect(start).to.equal((NUM_DOCS * page) + 1);
+  expect(end).to.equal((NUM_DOCS * page) + nextPageSize);
+};
+
 const notCalledExcept = function(spies, except) {
   for (const action in spies) {
     if (except.indexOf(action) < 0 && action !== 'selectAll' && action !== 'path') {
@@ -112,5 +144,8 @@ module.exports = {
   getColumnApi: getColumnApi,
   getContext: getContext,
   getDataService: getDataService,
-  notCalledExcept: notCalledExcept
+  notCalledExcept: notCalledExcept,
+  NUM_DOCS: NUM_DOCS,
+  expectedDocs: expectedDocs,
+  checkPageRange: checkPageRange
 };
