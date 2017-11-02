@@ -81,10 +81,8 @@ const PageChangedStore = Reflux.createStore({
 
     const documentsLoaded = this.counter + NUM_PAGE_DOCS;
     let nextPageCount = NUM_PAGE_DOCS;
-    if (this.limit > 0) {
-      if (documentsLoaded > this.limit) {
-        nextPageCount = this.limit - this.counter;
-      }
+    if (this.limit > 0 && documentsLoaded + nextPageCount > this.limit) {
+      nextPageCount = this.limit - documentsLoaded;
       if (nextPageCount === 0) {
         return;
       }

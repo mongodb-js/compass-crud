@@ -103,107 +103,242 @@ describe('PageChangedStore', () => {
     });
   });
 
-  describe('#getNextPage', () => {
+  describe('Changing page', () => {
     describe('get pages of correct size', () => {
+      before(() => {
+        PageChangedStore.reset();
+      });
       describe('no skip or limit', () => {
-        before(() => {
+        before((done) => {
           PageChangedStore.reset();
           PageChangedStore.onCollectionChanged('compass-crud.test');
+          done();
         });
-        after(() => {
-          PageChangedStore.onCollectionChanged(undefined);
+        after((done) => {
+          PageChangedStore.reset();
+          done();
         });
-        for (let i = 0; i < 3; i++) {
+        /* Don't test getNextPage(0) because not possible */
+        for (let i = 1; i < 3; i++) {
           it('gets the next page for ' + i, (done) => {
             const unsubscribe = PageChangedStore.listen(
               (error, documents, start, end, page) => {
-                checkPageRange(error, documents, start, end, page, i, 0, 0);
                 unsubscribe();
+                checkPageRange(error, documents, start, end, page, i, 0, 0);
                 done();
               });
             PageChangedStore.getNextPage(i);
           });
           it('updates counter correctly', () => {
-            expect(PageChangedStore.counter).to.equal(NUM_DOCS * (i + 1));
+            expect(PageChangedStore.counter).to.equal(NUM_DOCS * i);
+          });
+        }
+
+        for (let i = 1; i >= 0; i--) {
+          it('gets the prev page for ' + i, (done) => {
+            const unsubscribe = PageChangedStore.listen(
+              (error, documents, start, end, page) => {
+                unsubscribe();
+                checkPageRange(error, documents, start, end, page, i, 0, 0);
+                done();
+              });
+            PageChangedStore.getPrevPage(i);
+          });
+          it('updates counter correctly', () => {
+            expect(PageChangedStore.counter).to.equal(NUM_DOCS * i);
           });
         }
       });
       describe('with skip', () => {
         const skip = 5;
-        before(() => {
+        before((done) => {
           PageChangedStore.reset();
           PageChangedStore.onCollectionChanged('compass-crud.test');
           PageChangedStore.skip = skip;
+          done();
         });
-        after(() => {
-          PageChangedStore.onCollectionChanged(undefined);
+        after((done) => {
+          PageChangedStore.reset();
+          done();
         });
-        for (let i = 0; i < 3; i++) {
+        for (let i = 1; i < 3; i++) {
           it('gets the next page for ' + i, (done) => {
             const unsubscribe = PageChangedStore.listen(
               (error, documents, start, end, page) => {
-                checkPageRange(error, documents, start, end, page, i, skip, 0);
                 unsubscribe();
+                checkPageRange(error, documents, start, end, page, i, skip, 0);
                 done();
               });
             PageChangedStore.getNextPage(i);
           });
           it('updates counter correctly', () => {
-            expect(PageChangedStore.counter).to.equal(NUM_DOCS * (i + 1));
+            expect(PageChangedStore.counter).to.equal(NUM_DOCS * i);
+          });
+        }
+        for (let i = 1; i >= 0; i--) {
+          it('gets the prev page for ' + i, (done) => {
+            const unsubscribe = PageChangedStore.listen(
+              (error, documents, start, end, page) => {
+                unsubscribe();
+                checkPageRange(error, documents, start, end, page, i, skip, 0);
+                done();
+              });
+            PageChangedStore.getPrevPage(i);
+          });
+          it('updates counter correctly', () => {
+            expect(PageChangedStore.counter).to.equal(NUM_DOCS * i);
           });
         }
       });
       describe('with limit', () => {
         const limit = 50;
-        before(() => {
+        before((done) => {
           PageChangedStore.reset();
           PageChangedStore.onCollectionChanged('compass-crud.test');
           PageChangedStore.limit = limit;
+          done();
         });
-        after(() => {
-          PageChangedStore.onCollectionChanged(undefined);
+        after((done) => {
+          PageChangedStore.reset();
+          done();
         });
-        for (let i = 0; i < 3; i++) {
+        for (let i = 1; i < 3; i++) {
           it('gets the next page for ' + i, (done) => {
             const unsubscribe = PageChangedStore.listen(
               (error, documents, start, end, page) => {
-                checkPageRange(error, documents, start, end, page, i, 0, limit);
                 unsubscribe();
+                checkPageRange(error, documents, start, end, page, i, 0, limit);
                 done();
               });
             PageChangedStore.getNextPage(i);
           });
           it('updates counter correctly', () => {
-            expect(PageChangedStore.counter).to.equal(NUM_DOCS * (i + 1));
+            expect(PageChangedStore.counter).to.equal(NUM_DOCS * i);
+          });
+        }
+        for (let i = 1; i >= 0; i--) {
+          it('gets the prev page for ' + i, (done) => {
+            const unsubscribe = PageChangedStore.listen(
+              (error, documents, start, end, page) => {
+                unsubscribe();
+                checkPageRange(error, documents, start, end, page, i, 0, limit);
+                done();
+              });
+            PageChangedStore.getPrevPage(i);
+          });
+          it('updates counter correctly', () => {
+            expect(PageChangedStore.counter).to.equal(NUM_DOCS * i);
           });
         }
       });
       describe('with skip and limit', () => {
         const limit = 50;
         const skip = 2;
-        before(() => {
+        before((done) => {
           PageChangedStore.reset();
           PageChangedStore.onCollectionChanged('compass-crud.test');
           PageChangedStore.limit = limit;
           PageChangedStore.skip = skip;
+          done();
         });
-        after(() => {
-          PageChangedStore.onCollectionChanged(undefined);
+        after((done) => {
+          PageChangedStore.reset();
+          done();
         });
-        for (let i = 0; i < 3; i++) {
+        for (let i = 1; i < 3; i++) {
           it('gets the next page for ' + i, (done) => {
             const unsubscribe = PageChangedStore.listen(
               (error, documents, start, end, page) => {
-                checkPageRange(error, documents, start, end, page, i, skip, limit);
                 unsubscribe();
+                checkPageRange(error, documents, start, end, page, i, skip, limit);
                 done();
               });
             PageChangedStore.getNextPage(i);
           });
           it('updates counter correctly', () => {
-            expect(PageChangedStore.counter).to.equal(NUM_DOCS * (i + 1));
+            expect(PageChangedStore.counter).to.equal(NUM_DOCS * i);
           });
         }
+        for (let i = 1; i >= 0; i--) {
+          it('gets the prev page for ' + i, (done) => {
+            const unsubscribe = PageChangedStore.listen(
+              (error, documents, start, end, page) => {
+                unsubscribe();
+                checkPageRange(error, documents, start, end, page, i, skip, limit);
+                done();
+              });
+            PageChangedStore.getPrevPage(i);
+          });
+          it('updates counter correctly', () => {
+            expect(PageChangedStore.counter).to.equal(NUM_DOCS * i);
+          });
+        }
+      });
+
+      describe('skip around pages', () => {
+        const limit = 55;
+        const skip = 3;
+        before((done) => {
+          PageChangedStore.reset();
+          PageChangedStore.onCollectionChanged('compass-crud.test');
+          PageChangedStore.limit = limit;
+          PageChangedStore.skip = skip;
+          done();
+        });
+        after((done) => {
+          PageChangedStore.reset();
+          done();
+        });
+        it('next to page 1', (done) => {
+          const unsubscribe = PageChangedStore.listen(
+            (error, documents, start, end, page) => {
+              unsubscribe();
+              checkPageRange(error, documents, start, end, page, 1, skip, limit);
+              expect(PageChangedStore.counter).to.equal(NUM_DOCS);
+              done();
+            });
+          PageChangedStore.getNextPage(1);
+        });
+        it('prev to page 0', (done) => {
+          const unsubscribe = PageChangedStore.listen(
+            (error, documents, start, end, page) => {
+              unsubscribe();
+              checkPageRange(error, documents, start, end, page, 0, skip, limit);
+              expect(PageChangedStore.counter).to.equal(0);
+              done();
+            });
+          PageChangedStore.getPrevPage(0);
+        });
+        it('next to page 1', (done) => {
+          const unsubscribe = PageChangedStore.listen(
+            (error, documents, start, end, page) => {
+              unsubscribe();
+              checkPageRange(error, documents, start, end, page, 1, skip, limit);
+              expect(PageChangedStore.counter).to.equal(NUM_DOCS);
+              done();
+            });
+          PageChangedStore.getNextPage(1);
+        });
+        it('next to page 2', (done) => {
+          const unsubscribe = PageChangedStore.listen(
+            (error, documents, start, end, page) => {
+              unsubscribe();
+              checkPageRange(error, documents, start, end, page, 2, skip, limit);
+              expect(PageChangedStore.counter).to.equal(NUM_DOCS * 2);
+              done();
+            });
+          PageChangedStore.getNextPage(2);
+        });
+        it('prev to page 1', (done) => {
+          const unsubscribe = PageChangedStore.listen(
+            (error, documents, start, end, page) => {
+              unsubscribe();
+              checkPageRange(error, documents, start, end, page, 1, skip, limit);
+              expect(PageChangedStore.counter).to.equal(NUM_DOCS);
+              done();
+            });
+          PageChangedStore.getPrevPage(1);
+        });
       });
     });
     describe('handle deleting documents', () => {
@@ -212,21 +347,5 @@ describe('PageChangedStore', () => {
     describe('handle inserting documents', () => {
 
     });
-  });
-
-  describe('#getPrevPage', () => {
-    describe('get pages of correct size', () => {
-
-    });
-    describe('handle deleting documents', () => {
-
-    });
-    describe('handle inserting documents', () => {
-
-    });
-  });
-
-  describe('both prev then next', () => {
-
   });
 });
