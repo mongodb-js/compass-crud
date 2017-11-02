@@ -111,11 +111,12 @@ const checkPageRange = function(error, documents, start, end, page,
   const startingDocument = (NUM_DOCS * page) + skip;
 
   let nextPageSize = NUM_DOCS;
+
   if (startingDocument + nextPageSize > expectedDocs.length) {
     nextPageSize = expectedDocs.length - startingDocument;
   }
-  if (limit !== 0 && startingDocument + nextPageSize > limit) {
-    nextPageSize = startingDocument + nextPageSize - limit;
+  if (limit !== 0 && limit < expectedDocs.length && startingDocument + nextPageSize > limit) {
+    nextPageSize = limit - (NUM_DOCS * page);
   }
   const endingDocument = startingDocument + nextPageSize;
 

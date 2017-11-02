@@ -341,11 +341,5 @@ describe('PageChangedStore', () => {
         });
       });
     });
-    describe('handle deleting documents', () => {
-
-    });
-    describe('handle inserting documents', () => {
-
-    });
   });
 });
