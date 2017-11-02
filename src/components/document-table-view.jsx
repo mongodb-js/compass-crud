@@ -736,7 +736,7 @@ class DocumentTableView extends React.Component {
   render() {
     return (
       <div className="ag-parent">
-        <BreadcrumbComponent collection={this.collection}/>
+        <BreadcrumbComponent collection={this.collection} actions={Actions}/>
         {this.AGGrid}
       </div>
     );
