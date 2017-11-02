@@ -70,4 +70,54 @@ describe('<BreadcrumbComponent />', () => {
       });
     });
   });
+
+  describe('#actions', () => {
+    let component;
+    let tabs;
+    let actions;
+    describe('clicking on the home button triggers correctly', () => {
+      before((done) => {
+        actions = getActions();
+        component = mount(<BreadcrumbComponent collection={''}
+                                               actions={actions}/>);
+        component.instance().breadcrumbStoreChanged({
+          path: ['a', 'b', 1],
+          types: ['Object', 'Array', 'Object'],
+          collection: 'compass-crud'
+        });
+        tabs = component.find('.ag-header-breadcrumb-tab');
+        expect(tabs).to.be.present();
+        tabs.at(0).simulate('click');
+        done();
+      });
+      it('triggers the pathChanged action', () => {
+        expect(actions.pathChanged.callCount).to.equal(1);
+        expect(actions.pathChanged.alwaysCalledWithExactly([], []));
+        notCalledExcept(actions, 'pathChanged');
+      });
+    });
+
+    describe('clicking on a tab triggers correctly', () => {
+      before((done) => {
+        actions = getActions();
+        component = mount(<BreadcrumbComponent collection={''}
+                                               actions={actions}/>);
+        component.instance().breadcrumbStoreChanged({
+          path: ['a', 'b', 1],
+          types: ['Object', 'Array', 'Object'],
+          collection: 'compass-crud'
+        });
+        tabs = component.find('.ag-header-breadcrumb-tab');
+        expect(tabs).to.be.present();
+        expect(tabs.at(1).text()).to.equal('a { }');
+        tabs.at(1).simulate('click');
+        done();
+      });
+      it('triggers the pathChanged action', () => {
+        expect(actions.pathChanged.callCount).to.equal(1);
+        expect(actions.pathChanged.alwaysCalledWithExactly(['a'], ['Object']));
+        notCalledExcept(actions, 'pathChanged');
+      });
+    });
+  });
 });
