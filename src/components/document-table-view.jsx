@@ -238,7 +238,7 @@ class DocumentTableView extends React.Component {
 
     /* Update this.hadronDocs */
     for (let i = 0; i < this.hadronDocs.length; i++) {
-      if (this.hadronDocs[i].value === data._id) {
+      if (this.hadronDocs[i].getStringId() === newData.hadronDocument.getStringId()) {
         this.hadronDocs[i] = newData.hadronDocument;
         break;
       }
