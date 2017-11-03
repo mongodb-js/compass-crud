@@ -231,8 +231,25 @@ class FullWidthCellRenderer extends React.Component {
    * @param {Object} doc - The updated document.
    */
   handleUpdateSuccess(doc) {
-    for (const element of this.doc.elements) {
-      if (!(element.currentKey in doc)) {
+    let parent = this.doc;
+    let check = doc;
+    if (this.props.context.path.length) {
+      console.log(this.props.context.path);
+      
+      parent = this.doc.getChild(this.props.context.path);
+      
+      for(let i = 0; i < this.props.context.path.length; i++) {
+        check = check[this.props.context.path[i]];
+      }
+    }
+    for (const element of parent.elements) {
+      console.log('checking key=' + element.currentKey);
+      if ((parent.isRoot() || parent.currentType === 'Object') && !(element.currentKey in check)) {
+        console.log('DELETING');
+        this.props.actions.elementRemoved(element.currentKey, doc._id);
+      } else if (parent.currentType === 'Array' && element.currentKey >= check.length
+                 || element.isRemoved()) { // TODO: is this too much of a hack? Can't tell if the end of an array needs to be trimmed from currentKey bc out of date
+        console.log('DELETING');
         this.props.actions.elementRemoved(element.currentKey, doc._id);
       }
     }

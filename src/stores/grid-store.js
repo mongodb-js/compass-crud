@@ -94,6 +94,7 @@ const GridStore = Reflux.createStore( {
     for (let i = 0; i < columnNames.length; i++) {
       const name = columnNames[i];
       if (!(name in this.columns) && !(name in this.stageRemove)) {
+        console.log("DELETING IT");
         toDel.push(name);
         delete this.showing[name];
       }
