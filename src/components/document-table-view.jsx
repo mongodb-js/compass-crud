@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 const React = require('react');
 const PropTypes = require('prop-types');
 const {AgGridReact} = require('ag-grid-react');
@@ -261,19 +262,40 @@ class DocumentTableView extends React.Component {
    * @param {String} headerName - The field of a new column from insert document dialog
    * @param {String} colType - The type of a new column from document insert dialog
    * @param {Array} path - The series of field names. Empty at top-level.
+   * @param {HadronDocument} updateArray - If we need to update the array element
+   * headers because of an insert.
    */
-  addColumn(colId, headerName, colType, path) {
+  addGridColumn(colId, headerName, colType, path, updateArray) {
     const columnHeaders = _.map(this.columnApi.getAllGridColumns(), function(col) {
       return col.getColDef();
     });
 
     let i = 0;
     while (i < columnHeaders.length) {
-      if (columnHeaders[i].colId === colId) {
-        break;
-      }
-      if (columnHeaders[i].colId === headerName) {
+      if (!updateArray && columnHeaders[i].colId === headerName) {
         return;
+      }
+      i++;
+    }
+
+    i = 0;
+    while (i < columnHeaders.length) {
+      if (columnHeaders[i].colId === colId) {
+        if (updateArray) {
+          let j = i + 1;
+          while (j < columnHeaders.length) {
+            if (!(columnHeaders[j].colId.toString().includes('$'))) {
+              const newId = columnHeaders[j].colId + 1;
+              columnHeaders[j].colId = newId;
+              columnHeaders[j].headerName = newId;
+              columnHeaders[j].valueGetter = function(params) {
+                return params.data.hadronDocument.getChild([].concat(path, [newId]));
+              };
+            }
+            j++;
+          }
+        }
+        break;
       }
       i++;
     }
@@ -283,6 +305,9 @@ class DocumentTableView extends React.Component {
     columnHeaders.splice(i + 1, 0, newColDef);
 
     this.gridApi.setColumnDefs(columnHeaders);
+    if (updateArray) {
+      this.gridApi.refreshCells({force: true});
+    }
   }
 
   /**
@@ -330,21 +355,22 @@ class DocumentTableView extends React.Component {
    *
    * @param {Object} params - The set of optional params.
    *   Adding a column:
+   *    params.add.newColId - Either $new or the index if it is an array element.
    *    params.add.colId - The columnId that the new column will be added next to.
-   *    params.add.rowIndex - The index of row which added the new column. Required
-   *      so that we can open up the new field for editing.
    *    params.add.path - An array of field names. Will be empty for top level.
+   *    params.add.isArray - If we're adding to an array view.
    *   Deleting columns:
    *    params.remove.colIds - The array of columnIds to be deleted.
    *   Updating headers:
    *    params.updateHeaders.showing - A mapping of columnId to BSON type. The
    *      new bson type will be forwarded to the column headers.
+   *   Editing:
+   *    params.edit.rowIndex - The index of row of the cell to start editing.
+   *    params.edit.colId - The colId of the cell to start editing.
    */
   modifyColumns(params) {
     if ('add' in params) {
-      this.addColumn(params.add.colId, '$new', '', params.add.path);
-      this.gridApi.setFocusedCell(params.add.rowIndex, '$new');
-      this.gridApi.startEditingCell({rowIndex: params.add.rowIndex, colKey: '$new'});
+      this.addGridColumn(params.add.colId, params.add.newColId, '', params.add.path, params.add.isArray);
     }
     if ('remove' in params) {
       this.removeColumns(params.remove.colIds);
@@ -356,6 +382,10 @@ class DocumentTableView extends React.Component {
 
       this.updateHeaders(params.updateHeaders.showing, columnHeaders);
       this.gridApi.refreshHeader();
+    }
+    if ('edit' in params) {
+      this.gridApi.setFocusedCell(params.edit.rowIndex, params.edit.colId);
+      this.gridApi.startEditingCell({rowIndex: params.edit.rowIndex, colKey: params.edit.colId});
     }
   }
 
@@ -430,7 +460,7 @@ class DocumentTableView extends React.Component {
   handleInsert(error, doc, clone) {
     if (!error && !clone) {
       Object.keys(doc).forEach((key) => {
-        this.addColumn(null, key, TypeChecker.type(doc[key]), []);
+        this.addGridColumn(null, key, TypeChecker.type(doc[key]), [], false);
       });
       this.insertRow(doc, 0, 1, false);
     }

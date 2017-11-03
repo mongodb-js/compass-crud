@@ -237,10 +237,36 @@ const GridStore = Reflux.createStore( {
     }
   },
 
-  addColumn: function(columnBefore, rowIndex, path) {
-    this.trigger({add: {colId: columnBefore, rowIndex: rowIndex, path: path}});
+  /**
+   * A new column must be added to the grid.
+   *
+   * @param {String} newColId - $new or the index of the column.
+   * @param {String} columnBefore - The colId of the column to insert the new column after.
+   * @param {Integer} rowIndex - The row index to start editing.
+   * @param {Array} path - The series of fieldnames or indexes.
+   * @param {Boolean} isArray - If we are inserting into an array.
+   * @param {Boolean} editOnly - Don't actually add a column, just start editing
+   * (for the case where we're adding to an array but the column already exists).
+   */
+  addColumn: function(newColId, columnBefore, rowIndex, path, isArray, editOnly) {
+    const params = {
+      edit: {
+        colId: newColId, rowIndex: rowIndex
+      }
+    };
+    if (!editOnly) {
+      params.add = {
+        newColId: newColId, colId: columnBefore, path: path, isArray: isArray
+      };
+    }
+    this.trigger(params);
   },
 
+  /**
+   * A column must be removed from the grid.
+   *
+   * @param {String} colId - The colId of the column to be removed.
+   */
   removeColumn: function(colId) {
     this.trigger({remove: {colIds: [colId]}});
   }
