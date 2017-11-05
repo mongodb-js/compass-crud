@@ -132,7 +132,7 @@ class AddFieldButton extends React.Component {
     }
 
     if (isArray) {
-      const lastIndex = parent.elements.lastElement.currentKey;
+      const lastIndex = parent.originalExpandableValue.length;
       if (this.props.columnApi.getColumn(lastIndex) !== null) {
         editOnly = true;
       }
@@ -144,7 +144,8 @@ class AddFieldButton extends React.Component {
       this.props.node.childIndex,
       this.props.context.path,
       isArray,
-      editOnly);
+      editOnly,
+      this.props.node.data.hadronDocument.getStringId());
   }
 
   /**
@@ -152,12 +153,16 @@ class AddFieldButton extends React.Component {
    */
   handleAddChildClick() {
     this.setState({ menu: false });
-    this.props.actions.drillDown(this.props.node.data.hadronDocument, this.props.value);
+    const newElement = this.props.value.insertEnd('$new', '');
 
-    this.props.value.insertEnd('$new', '');
+    const edit = {
+      colId: newElement.currentKey,
+      rowIndex: this.props.node.childIndex
+    };
 
-    const path = [].concat(this.props.context.path, [this.props.value.currentKey]);
-    this.props.actions.addColumn(null, 0, path);
+    this.props.actions.drillDown(
+      this.props.node.data.hadronDocument, this.props.value, edit
+    );
   }
 
 
@@ -185,8 +190,13 @@ class AddFieldButton extends React.Component {
    * @returns {Boolean} If the parent element is an array.
    */
   isParentArray() {
-    return !this.empty && !this.props.value.parent.isRoot() &&
-        this.props.value.parent.currentType === 'Array';
+    if (this.props.context.path.length) {
+      const parent = this.props.node.data.hadronDocument.getChild(
+        this.props.context.path
+      );
+      return parent.currentType === 'Array';
+    }
+    return false;
   }
 
   /**
@@ -325,6 +335,9 @@ class AddFieldButton extends React.Component {
    * @returns {React.Component} The component.
    */
   render() {
+    if (this.empty && this.isParentArray()) {
+      return null;
+    }
     return (
       <div className={this.divClassName()}
         onClick={this.handleClick.bind(this)}

@@ -38,7 +38,8 @@ const INVALID = `${VALUE_CLASS}-is-invalid-type`;
 class CellEditor extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { fieldName: '', changed: false };
+    this.state = { fieldName: '' };
+    this.changed = false;
   }
 
   /**
@@ -67,8 +68,15 @@ class CellEditor extends React.Component {
         parent = parent.getChild(this.props.context.path);
       }
 
-      this.element = parent.insertEnd(key, '', true, parent);
-      const value = TypeChecker.cast('', type);
+      let value;
+      if (type === 'Object') {
+        value = {};
+      } else if (type === 'Array') {
+        value = [];
+      } else {
+        value = TypeChecker.cast('', type);
+      }
+      this.element = parent.insertEnd(key, value, true, parent);
       this.element.edit(value);
     } else {
       /* Only use fieldName if this a newly added field */
@@ -155,25 +163,23 @@ class CellEditor extends React.Component {
         return (params.node.data.state !== 'deleting');
       };
 
-      /* Update the grid store so we know what type this element is. This
-       * will also refresh the header API */
-      this.props.actions.elementAdded(this.element.currentKey, this.element.currentType, id);
-
       /* TODO: should we update column.* as well to be safe?
        Not needed if everywhere we access columns through .getColDef() but
        if somewhere internally they don't do that, will have outdated values.
        Docs: https://www.ag-grid.com/javascript-grid-column-definitions
        */
     } else if (this.wasEmpty) {
-      if (!this.state.changed) {
+      if (!this.changed) {
         this.element.revert();
         return false;
       }
-      /* Update the grid store so we know what type this element is */
-      this.props.actions.elementAdded(this.element.currentKey, this.element.currentType, id);
     } else if (!this.element.isRemoved() && this.element.currentType !== this.oldType) {
       /* Update the grid store since the element has changed type */
       this.props.actions.elementTypeChanged(this.element.currentKey, this.element.currentType, id);
+    }
+    if (this.element.isAdded()) {
+      /* Update the grid store so we know what type this element is */
+      this.props.actions.elementAdded(this.element.currentKey, this.element.currentType, id);
     }
   }
 
@@ -188,7 +194,7 @@ class CellEditor extends React.Component {
   }
 
   handleTypeChange() {
-    this.setState({changed: true});
+    this.changed = true;
     this.props.api.stopEditing();
   }
 
@@ -212,12 +218,13 @@ class CellEditor extends React.Component {
   }
 
   handleDrillDown() {
-    this.props.actions.drillDown(this.props.node.data.hadronDocument, this.element);
+    this.changed = true;
     this.props.api.stopEditing();
+    this.props.actions.drillDown(this.props.node.data.hadronDocument, this.element);
   }
 
   handleChange(event) {
-    this.setState({changed: true});
+    this.changed = true;
     if (this._pasting) {
       this._pasteEdit(event.target.value);
     } else {

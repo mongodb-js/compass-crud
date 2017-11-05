@@ -257,7 +257,7 @@ class DocumentTableView extends React.Component {
   /**
    * Add a column to the grid to the right of the column with colId.
    *
-   * @param {String} colId - The new column will be inserted after the column
+   * @param {String} colIdBefore - The new column will be inserted after the column
    * with colId.
    * @param {String} headerName - The field of a new column from insert document dialog
    * @param {String} colType - The type of a new column from document insert dialog
@@ -265,7 +265,7 @@ class DocumentTableView extends React.Component {
    * @param {HadronDocument} updateArray - If we need to update the array element
    * headers because of an insert.
    */
-  addGridColumn(colId, headerName, colType, path, updateArray) {
+  addGridColumn(colIdBefore, headerName, colType, path, updateArray) {
     const columnHeaders = _.map(this.columnApi.getAllGridColumns(), function(col) {
       return col.getColDef();
     });
@@ -280,7 +280,7 @@ class DocumentTableView extends React.Component {
 
     i = 0;
     while (i < columnHeaders.length) {
-      if (columnHeaders[i].colId === colId) {
+      if (columnHeaders[i].colId === colIdBefore) {
         if (updateArray) {
           let j = i + 1;
           while (j < columnHeaders.length) {
@@ -291,6 +291,7 @@ class DocumentTableView extends React.Component {
               columnHeaders[j].valueGetter = function(params) {
                 return params.data.hadronDocument.getChild([].concat(path, [newId]));
               };
+              /* The bsonType is updated from the GridStore */
             }
             j++;
           }
@@ -341,7 +342,7 @@ class DocumentTableView extends React.Component {
   updateHeaders(showing, columnHeaders) {
     const colIds = Object.keys(showing);
     for (let i = 0; i < columnHeaders.length; i++) {
-      if (colIds.includes(columnHeaders[i].colId)) {
+      if (colIds.includes('' + columnHeaders[i].colId)) {
         columnHeaders[i].headerComponentParams.bsonType = showing[columnHeaders[i].colId];
       }
     }
@@ -356,7 +357,7 @@ class DocumentTableView extends React.Component {
    * @param {Object} params - The set of optional params.
    *   Adding a column:
    *    params.add.newColId - Either $new or the index if it is an array element.
-   *    params.add.colId - The columnId that the new column will be added next to.
+   *    params.add.colIdBefore - The columnId that the new column will be added next to.
    *    params.add.path - An array of field names. Will be empty for top level.
    *    params.add.isArray - If we're adding to an array view.
    *   Deleting columns:
@@ -370,7 +371,7 @@ class DocumentTableView extends React.Component {
    */
   modifyColumns(params) {
     if ('add' in params) {
-      this.addGridColumn(params.add.colId, params.add.newColId, '', params.add.path, params.add.isArray);
+      this.addGridColumn(params.add.colIdBefore, params.add.newColId, '', params.add.path, params.add.isArray);
     }
     if ('remove' in params) {
       this.removeColumns(params.remove.colIds);
@@ -543,6 +544,15 @@ class DocumentTableView extends React.Component {
     if (this.gridApi) {
       this.addFooters();
     }
+
+    if (params.editParams) {
+      const strColId = '' + params.editParams.colId;
+      this.gridApi.ensureColumnVisible(strColId);
+      this.gridApi.setFocusedCell(params.editParams.rowIndex, strColId);
+      this.gridApi.startEditingCell({rowIndex: params.editParams.rowIndex, colKey: strColId});
+    } else if (params.path.length && params.types[params.types.length - 1] === 'Array') {
+      this.gridApi.ensureColumnVisible('0');
+    }
   }
 
   /**
@@ -616,7 +626,19 @@ class DocumentTableView extends React.Component {
       },
 
       editable: function(params) {
-        return (isEditable && params.node.data.state !== 'deleting');
+        if (!isEditable || params.node.data.state === 'deleting') {
+          return false;
+        } else if (path.length <= 1) {
+          return true;
+        }
+        const parent = params.node.data.hadronDocument.getChild(
+          path.slice(0, path.length - 1)
+        );
+        if (parent.currentType === 'Array' &&
+            params.colDef.colId > parent.elements.lastElement.currentKey + 1) {
+          return false;
+        }
+        return true;
       },
 
       cellEditorFramework: CellEditor,

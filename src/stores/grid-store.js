@@ -47,7 +47,7 @@ const GridStore = Reflux.createStore( {
    * this.stagedRemove is a mapping of colId to objectId to boolean.
    *
    * @param {String} key - The column ID.
-   * @param {ObjectId} oid - The OID of the document.
+   * @param {String} oid - The OID string of the document.
    * @param {boolean} add - True if we are marking a field as deleted. False if
    * we are no longer tracking that field (either because it was actually
    * deleted or undo/cancel was clicked.
@@ -94,7 +94,6 @@ const GridStore = Reflux.createStore( {
     for (let i = 0; i < columnNames.length; i++) {
       const name = columnNames[i];
       if (!(name in this.columns) && !(name in this.stageRemove)) {
-        console.log("DELETING IT");
         toDel.push(name);
         delete this.showing[name];
       }
@@ -113,7 +112,7 @@ const GridStore = Reflux.createStore( {
    * @param {ObjectId} oid - The ObjectId of the parent document.
    */
   elementAdded(key, type, oid) {
-    let oldType = null;
+    let oldType = -1;
 
     if (!(key in this.columns)) {
       this.columns[key] = {};
@@ -122,7 +121,9 @@ const GridStore = Reflux.createStore( {
     } else {
       this.columns[key][oid] = type;
       oldType = this.showing[key];
-      if (type !== oldType) {
+      if (Object.keys(this.columns[key]).length < 2) {
+        this.showing[key] = type;
+      } else if (type !== oldType) {
         this.showing[key] = MIXED;
       }
     }
@@ -248,8 +249,9 @@ const GridStore = Reflux.createStore( {
    * @param {Boolean} isArray - If we are inserting into an array.
    * @param {Boolean} editOnly - Don't actually add a column, just start editing
    * (for the case where we're adding to an array but the column already exists).
+   * @param {String} oid - The string representation of the _id field of the row.
    */
-  addColumn: function(newColId, columnBefore, rowIndex, path, isArray, editOnly) {
+  addColumn: function(newColId, columnBefore, rowIndex, path, isArray, editOnly, oid) {
     const params = {
       edit: {
         colId: newColId, rowIndex: rowIndex
@@ -257,8 +259,31 @@ const GridStore = Reflux.createStore( {
     };
     if (!editOnly) {
       params.add = {
-        newColId: newColId, colId: columnBefore, path: path, isArray: isArray
+        newColId: newColId, colIdBefore: columnBefore, path: path, isArray: isArray
       };
+    }
+    /* If we're inserting into an array, need to update headers */
+    if (isArray) {
+      const currentMax = Object.keys(this.columns).length;
+      const newShowing = {};
+      this.columns[currentMax] = {};
+
+      for (let index = currentMax; index > newColId; index--) {
+        this.columns[index][oid] = this.columns[index - 1][oid];
+        this.setShowing(index);
+        newShowing[index] = this.showing[index];
+
+        this.stageField('' + index, oid, false);
+        if ('' + (index - 1) in this.stageRemove) {
+          if (oid in this.stageRemove['' + (index - 1)]) {
+            this.stageField('' + index, oid, true);
+          }
+        }
+      }
+      this.stageField('' + newColId, oid, false);
+      if (!_.isEmpty(newShowing)) {
+        params.updateHeaders = { showing: newShowing };
+      }
     }
     this.trigger(params);
   },
