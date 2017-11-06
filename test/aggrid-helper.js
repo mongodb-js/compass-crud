@@ -132,7 +132,7 @@ const checkPageRange = function(error, documents, start, end, page,
 const notCalledExcept = function(spies, except) {
   for (const action in spies) {
     if (except.indexOf(action) < 0 && action !== 'selectAll' && action !== 'path') {
-      expect(spies[action].called).to.equal(false);
+      expect(spies[action].called).to.equal(false, action + ' called but should not be');
     }
   }
 };
