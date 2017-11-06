@@ -73,12 +73,6 @@ class AddFieldButton extends React.Component {
     }
   }
 
-  componentDidMount() {
-  }
-
-  componentWillUnmount() {
-  }
-
   /**
    * Class name for add field button div.
    *
@@ -92,7 +86,6 @@ class AddFieldButton extends React.Component {
    * Handle click on the add field button.
    */
   handleClick() {
-  // Provide menu for _id because it's top-level, but not for any potential children.
     if (this.empty || this.props.value.isParentEditable()) {
       this.setState({menu: !this.state.menu});
     }
@@ -174,8 +167,13 @@ class AddFieldButton extends React.Component {
    * @returns {Boolean} If the parent element is an array.
    */
   isParentArray() {
-    return !this.empty && !this.props.value.parent.isRoot() &&
-        this.props.value.parent.currentType === 'Array';
+    if (this.props.context.path.length) {
+      const parent = this.props.node.data.hadronDocument.getChild(
+        this.props.context.path
+      );
+      return !parent.isRoot() && parent.currentType === 'Array';
+    }
+    return false;
   }
 
   /**

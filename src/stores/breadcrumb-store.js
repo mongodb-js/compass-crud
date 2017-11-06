@@ -66,7 +66,9 @@ const BreadcrumbStore = Reflux.createStore( {
     this.path.push(element.currentKey);
     this.types.push(element.currentType);
     this.doc = document;
-    this.trigger({path: this.path, types: this.types, document: this.doc});
+    this.trigger({
+      path: this.path, types: this.types, document: this.doc
+    });
   }
 
 });
