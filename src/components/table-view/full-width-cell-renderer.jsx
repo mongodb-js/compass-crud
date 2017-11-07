@@ -291,6 +291,7 @@ class FullWidthCellRenderer extends React.Component {
     for (let i = 0; i < changed.length; i++) {
       this.props.actions.elementTypeChanged(changed[i].currentKey, changed[i].currentType, id);
     }
+    this.props.actions.cleanCols();
     this.props.context.removeFooter(this.props.node);
   }
 

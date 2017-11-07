@@ -173,7 +173,7 @@ class CellEditor extends React.Component {
       /* Update the grid store since the element has changed type */
       this.props.actions.elementTypeChanged(this.element.currentKey, this.element.currentType, id);
     }
-    if (this.element.isAdded()) {
+    if (!this.element.isRemoved() && this.element.isAdded()) {
       /* Update the grid store so we know what type this element is */
       this.props.actions.elementAdded(this.element.currentKey, this.element.currentType, id);
       /* TODO: should we update column.* as well to be safe?
