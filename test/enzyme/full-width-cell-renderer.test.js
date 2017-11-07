@@ -172,9 +172,12 @@ describe('<FullWidthCellRenderer />', () => {
           expect(actions.elementTypeChanged.alwaysCalledWithExactly(
             'toTypeChange', 'Int32', '1')).to.equal(true);
         });
+        it('calls cleanCols', () => {
+          expect(actions.cleanCols.callCount).to.equal(1);
+        });
         it('does not call other actions', () => {
           notCalledExcept(actions,
-            ['elementAdded', 'elementRemoved', 'elementTypeChanged']);
+            ['elementAdded', 'elementRemoved', 'elementTypeChanged', 'cleanCols']);
         });
         it('calls cancel on the HadronDocument', () => {
           expect(data.hadronDocument.generateObject()).to.deep.equal({

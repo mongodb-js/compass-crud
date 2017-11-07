@@ -406,7 +406,6 @@ describe('<CellEditor />', () => {
           expect(wrapper).to.be.present();
           wrapper.simulate('mousedown');
           component.instance().isCancelAfterEnd();
-          expect(actions.elementAdded.callCount).to.equal(1);
           done();
         });
         it('calls elementRemoved action', () => {
@@ -420,7 +419,7 @@ describe('<CellEditor />', () => {
         });
         it('does not trigger other actions', () => {
           notCalledExcept(api, ['stopEditing']);
-          notCalledExcept(actions, ['elementRemoved', 'elementAdded']);
+          notCalledExcept(actions, ['elementRemoved']);
         });
       });
     });
