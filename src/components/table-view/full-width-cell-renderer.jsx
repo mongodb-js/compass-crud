@@ -268,7 +268,13 @@ class FullWidthCellRenderer extends React.Component {
     const removed = [];
     const changed = [];
     const added = [];
-    for (const element of this.doc.elements) {
+
+    let parent = this.doc;
+    if (this.props.context.path.length) {
+      parent = this.doc.getChild(this.props.context.path);
+    }
+
+    for (const element of parent.elements) {
       if (element.isAdded()) {
         added.push(element);
       } else if (element.isRemoved()) {

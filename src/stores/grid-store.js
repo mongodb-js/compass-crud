@@ -18,6 +18,7 @@ const GridStore = Reflux.createStore( {
     this.listenTo(Actions.elementRemoved, this.elementRemoved.bind(this));
     this.listenTo(Actions.elementMarkRemoved, this.elementMarkRemoved.bind(this));
     this.listenTo(Actions.elementTypeChanged, this.elementTypeChanged.bind(this));
+    this.listenTo(Actions.renameColumn, this.renameColumn.bind(this));
 
     this.setShowing = this.setShowing.bind(this);
   },
@@ -81,6 +82,26 @@ const GridStore = Reflux.createStore( {
     for (let i = 0; i < columnNames.length; i++) {
       this.setShowing(columnNames[i]);
     }
+  },
+
+  /**
+   * Rename a column. Right now only used for $new.
+   * @param {String} oldKey
+   * @param {String} newKey
+   */
+  renameColumn(oldKey, newKey) {
+    if (!this.columns[newKey]) {
+      return;
+    }
+    this.columns[newKey] = this.columns[oldKey];
+    this.setShowing(newKey);
+    if (this.stageRemove[oldKey]) {
+      this.stageRemove[newKey] = true;
+    }
+
+    delete this.columns[oldKey];
+    delete this.stageRemove[oldKey];
+    delete this.showing[oldKey];
   },
 
   /**

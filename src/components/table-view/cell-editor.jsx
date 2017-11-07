@@ -152,6 +152,7 @@ class CellEditor extends React.Component {
       }
 
       /* Rename the element within HadronDocument */
+      this.props.actions.renameColumn(this.element.currentKey, key);
       this.element.rename(key);
 
       /* Rename the column + update its definition */
@@ -164,6 +165,7 @@ class CellEditor extends React.Component {
       colDef.editable = function(params) {
         return (params.node.data.state !== 'deleting');
       };
+      this.props.api.refreshHeader();
     } else if (this.wasEmpty) {
       if (!this.changed) {
         this.element.revert();

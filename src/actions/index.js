@@ -24,7 +24,8 @@ const Actions = Reflux.createActions([
   'getNextPage',
   'getPrevPage',
   'pathChanged',
-  'drillDown'
+  'drillDown',
+  'renameColumn'
 ]);
 
 document.ondragover = document.ondrop = (ev) => {
