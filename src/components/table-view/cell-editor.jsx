@@ -10,6 +10,15 @@ const initEditors = require('../editor/');
 const Types = require('../types');
 const AddFieldButton = require('./add-field-button');
 
+const EMPTY_TYPE = {
+  Array: [], Object: {},
+  Decimal128: 0, Int32: 0, Int64: 0, Double: 0, MaxKey: 0, MinKey: 0,
+  Timestamp: 0, Date: 0,
+  String: '', Code: '', Binary: '', ObjectId: '', BSONRegExp: '', Symbol: '',
+  Boolean: false,
+  Undefined: undefined, Null: null
+};
+
 // const util = require('util');
 
 /**
@@ -59,8 +68,8 @@ class CellEditor extends React.Component {
          Otherwise, set it to undefined. Set the key name to be the columnId */
       const key = this.props.column.getColDef().headerName;
       let type = this.props.column.getColDef().headerComponentParams.bsonType;
-      if (type === 'mixed') {
-        type = 'Undefined';
+      if (type === 'Mixed') {
+        type = 'String';
       }
 
       let parent = this.props.node.data.hadronDocument;
@@ -68,14 +77,7 @@ class CellEditor extends React.Component {
         parent = parent.getChild(this.props.context.path);
       }
 
-      let value;
-      if (type === 'Object') {
-        value = {};
-      } else if (type === 'Array') {
-        value = [];
-      } else {
-        value = TypeChecker.cast('', type);
-      }
+      const value = TypeChecker.cast(EMPTY_TYPE[type], type);
       this.element = parent.insertEnd(key, value, true, parent);
       this.element.edit(value);
     } else {
