@@ -302,6 +302,7 @@ class DocumentTableView extends React.Component {
     }
 
     // Newly added columns are always editable.
+    console.log('adding new colType=' + colType);
     const newColDef = this.createColumnHeader(colType, true, [].concat(path, [headerName]));
     columnHeaders.splice(i + 1, 0, newColDef);
 
@@ -360,6 +361,7 @@ class DocumentTableView extends React.Component {
    *    params.add.colIdBefore - The columnId that the new column will be added next to.
    *    params.add.path - An array of field names. Will be empty for top level.
    *    params.add.isArray - If we're adding to an array view.
+   *    params.add.colType - The type of the column that we're adding, if we know.
    *   Deleting columns:
    *    params.remove.colIds - The array of columnIds to be deleted.
    *   Updating headers:
@@ -370,8 +372,12 @@ class DocumentTableView extends React.Component {
    *    params.edit.colId - The colId of the cell to start editing.
    */
   modifyColumns(params) {
+    console.log('modify columns params=' + JSON.stringify(params, null, ' '));
     if ('add' in params) {
-      this.addGridColumn(params.add.colIdBefore, params.add.newColId, '', params.add.path, params.add.isArray);
+      this.addGridColumn(
+        params.add.colIdBefore, params.add.newColId, params.add.colType,
+        params.add.path, params.add.isArray
+      );
     }
     if ('remove' in params) {
       this.removeColumns(params.remove.colIds);

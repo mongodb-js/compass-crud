@@ -109,11 +109,13 @@ const GridStore = Reflux.createStore( {
    * delete them.
    */
   cleanCols() {
+    console.log('GridStore: cleanCols');
     const toDel = [];
 
     const columnNames = Object.keys(this.showing);
     for (let i = 0; i < columnNames.length; i++) {
       const name = columnNames[i];
+      console.log('checking col=' + name + ' in cols=' + (name in this.columns) + ' name in remove=' + (name in this.stageRemove));
       if (!(name in this.columns) && !(name in this.stageRemove)) {
         toDel.push(name);
         delete this.showing[name];
@@ -130,21 +132,29 @@ const GridStore = Reflux.createStore( {
    *
    * @param {String} key - The newly added element's fieldname.
    * @param {String} type - The newly added element's type.
-   * @param {ObjectId} oid - The ObjectId of the parent document.
+   * @param {String} oid - The ObjectId string of the parent document.
    */
   elementAdded(key, type, oid) {
+    console.log('GridStore: ' + key + ' element added with type=' + type);
+    console.log(this.columns);
+    console.log(this.showing);
     let oldType = -1;
 
     if (!(key in this.columns)) {
+      console.log('key missing from columns');
       this.columns[key] = {};
       this.columns[key][oid] = type;
       this.showing[key] = type;
     } else {
+      console.log('key not missing from columns');
       this.columns[key][oid] = type;
       oldType = this.showing[key];
+      console.log('oldType=' + oldType);
       if (Object.keys(this.columns[key]).length < 2) {
+        console.log('set showing to type because 0 or 1');
         this.showing[key] = type;
       } else if (type !== oldType) {
+        console.log('switching the type to mixed');
         this.showing[key] = MIXED;
       }
     }
@@ -169,6 +179,7 @@ const GridStore = Reflux.createStore( {
    * @param {ObjectId} oid - The ObjectId of the parent element.
    */
   elementMarkRemoved(key, oid) {
+    console.log('GridStore: ' + key + ' marked removed');
     delete this.columns[key][oid];
     const params = {};
 
@@ -200,6 +211,7 @@ const GridStore = Reflux.createStore( {
    * @param {ObjectId} oid - The ObjectId of the parent element.
    */
   elementRemoved(key, oid) {
+    console.log('GridStore: ' + key + ' removed');
     if (this.columns[key] && this.columns[key][oid]) {
       delete this.columns[key][oid];
     }
@@ -242,6 +254,7 @@ const GridStore = Reflux.createStore( {
    * @param {ObjectId} oid - The ObjectId of the parent document.
    */
   elementTypeChanged(key, type, oid) {
+    console.log('GridStore: ' + key + ' type changed');
     const oldType = this.showing[key];
 
     this.columns[key][oid] = type;
@@ -273,6 +286,7 @@ const GridStore = Reflux.createStore( {
    * @param {String} oid - The string representation of the _id field of the row.
    */
   addColumn: function(newColId, columnBefore, rowIndex, path, isArray, editOnly, oid) {
+    console.log('GridStore: ' + newColId + ' col added');
     const params = {
       edit: {
         colId: newColId, rowIndex: rowIndex
@@ -280,12 +294,12 @@ const GridStore = Reflux.createStore( {
     };
     if (!editOnly) {
       params.add = {
-        newColId: newColId, colIdBefore: columnBefore, path: path, isArray: isArray
+        newColId: newColId, colIdBefore: columnBefore, path: path, isArray: isArray, colType: ''
       };
     }
     /* If we're inserting into an array, need to update headers */
     if (isArray) {
-      const currentMax = Object.keys(this.columns).length;
+      const currentMax = Object.keys(this.columns).length; //TODO: maxKey?
       const newShowing = {};
       this.columns[currentMax] = {};
 
@@ -294,6 +308,7 @@ const GridStore = Reflux.createStore( {
         this.setShowing(index);
         newShowing[index] = this.showing[index];
 
+        /* Update stagedRemove */
         this.stageField('' + index, oid, false);
         if ('' + (index - 1) in this.stageRemove) {
           if (oid in this.stageRemove['' + (index - 1)]) {
@@ -301,6 +316,16 @@ const GridStore = Reflux.createStore( {
           }
         }
       }
+      if (newColId in this.columns) {
+        delete this.columns[newColId][oid];
+        if (_.isEmpty(this.columns[newColId])) {
+          delete this.columns[newColId];
+        } else {
+          this.setShowing(newColId);
+          params.add.colType = this.showing[newColId];
+        }
+      }
+
       this.stageField('' + newColId, oid, false);
       if (!_.isEmpty(newShowing)) {
         params.updateHeaders = { showing: newShowing };
@@ -315,6 +340,7 @@ const GridStore = Reflux.createStore( {
    * @param {String} colId - The colId of the column to be removed.
    */
   removeColumn: function(colId) {
+    console.log('GridStore: ' + colId + ' col removed');
     this.trigger({remove: {colIds: [colId]}});
   }
 });
