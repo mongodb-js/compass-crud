@@ -43,7 +43,7 @@ class DocumentTableView extends React.Component {
     this.handleUpdate = this.handleUpdate.bind(this);
     this.addFooter = this.addFooter.bind(this);
     this.handleClone = this.handleClone.bind(this);
-
+    this.updateWidth = this.updateWidth.bind(this);
     this.sharedGridProperties = {
       gridOptions: {
         context: {
@@ -55,7 +55,9 @@ class DocumentTableView extends React.Component {
           path: []
         },
         onCellDoubleClicked: this.onCellDoubleClicked.bind(this),
-        rowHeight: 28  // .document-footer row needs 28px, ag-grid default is 25px
+        rowHeight: 28,  // .document-footer row needs 28px, ag-grid default is 25px
+        getRowStyle: this.updateWidth,
+        onGridSizeChanged: this.updateActionsPlacement
       },
       onGridReady: this.onGridReady.bind(this),
       isFullWidthCell: function(rowNode) {
@@ -118,6 +120,25 @@ class DocumentTableView extends React.Component {
   }
 
   /**
+   * Updates the placement of the document actions panel by moving the entire
+   * pinned right column based on how many body columns are visible on the page.
+   */
+  updateActionsPlacement() {
+    if (this.gridApi) {
+      const allColumns = this.columnApi.getAllColumns();
+      const tableWidth = document.getElementById('borderLayout_eRootPanel').offsetWidth;
+      const rightViewport = document.getElementsByClassName('ag-pinned-right-cols-viewport')[0];
+      const bodyColumnWidth = ((allColumns.length - 2) * 200 + 50);
+      const emptyWidth = tableWidth - bodyColumnWidth;
+      if (bodyColumnWidth < tableWidth) {
+        rightViewport.style.right = `${emptyWidth}px`;
+      } else {
+        rightViewport.style.right = '0px';
+      }
+    }
+  }
+
+  /**
    * Callback for when a cell is double clicked.
    *
    * @param {Object} event
@@ -172,7 +193,6 @@ class DocumentTableView extends React.Component {
     dataNode.data.state = null;
     this.gridApi.refreshCells({rowNodes: [dataNode], columns: ['$rowActions'], force: true});
     this.gridApi.clearFocusedCell();
-
     this.gridApi.updateRowData({remove: [node.data]});
   }
 
@@ -510,9 +530,30 @@ class DocumentTableView extends React.Component {
       this.gridApi.setColumnDefs(headers);
     }
     this.gridApi.refreshCells({force: true});
+    this.updateActionsPlacement();
 
     if (this.gridApi) {
       this.addFooters();
+    }
+  }
+
+   /**
+   * Set the width of the document footer based on the width of the columns.
+   * If there are more columns than can displayed, set the width to 100%.
+   */
+  updateWidth(params) {
+    const allColumns = this.columnApi.getAllColumns();
+    const tableWidth = document.getElementById('borderLayout_eRootPanel').offsetWidth;
+    if (params.node.data.state === 'editing' || params.node.data.state === 'deleting' || params.node.data.state === 'cloned') {
+      let width = 30;
+      const newColumn = this.columnApi.getColumn('$new');
+      for (let i = 0; i < allColumns.length - 2; i++) {
+        width = width + 200;
+      }
+      if (width > tableWidth || newColumn) {
+        return {width: '100%'};
+      }
+      return {width: `${width}px`};
     }
   }
 
@@ -532,13 +573,15 @@ class DocumentTableView extends React.Component {
     return {
       headerName: '_id',
       colId: '$_id',
+      cellClass: 'ag-cell-subtable-objectid',
       valueGetter: function(params) {
         return params.data.hadronDocument.get('_id');
       },
       headerComponentFramework: HeaderComponent,
       headerComponentParams: {
         hide: false,
-        bsonType: 'ObjectId'
+        bsonType: 'ObjectId',
+        subtable: true
       },
       cellRendererFramework: CellRenderer,
       cellRendererParams: {
@@ -694,7 +737,8 @@ class DocumentTableView extends React.Component {
         nested: (path.length !== 0)
       },
       editable: false,
-      pinned: 'right'
+      pinned: 'right',
+      width: 100
     });
 
     /* Return the updated column definitions */
