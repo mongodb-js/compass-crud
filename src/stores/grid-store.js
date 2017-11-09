@@ -116,7 +116,7 @@ const GridStore = Reflux.createStore( {
       }
       this.setShowing(key);
     });
-    
+
     _.forEach(this.stageRemove, (val, key) => {
       if (key in this.stageRemove && oldOid in this.stageRemove[key]) {
         delete this.stageRemove[key][oldOid];
@@ -125,15 +125,15 @@ const GridStore = Reflux.createStore( {
         }
       }
     });
-    
+
     _.forEach(newDoc, (val, key) => {
       if (key !== '_id' && !(key in this.columns)) {
-        console.log("TODO: ADD NEW COLS");
+        console.log('TODO: ADD NEW COLS');
       }
     });
-    
+
     params.updateHeaders = {showing: this.showing};
-    
+
     this.trigger(params);
   },
 
@@ -358,7 +358,7 @@ const GridStore = Reflux.createStore( {
       /* For each col after the col inserted, move the values to the right */
       for (let index = currentMax; index > newColId; index--) {
         if (oid in this.columns[index - 1]) {
-          console.log('resetting index at ' + index + ' to ' + (index -1));
+          console.log('resetting index at ' + index + ' to ' + (index - 1));
           this.columns[index][oid] = this.columns[index - 1][oid];
           this.setShowing(index);
           newShowing[index] = this.showing[index];

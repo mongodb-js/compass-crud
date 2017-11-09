@@ -1,9 +1,7 @@
 const React = require('react');
 const Reflux = require('reflux');
 const PropTypes = require('prop-types');
-const _ = require('lodash');
 
-const TypeChecker = require('hadron-type-checker');
 const DocumentFooter = require('../document-footer');
 const RemoveDocumentFooter = require('../remove-document-footer');
 const ClonedDocumentFooter = require('../cloned-document-footer');
