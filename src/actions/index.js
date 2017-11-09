@@ -17,6 +17,7 @@ const Actions = Reflux.createActions([
   'removeColumn',
   'cleanCols',
   'resetHeaders',
+  'replaceDoc',
   'elementAdded',
   'elementRemoved',
   'elementMarkRemoved',

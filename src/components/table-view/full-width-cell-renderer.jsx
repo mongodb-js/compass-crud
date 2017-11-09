@@ -1,7 +1,9 @@
 const React = require('react');
 const Reflux = require('reflux');
 const PropTypes = require('prop-types');
+const _ = require('lodash');
 
+const TypeChecker = require('hadron-type-checker');
 const DocumentFooter = require('../document-footer');
 const RemoveDocumentFooter = require('../remove-document-footer');
 const ClonedDocumentFooter = require('../cloned-document-footer');
@@ -231,22 +233,14 @@ class FullWidthCellRenderer extends React.Component {
    * @param {Object} doc - The updated document.
    */
   handleUpdateSuccess(doc) {
-    let parent = this.doc;
     let check = doc;
     if (this.props.context.path.length) {
-      parent = this.doc.getChild(this.props.context.path);
-
       for (let i = 0; i < this.props.context.path.length; i++) {
         check = check[this.props.context.path[i]];
       }
     }
-    for (const element of parent.elements) {
-      if ((parent.isRoot() || parent.currentType === 'Object') && !(element.currentKey in check)) {
-        this.props.actions.elementRemoved(element.currentKey, doc._id);
-      } else if (parent.currentType === 'Array' && element.currentKey >= check.length) {
-        this.props.actions.elementRemoved(element.currentKey, doc._id);
-      }
-    }
+    this.props.actions.replaceDoc(this.doc.getStringId(), doc._id, check);
+
     this.props.context.handleUpdate(doc);
   }
 

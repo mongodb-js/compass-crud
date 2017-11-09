@@ -132,7 +132,7 @@ class AddFieldButton extends React.Component {
     }
 
     if (isArray) {
-      const lastIndex = parent.getMaxKey();
+      const lastIndex = parent.elements.lastElement.currentKey;
       if (this.props.columnApi.getColumn(lastIndex) !== null) {
         editOnly = true;
       }

@@ -141,7 +141,6 @@ class CellEditor extends React.Component {
 
     /* If this is a new field, need to update the colDef with the key name */
     if (this.newField) {
-      console.log('CellEditor: newField');
       const key = this.state.fieldName;
       const path = [].concat(this.props.context.path, [key]);
 
@@ -168,18 +167,15 @@ class CellEditor extends React.Component {
       };
       this.props.api.refreshHeader();
     } else if (this.wasEmpty) {
-      console.log('CellEditor: wasEmpty');
       if (!this.changed) {
         this.element.revert();
         return false;
       }
     } else if (!this.element.isAdded() && !this.element.isRemoved() && this.element.currentType !== this.oldType) {
       /* Update the grid store since the element has changed type */
-      console.log('cellEditor: type changed');
       this.props.actions.elementTypeChanged(this.element.currentKey, this.element.currentType, id);
     }
     if (!this.element.isRemoved() && this.element.isAdded()) {
-      console.log('CellEditor: isAdded');
       /* Update the grid store so we know what type this element is */
       this.props.actions.elementAdded(this.element.currentKey, this.element.currentType, id);
       /* TODO: should we update column.* as well to be safe?

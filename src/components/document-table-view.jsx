@@ -272,7 +272,7 @@ class DocumentTableView extends React.Component {
 
     let i = 0;
     while (i < columnHeaders.length) {
-      if (!updateArray && columnHeaders[i].colId === headerName) {
+      if (!updateArray && '' + columnHeaders[i].colId === '' + headerName) {
         return;
       }
       i++;
@@ -280,7 +280,7 @@ class DocumentTableView extends React.Component {
 
     i = 0;
     while (i < columnHeaders.length) {
-      if (columnHeaders[i].colId === colIdBefore) {
+      if ('' + columnHeaders[i].colId === '' + colIdBefore) {
         if (updateArray) {
           let j = i + 1;
           while (j < columnHeaders.length) {
@@ -302,7 +302,6 @@ class DocumentTableView extends React.Component {
     }
 
     // Newly added columns are always editable.
-    console.log('adding new colType=' + colType);
     const newColDef = this.createColumnHeader(colType, true, [].concat(path, [headerName]));
     columnHeaders.splice(i + 1, 0, newColDef);
 
@@ -324,7 +323,7 @@ class DocumentTableView extends React.Component {
 
     const newCols = [];
     for (let i = 0; i < columnHeaders.length; i++) {
-      if (!colIds.includes(columnHeaders[i].colId)) {
+      if (!colIds.includes('' + columnHeaders[i].colId)) {
         newCols.push(columnHeaders[i]);
       }
     }
@@ -372,7 +371,8 @@ class DocumentTableView extends React.Component {
    *    params.edit.colId - The colId of the cell to start editing.
    */
   modifyColumns(params) {
-    console.log('modify columns params=' + JSON.stringify(params, null, ' '));
+    console.log('modify columns params=');
+    console.log(params);
     if ('add' in params) {
       this.addGridColumn(
         params.add.colIdBefore, params.add.newColId, params.add.colType,
