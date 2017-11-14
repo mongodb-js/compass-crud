@@ -529,6 +529,7 @@ class DocumentTableView extends React.Component {
    *  collection {String} - The collection name.
    *  path {Array} - The array of field names/indexes.
    *  types {Array} - The array of types for each segment of the path array.
+   *  editParams {Object} - The cell to open for editing, includes colId and rowIndex.
    */
   handleBreadcrumbChange(params) {
     if (params.path.length === 0) {

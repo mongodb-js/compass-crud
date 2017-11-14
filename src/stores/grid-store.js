@@ -381,7 +381,7 @@ const GridStore = Reflux.createStore( {
     }
     /* If we're inserting into an array, need to update headers */
     if (isArray) {
-      let currentMax = Object.keys(this.columns).length - 1;
+      let currentMax = Object.keys(this.showing).length - 1;
       /* Add to this.columns if adding to a new column */
       if (!editOnly) {
         currentMax++;
@@ -398,6 +398,17 @@ const GridStore = Reflux.createStore( {
           this.columns[index][oid] = this.columns[index - 1][oid];
           this.setShowing(index);
           newShowing[index] = this.showing[index];
+        } else if (index - 1 in this.stageRemove && oid in this.stageRemove[index - 1]) {
+          /* If a field is empty because it's marked as removed, not end of array */
+          if (index in this.columns) {
+            delete this.columns[index][oid];
+            if (_.isEmpty(this.columns[index])) {
+              delete this.columns[index];
+            }
+          }
+          if (!(index in this.showing)) {
+            this.showing[index] = this.showing[index - 1];
+          }
         }
 
         /* Update stagedRemove */
