@@ -460,9 +460,17 @@ describe('<CellEditor />', () => {
           expect(actions.elementAdded.alwaysCalledWithExactly(
             'fieldname', 'String', '1')).to.equal(true);
         });
+        it('calls renameColumn', () => {
+          expect(actions.renameColumn.callCount).to.equal(1);
+          expect(actions.renameColumn.alwaysCalledWithExactly(
+            '$new', 'fieldname')).to.equal(true);
+        });
+        it('calls refreshHeader', () => {
+          expect(api.refreshHeader.callCount).to.equal(1);
+        });
         it('does not trigger other actions', () => {
-          notCalledExcept(api, []);
-          notCalledExcept(actions, ['elementAdded']);
+          notCalledExcept(api, ['refreshHeader']);
+          notCalledExcept(actions, ['elementAdded', 'renameColumn']);
         });
       });
       describe('set field name to duplicate key', () => {

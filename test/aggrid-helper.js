@@ -14,7 +14,8 @@ const getApi = function() {
   return {
     selectAll: sinon.spy(),
     startEditingCell: sinon.spy(),
-    stopEditing: sinon.spy()
+    stopEditing: sinon.spy(),
+    refreshHeader: sinon.spy()
   };
 };
 
@@ -22,6 +23,8 @@ const getActions = function() {
   return {
     addColumn: sinon.spy(),
     removeColumn: sinon.spy(),
+    renameColumn: sinon.spy(),
+    replaceDoc: sinon.spy(),
     cleanCols: sinon.spy(),
     resetHeaders: sinon.spy(),
     elementAdded: sinon.spy(),

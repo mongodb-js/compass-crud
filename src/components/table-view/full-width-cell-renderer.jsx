@@ -237,7 +237,7 @@ class FullWidthCellRenderer extends React.Component {
         check = check[this.props.context.path[i]];
       }
     }
-    this.props.actions.replaceDoc(this.doc.getStringId(), doc._id, check);
+    this.props.actions.replaceDoc(this.doc.getStringId(), '' + doc._id, check);
 
     this.props.context.handleUpdate(doc);
   }

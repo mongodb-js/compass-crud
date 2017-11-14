@@ -157,27 +157,17 @@ describe('<FullWidthCellRenderer />', () => {
         it('calls api.stopEditing()', () => {
           expect(api.stopEditing.callCount).to.equal(1);
         });
-        it('calls elementAdded action for added elements', () => {
-          expect(actions.elementAdded.callCount).to.equal(1);
-          expect(actions.elementAdded.alwaysCalledWithExactly(
-            'toAdd', 'Int32', '1')).to.equal(true);
-        });
-        it('calls elementRemoved action for deleted elements', () => {
-          expect(actions.elementRemoved.callCount).to.equal(1);
-          expect(actions.elementRemoved.alwaysCalledWithExactly(
-            'toRemove', '1')).to.equal(true);
-        });
-        it('calls elementTypeChanged action for casted elements', () => {
-          expect(actions.elementTypeChanged.callCount).to.equal(1);
-          expect(actions.elementTypeChanged.alwaysCalledWithExactly(
-            'toTypeChange', 'Int32', '1')).to.equal(true);
+        it('calls replaceDoc', () => {
+          expect(actions.replaceDoc.callCount).to.equal(1);
+          expect(actions.replaceDoc.alwaysCalledWithExactly(
+            '1', '1', {toAdd: 1, toTypeChange: 2, _id: '1'})).to.equal(true);
         });
         it('calls cleanCols', () => {
           expect(actions.cleanCols.callCount).to.equal(1);
         });
         it('does not call other actions', () => {
           notCalledExcept(actions,
-            ['elementAdded', 'elementRemoved', 'elementTypeChanged', 'cleanCols']);
+              ['replaceDoc', 'cleanCols']);
         });
         it('calls cancel on the HadronDocument', () => {
           expect(data.hadronDocument.generateObject()).to.deep.equal({
@@ -187,7 +177,7 @@ describe('<FullWidthCellRenderer />', () => {
         it('removes the footer', () => {
           expect(context.removeFooter.callCount).to.equal(1);
           expect(context.removeFooter.alwaysCalledWithExactly(
-            rowNode)).to.equal(true);
+              rowNode)).to.equal(true);
           notCalledExcept(context, ['removeFooter']);
         });
       });
@@ -200,9 +190,10 @@ describe('<FullWidthCellRenderer />', () => {
           rowNode.data.state = 'cloned';
           data = rowNode.data;
           component = mount(<FullWidthCellRenderer api={api} node={rowNode}
-                                                   actions={actions} data={data}
-                                                   context={context}
-                                                   dataService={dataService}/>);
+                                                     actions={actions}
+                                                     data={data}
+                                                     context={context}
+                                                     dataService={dataService}/>);
           const wrapper = component.find({
             'data-test-id': 'cancel-document-button'
           });
@@ -213,7 +204,7 @@ describe('<FullWidthCellRenderer />', () => {
         it('removes the footer and the row', () => {
           expect(context.handleRemove.callCount).to.equal(1);
           expect(context.handleRemove.alwaysCalledWithExactly(
-            rowNode)).to.equal(true);
+              rowNode)).to.equal(true);
           notCalledExcept(context, ['handleRemove']);
         });
         it('calls api.stopEditing()', () => {
@@ -229,9 +220,10 @@ describe('<FullWidthCellRenderer />', () => {
           rowNode.data.state = 'deleting';
           data = rowNode.data;
           component = mount(<FullWidthCellRenderer api={api} node={rowNode}
-                                                   actions={actions} data={data}
-                                                   context={context}
-                                                   dataService={dataService}/>);
+                                                     actions={actions}
+                                                     data={data}
+                                                     context={context}
+                                                     dataService={dataService}/>);
           const wrapper = component.find({
             'data-test-id': 'cancel-document-button'
           });
@@ -245,7 +237,7 @@ describe('<FullWidthCellRenderer />', () => {
         it('removes the footer', () => {
           expect(context.removeFooter.callCount).to.equal(1);
           expect(context.removeFooter.alwaysCalledWithExactly(
-            rowNode)).to.equal(true);
+              rowNode)).to.equal(true);
           notCalledExcept(context, ['removeFooter']);
         });
       });
@@ -265,9 +257,10 @@ describe('<FullWidthCellRenderer />', () => {
           data.hadronDocument.insertEnd('newfield', 'value');
           data.hadronDocument.get('toRemove').remove();
           component = mount(<FullWidthCellRenderer api={api} node={rowNode}
-                                                   actions={actions} data={data}
-                                                   context={context}
-                                                   dataService={ds}/>);
+                                                     actions={actions}
+                                                     data={data}
+                                                     context={context}
+                                                     dataService={ds}/>);
           expect(component.find('.document-footer-is-modified')).to.be.present();
           const wrapper = component.find({
             'data-test-id': 'update-document-button'
@@ -281,14 +274,14 @@ describe('<FullWidthCellRenderer />', () => {
         it('calls findOneAndReplace on DataService', () => {
           expect(ds.foarSpy.callCount).to.equal(1);
           expect(ds.foarSpy.alwaysCalledWith(
-            {_id: oid},
-            {_id: oid, newfield: 'value'})).to.equal(true);
+              {_id: oid},
+              {_id: oid, newfield: 'value'})).to.equal(true);
         });
-        it('calls elementRemoved for elements not updated', () => {
-          expect(actions.elementRemoved.callCount).to.equal(1);
-          expect(actions.elementRemoved.alwaysCalledWithExactly(
-            'toRemove', oid)).to.equal(true);
-          notCalledExcept(actions, ['elementRemoved']);
+        it('calls replaceDoc', () => {
+          expect(actions.replaceDoc.callCount).to.equal(1);
+          expect(actions.replaceDoc.alwaysCalledWithExactly(
+              '' + oid, '' + oid, {_id: oid, newfield: 'value'})).to.equal(true);
+          notCalledExcept(actions, ['replaceDoc']);
         });
         it('calls context.handleUpdate', () => {
           expect(context.handleUpdate.callCount).to.equal(1);
@@ -311,9 +304,10 @@ describe('<FullWidthCellRenderer />', () => {
           rowNode.data.state = 'cloned';
           data = rowNode.data;
           component = mount(<FullWidthCellRenderer api={api} node={rowNode}
-                                                   actions={actions} data={data}
-                                                   context={context}
-                                                   dataService={ds}/>);
+                                                     actions={actions}
+                                                     data={data}
+                                                     context={context}
+                                                     dataService={ds}/>);
           expect(component.find('.document-footer-is-modified')).to.be.present();
           const wrapper = component.find({
             'data-test-id': 'update-document-button'
@@ -327,7 +321,7 @@ describe('<FullWidthCellRenderer />', () => {
         it('calls insertOne on DataService', () => {
           expect(ds.iSpy.callCount).to.equal(1);
           expect(ds.iSpy.alwaysCalledWith(
-            {_id: oid, field: 'value'})).to.equal(true);
+              {_id: oid, field: 'value'})).to.equal(true);
         });
         it('calls context.handleUpdate', () => {
           expect(context.handleUpdate.callCount).to.equal(1);
@@ -336,8 +330,11 @@ describe('<FullWidthCellRenderer />', () => {
           })).to.equal(true);
           notCalledExcept(context, ['handleUpdate']);
         });
+        it('calls replaceDoc', () => {
+          expect(actions.replaceDoc.callCount).to.equal(1);
+        });
         it('does not call any actions', () => {
-          notCalledExcept(actions, []);
+          notCalledExcept(actions, ['replaceDoc']);
         });
       });
 
@@ -353,9 +350,10 @@ describe('<FullWidthCellRenderer />', () => {
           rowNode.data.state = 'deleting';
           data = rowNode.data;
           component = mount(<FullWidthCellRenderer api={api} node={rowNode}
-                                                   actions={actions} data={data}
-                                                   context={context}
-                                                   dataService={ds}/>);
+                                                     actions={actions}
+                                                     data={data}
+                                                     context={context}
+                                                     dataService={ds}/>);
           expect(component.find('.document-footer-is-error')).to.be.present();
           const wrapper = component.find({
             'data-test-id': 'confirm-delete-document-button'
@@ -368,12 +366,12 @@ describe('<FullWidthCellRenderer />', () => {
         });
         it('calls deleteOne on DataService', () => {
           expect(ds.dSpy.callCount).to.equal(1);
-          expect(ds.dSpy.alwaysCalledWith({ _id: oid })).to.equal(true);
+          expect(ds.dSpy.alwaysCalledWith({_id: oid})).to.equal(true);
         });
         it('calls context.handleRemove', () => {
           expect(context.handleRemove.callCount).to.equal(1);
           expect(context.handleRemove.alwaysCalledWithExactly(
-            rowNode)).to.equal(true);
+              rowNode)).to.equal(true);
         });
       });
     });

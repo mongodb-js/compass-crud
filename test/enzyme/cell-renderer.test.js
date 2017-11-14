@@ -251,7 +251,7 @@ describe('<CellRenderer />', () => {
         it('calls elementRemoved action', () => {
           expect(actions.elementRemoved.callCount).to.equal(1);
           expect(actions.elementRemoved.alwaysCalledWithExactly(
-            'field1', '1')).to.equal(true);
+            'field1', '1', false)).to.equal(true);
           notCalledExcept(actions, ['elementRemoved']);
           notCalledExcept(api, []);
         });
