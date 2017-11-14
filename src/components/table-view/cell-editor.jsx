@@ -78,7 +78,7 @@ class CellEditor extends React.Component {
       }
 
       const value = TypeChecker.cast(EMPTY_TYPE[type], type);
-      this.element = parent.insertEnd(key, value, true, parent);
+      this.element = parent.insertEnd(key, value);
       this.element.edit(value);
     } else {
       /* Only use fieldName if this a newly added field */
@@ -211,7 +211,8 @@ class CellEditor extends React.Component {
       }
 
       if (this.newField || this.element.isAdded()) { /* new field not possible */
-        this.props.actions.elementRemoved(this.element.currentKey, oid);
+        const isArray = !this.element.parent.isRoot() && this.element.parent.currentType === 'Array';
+        this.props.actions.elementRemoved(this.element.currentKey, oid, isArray);
       } else {
         this.props.actions.elementMarkRemoved(this.element.currentKey, oid);
       }

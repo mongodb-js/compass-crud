@@ -257,38 +257,14 @@ class FullWidthCellRenderer extends React.Component {
   handleCancelUpdate() {
     this.props.api.stopEditing();
     const id = this.doc.getStringId();
-    const removed = [];
-    const changed = [];
-    const added = [];
 
     let parent = this.doc;
     if (this.props.context.path.length) {
       parent = this.doc.getChild(this.props.context.path);
     }
 
-    for (const element of parent.elements) {
-      if (element.isAdded()) {
-        added.push(element);
-      } else if (element.isRemoved()) {
-        removed.push(element);
-      } else if (element.isEdited()) {
-        changed.push(element);
-      }
-    }
-
-    /* Cancel should go through undo all the adding/removing/editing that the cell
-       has done. We go through and remove all the added elements, and add back all
-       the removed elements. */
-    for (let i = 0; i < removed.length; i++) {
-      this.props.actions.elementAdded(removed[i].currentKey, removed[i].currentType, id);
-    }
-    for (let i = 0; i < added.length; i++) {
-      this.props.actions.elementRemoved(added[i].currentKey, id);
-    }
     this.doc.cancel();
-    for (let i = 0; i < changed.length; i++) {
-      this.props.actions.elementTypeChanged(changed[i].currentKey, changed[i].currentType, id);
-    }
+    this.props.actions.replaceDoc(id, id, parent.generateObject());
     this.props.actions.cleanCols();
     this.props.context.removeFooter(this.props.node);
   }

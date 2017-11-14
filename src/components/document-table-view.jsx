@@ -207,7 +207,7 @@ class DocumentTableView extends React.Component {
 
     /* Update the headers */
     for (const element of node.data.hadronDocument.elements) {
-      Actions.elementRemoved(element.currentKey, oid);
+      Actions.elementRemoved(element.currentKey, oid, false);
     }
 
     /* Update the toolbar */
@@ -323,7 +323,8 @@ class DocumentTableView extends React.Component {
 
     const newCols = [];
     for (let i = 0; i < columnHeaders.length; i++) {
-      if (!colIds.includes('' + columnHeaders[i].colId)) {
+      if (!colIds.includes('' + columnHeaders[i].colId) &&
+          !colIds.includes(columnHeaders[i].colId)) {
         newCols.push(columnHeaders[i]);
       }
     }
@@ -366,13 +367,13 @@ class DocumentTableView extends React.Component {
    *   Updating headers:
    *    params.updateHeaders.showing - A mapping of columnId to BSON type. The
    *      new bson type will be forwarded to the column headers.
+   *   Refreshing:
+   *    params.refresh.oid - The OID string of the row to redraw.
    *   Editing:
    *    params.edit.rowIndex - The index of row of the cell to start editing.
    *    params.edit.colId - The colId of the cell to start editing.
    */
   modifyColumns(params) {
-    console.log('modify columns params=');
-    console.log(params);
     if ('add' in params) {
       this.addGridColumn(
         params.add.colIdBefore, params.add.newColId, params.add.colType,
@@ -389,6 +390,10 @@ class DocumentTableView extends React.Component {
 
       this.updateHeaders(params.updateHeaders.showing, columnHeaders);
       this.gridApi.refreshHeader();
+    }
+    if ('refresh' in params) {
+      const node = this.gridApi.getRowNode(params.refresh.oid + '0');
+      this.gridApi.refreshCells({rowNodes: [node], force: true});
     }
     if ('edit' in params) {
       this.gridApi.setFocusedCell(params.edit.rowIndex, params.edit.colId);
