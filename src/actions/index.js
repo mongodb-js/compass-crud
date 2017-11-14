@@ -18,6 +18,7 @@ const Actions = Reflux.createActions([
   'cleanCols',
   'resetHeaders',
   'replaceDoc',
+  'renameColumn',
   'elementAdded',
   'elementRemoved',
   'elementMarkRemoved',
@@ -25,8 +26,7 @@ const Actions = Reflux.createActions([
   'getNextPage',
   'getPrevPage',
   'pathChanged',
-  'drillDown',
-  'renameColumn'
+  'drillDown'
 ]);
 
 document.ondragover = document.ondrop = (ev) => {

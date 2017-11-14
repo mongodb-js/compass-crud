@@ -357,9 +357,9 @@ class DocumentTableView extends React.Component {
    *
    * @param {Object} params - The set of optional params.
    *   Adding a column:
-   *    params.add.newColId - Either $new or the index if it is an array element.
    *    params.add.colIdBefore - The columnId that the new column will be added next to.
    *    params.add.path - An array of field names. Will be empty for top level.
+   *    params.add.newColId - Either $new or the index if it is an array element.
    *    params.add.isArray - If we're adding to an array view.
    *    params.add.colType - The type of the column that we're adding, if we know.
    *   Deleting columns:
@@ -556,6 +556,8 @@ class DocumentTableView extends React.Component {
       this.addFooters();
     }
 
+    /* Use this call to open cell for editing so that we're guaranteed the cell
+    has already been created before we start editing it. */
     if (params.editParams) {
       const strColId = '' + params.editParams.colId;
       this.gridApi.ensureColumnVisible(strColId);
