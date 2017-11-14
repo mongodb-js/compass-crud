@@ -64,7 +64,8 @@ const getColumn = function(colId, colDef) {
 
 const getColumnApi = function(columns) {
   return {
-    getAllColumns: () => { return columns; }
+    getAllColumns: () => { return columns; },
+    getColumn: (index) => { return index in columns ? columns[index] : null; }
   };
 };
 
