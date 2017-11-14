@@ -109,6 +109,7 @@ const GridStore = Reflux.createStore( {
         if (_.isEmpty(this.columns[key])) {
           delete this.columns[key];
         }
+        delete this.showing[key];
       }
       if (key in newDoc) {
         if (!(key in this.columns)) {

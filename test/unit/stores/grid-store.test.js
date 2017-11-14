@@ -1068,4 +1068,99 @@ describe('GridStore', () => {
       expect(GridStore.stageRemove).to.deep.equal({fieldname: {id2: true}});
     });
   });
+
+  describe('#replaceDoc', () => {
+    describe('replacing a document with a smaller document', () => {
+      before((done) => {
+        GridStore.resetColumns({
+          0: {id1: 'String', id2: 'Int32'},
+          1: {id1: 'Int64', id2: 'Double'},
+          2: {id1: 'Int32' }
+        });
+        GridStore.elementMarkRemoved(0, 'id1');
+        done();
+      });
+      after((done) => {
+        GridStore.resetColumns({});
+        done();
+      });
+      it('triggers correctly', (done) => {
+        const unsubscribe = GridStore.listen((params) => {
+          unsubscribe();
+          expect(params).to.deep.equal({updateHeaders: {showing: {
+            0: 'Int32', 1: 'Mixed'
+          }}});
+          done();
+        });
+        GridStore.replaceDoc(
+          'id1', 'id1', {0: 1, 1: 'a string'}
+        );
+      });
+      it('updates columns correctly', () => {
+        expect(GridStore.columns).to.deep.equal({
+          0: {id1: 'Int32', id2: 'Int32'},
+          1: {id1: 'String', id2: 'Double'}
+        });
+      });
+      it('updates showing correctly', () => {
+        expect(GridStore.showing).to.deep.equal({
+          0: 'Int32',
+          1: 'Mixed'
+        });
+      });
+      it('updates stageRemove correctly', () => {
+        expect(GridStore.stageRemove).to.deep.equal({});
+      });
+    });
+    describe('replacing a document with a larger document', () => {
+      before((done) => {
+        GridStore.resetColumns({
+          0: {id1: 'String', id2: 'Int32'},
+          1: {id1: 'Int64', id2: 'Double'},
+          2: {id1: 'Int32' }
+        });
+        GridStore.elementMarkRemoved(1, 'id2');
+        done();
+      });
+      after((done) => {
+        GridStore.resetColumns({});
+        done();
+      });
+      it('triggers correctly', (done) => {
+        const unsubscribe = GridStore.listen((params) => {
+          unsubscribe();
+          expect(params).to.deep.equal({updateHeaders: {showing: {
+            0: 'Int32', 1: 'String', 2: 'String', 3: 'Int32', 4: 'String'
+          }}});
+          done();
+        });
+        GridStore.replaceDoc(
+          'id1', 'id1', {
+            0: 1, 1: 'a string', 2: 'another string', 3: 1, 4: 'last string'
+          }
+        );
+      });
+      it('updates columns correctly', () => {
+        expect(GridStore.columns).to.deep.equal({
+          0: {id1: 'Int32', id2: 'Int32'},
+          1: {id1: 'String'},
+          2: {id1: 'String'},
+          3: {id1: 'Int32'},
+          4: {id1: 'String'}
+        });
+      });
+      it('updates showing correctly', () => {
+        expect(GridStore.showing).to.deep.equal({
+          0: 'Int32',
+          1: 'String',
+          2: 'String',
+          3: 'Int32',
+          4: 'String'
+        });
+      });
+      it('updates stageRemove correctly', () => {
+        expect(GridStore.stageRemove).to.deep.equal({1: {id2: true}});
+      });
+    });
+  });
 });
