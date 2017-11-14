@@ -15,16 +15,16 @@ describe('GridStore', () => {
     field4: { '1': 'Binary', '2': 'Binary', '3': 'Binary'},
     field5: { '1': 'Int32', '2': 'Int32', '3': 'String' }
   };
+  const arrayCols = {
+    0: {id1: 'String', id2: 'Int64'},
+    1: {id1: 'Int64', id2: 'Double'},
+    2: {id1: 'Int32' }
+  };
+  const arrayShowing = {
+    0: 'Mixed', 1: 'Mixed', 2: 'Int32'
+  };
 
   describe('#columns', () => {
-    const arrayCols = {
-      0: {id1: 'String', id2: 'Int64'},
-      1: {id1: 'Int64', id2: 'Double'},
-      2: {id1: 'Int32' }
-    };
-    const arrayShowing = {
-      0: 'Mixed', 1: 'Mixed', 2: 'Int32'
-    };
     describe('adding an array column', () => {
       describe('editOnly=true', () => {
         before((done) => {
@@ -39,11 +39,11 @@ describe('GridStore', () => {
         });
         it('does not trigger with add', (done) => {
           const unsubscribe = GridStore.listen((params) => {
+            unsubscribe();
             expect(params).to.deep.equal({
               updateHeaders: {showing: {1: 'Int64', 2: 'Mixed'} },
               edit: {colId: 1, rowIndex: 3}
             });
-            unsubscribe();
             done();
           });
           GridStore.addColumn(1, 0, 3, ['array'], true, true, 'id2');
@@ -74,6 +74,7 @@ describe('GridStore', () => {
         });
         it('does trigger with add', (done) => {
           const unsubscribe = GridStore.listen((params) => {
+            unsubscribe();
             expect(params).to.deep.equal({
               updateHeaders: {showing: {
                 1: 'Double', 2: 'Int64', 3: 'Int32'
@@ -85,7 +86,6 @@ describe('GridStore', () => {
                 colId: 1, rowIndex: 3
               }
             });
-            unsubscribe();
             done();
           });
           GridStore.addColumn(1, 0, 3, ['array'], true, false, 'id1');
@@ -129,6 +129,7 @@ describe('GridStore', () => {
             });
             it('does trigger with add', (done) => {
               const unsubscribe = GridStore.listen((params) => {
+                unsubscribe();
                 expect(params).to.deep.equal({
                   updateHeaders: {showing: {
                     1: 'Double', 3: 'Int32'
@@ -140,7 +141,6 @@ describe('GridStore', () => {
                     colId: 1, rowIndex: 3
                   }
                 });
-                unsubscribe();
                 done();
               });
               GridStore.addColumn(1, 0, 3, ['array'], true, false, 'id1');
@@ -186,6 +186,7 @@ describe('GridStore', () => {
             });
             it('does trigger with add', (done) => {
               const unsubscribe = GridStore.listen((params) => {
+                unsubscribe();
                 expect(params).to.deep.equal({
                   updateHeaders: {showing: {
                     1: 'Double', 2: 'Int64', 3: 'Int32'
@@ -197,7 +198,6 @@ describe('GridStore', () => {
                     colId: 1, rowIndex: 3
                   }
                 });
-                unsubscribe();
                 done();
               });
               GridStore.addColumn(1, 0, 3, ['array'], true, false, 'id1');
@@ -243,6 +243,7 @@ describe('GridStore', () => {
             });
             it('does trigger with add', (done) => {
               const unsubscribe = GridStore.listen((params) => {
+                unsubscribe();
                 expect(params).to.deep.equal({
                   updateHeaders: {showing: {
                     1: 'Double', 2: 'Int64'
@@ -254,7 +255,6 @@ describe('GridStore', () => {
                     colId: 1, rowIndex: 3
                   }
                 });
-                unsubscribe();
                 done();
               });
               GridStore.addColumn(1, 0, 3, ['array'], true, false, 'id1');
@@ -281,21 +281,35 @@ describe('GridStore', () => {
       });
     });
     describe('adding a non-array column', () => {
-      // it('triggers with correct params', (done) => {
-      //   const unsubscribe = GridStore.listen((params) => {
-      //     expect(params).to.deep.equal({remove: {colIds: ['field3']}});
-      //     unsubscribe();
-      //     done();
-      //   });
-      //   GridStore.addColumn('field3');
-      // });
+      before((done) => {
+        GridStore.resetColumns({});
+        done();
+      });
+      after((done) => {
+        GridStore.resetColumns({});
+        done();
+      });
+      it('triggers with correct params', (done) => {
+        const unsubscribe = GridStore.listen((params) => {
+          unsubscribe();
+          expect(params).to.deep.equal({
+            edit: { colId: 'field3', rowIndex: 1},
+            add: {
+              newColId: 'field3', colIdBefore: 'field1',
+              path: ['path'], isArray: false, colType: ''
+            }
+          });
+          done();
+        });
+        GridStore.addColumn('field3', 'field1', 1, ['path'], false, false, 'id1');
+      });
     });
 
     describe('removing a column', () => {
       it('triggers with correct params', (done) => {
         const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({remove: {colIds: ['field3']}});
           unsubscribe();
+          expect(params).to.deep.equal({remove: {colIds: ['field3']}});
           done();
         });
         GridStore.removeColumn('field3');
@@ -335,10 +349,10 @@ describe('GridStore', () => {
       for (const key in columns) {
         it('triggers correctly', (done) => {
           const unsubscribe = GridStore.listen((params) => {
+            unsubscribe();
             const show = {};
             show[key] = columns[key][1];
             expect(params).to.deep.equal({updateHeaders: {showing: show}});
-            unsubscribe();
             done();
           });
           GridStore.elementAdded(key, columns[key]['1'], '1');
@@ -389,8 +403,8 @@ describe('GridStore', () => {
     describe('Adding to a column that already exists with a new type', () => {
       it('triggers correctly', (done) => {
         const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({updateHeaders: {showing: {field5: 'Mixed'}}});
           unsubscribe();
+          expect(params).to.deep.equal({updateHeaders: {showing: {field5: 'Mixed'}}});
           done();
         });
         GridStore.elementAdded('field5', 'String', '3');
@@ -405,79 +419,331 @@ describe('GridStore', () => {
   });
 
   describe('#elementRemoved', () => {
-    before((done) => {
-      GridStore.resetColumns(columns);
-      done();
-    });
-    describe('Removing from a column that already exists with the same type', () => {
-      for (const key in columns) {
-        it('does not trigger', () => {
-          const unsubscribe = GridStore.listen(() => {
-            assert.fail();
+    describe('isArray=false', () => {
+      before((done) => {
+        GridStore.resetColumns(columns);
+        done();
+      });
+      describe('Removing from a column that already exists with the same type', () => {
+        for (const key in columns) {
+          it('does not trigger', () => {
+            const unsubscribe = GridStore.listen(() => {
+              assert.fail();
+            });
+            GridStore.elementRemoved(key, '1', false);
+            if (key !== 'field5') {
+              GridStore.elementRemoved(key, '2', false);
+            }
+            unsubscribe();
           });
-          GridStore.elementRemoved(key, '1');
-          if (key !== 'field5') {
-            GridStore.elementRemoved(key, '2');
-          }
-          unsubscribe();
+        }
+        it('sets this.columns correctly', () => {
+          expect(GridStore.columns).to.deep.equal({
+            field1: {3: 'Object'},
+            field2: {3: 'Array'},
+            field3: {3: 'Int32'},
+            field4: {3: 'Binary'},
+            field5: {2: 'Int32', 3: 'String'}
+          });
         });
-      }
-      it('sets this.columns correctly', () => {
-        expect(GridStore.columns).to.deep.equal({
-          field1: {3: 'Object'},
-          field2: {3: 'Array'},
-          field3: {3: 'Int32'},
-          field4: {3: 'Binary'},
-          field5: {2: 'Int32', 3: 'String'}
+        it('sets this.showing correctly', () => {
+          expect(GridStore.showing).to.deep.equal(showing);
         });
       });
-      it('sets this.showing correctly', () => {
-        expect(GridStore.showing).to.deep.equal(showing);
+      describe('Removing from a Mixed column', () => {
+        it('triggers correctly', (done) => {
+          const unsubscribe = GridStore.listen((params) => {
+            unsubscribe();
+            expect(params).to.deep.equal({updateHeaders: {showing: {field5: 'Int32'}}});
+            done();
+          });
+          GridStore.elementRemoved('field5', '3', false);
+        });
+        it('sets this.columns correctly', () => {
+          expect(GridStore.columns).to.deep.equal({
+            field1: {3: 'Object'},
+            field2: {3: 'Array'},
+            field3: {3: 'Int32'},
+            field4: {3: 'Binary'},
+            field5: {2: 'Int32'}
+          });
+        });
+        it('sets this.showing correctly', () => {
+          showing.field5 = 'Int32';
+          expect(GridStore.showing).to.deep.equal(showing);
+        });
+      });
+      describe('Removing the last item from a column', () => {
+        it('triggers correctly', (done) => {
+          const unsubscribe = GridStore.listen((params) => {
+            unsubscribe();
+            expect(params).to.deep.equal({remove: {colIds: ['field5']}});
+            done();
+          });
+          GridStore.elementRemoved('field5', '2', false);
+        });
+        it('sets this.columns correctly', () => {
+          expect(GridStore.columns).to.deep.equal({
+            field1: {3: 'Object'},
+            field2: {3: 'Array'},
+            field3: {3: 'Int32'},
+            field4: {3: 'Binary'}
+          });
+        });
+        it('sets this.showing correctly', () => {
+          delete showing.field5;
+          expect(GridStore.showing).to.deep.equal(showing);
+        });
       });
     });
-    describe('Removing from a Mixed column', () => {
-      it('triggers correctly', (done) => {
-        const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({updateHeaders: {showing: {field5: 'Int32'}}});
-          unsubscribe();
-          done();
+    describe('isArray=true', () => {
+      describe('from middle of array', () => {
+        describe('last column is now empty', () => {
+          before((done) => {
+            GridStore.resetColumns(arrayCols);
+            expect(GridStore.columns).to.deep.equal(arrayCols);
+            expect(GridStore.showing).to.deep.equal(arrayShowing);
+            done();
+          });
+          after((done) => {
+            GridStore.resetColumns({});
+            done();
+          });
+          it('does trigger with remove', (done) => {
+            const unsubscribe = GridStore.listen((params) => {
+              unsubscribe();
+              expect(params).to.deep.equal({
+                updateHeaders: {showing: {1: 'Mixed'} },
+                refresh: {oid: 'id1'},
+                remove: {colIds: [2]}
+              });
+              done();
+            });
+            GridStore.elementRemoved(1, 'id1', true);
+          });
+          it('updates this.columns correctly', () => {
+            expect(GridStore.columns).to.deep.equal({
+              0: {id1: 'String', id2: 'Int64'},
+              1: {id1: 'Int32', id2: 'Double'}
+            });
+          });
+          it('updates this.showing correctly', () => {
+            expect(GridStore.showing).to.deep.equal({
+              0: 'Mixed', 1: 'Mixed'
+            });
+          });
         });
-        GridStore.elementRemoved('field5', '3');
-      });
-      it('sets this.columns correctly', () => {
-        expect(GridStore.columns).to.deep.equal({
-          field1: {3: 'Object'},
-          field2: {3: 'Array'},
-          field3: {3: 'Int32'},
-          field4: {3: 'Binary'},
-          field5: {2: 'Int32'}
+        describe('last column is not empty', () => {
+          before((done) => {
+            GridStore.resetColumns(arrayCols);
+            expect(GridStore.columns).to.deep.equal(arrayCols);
+            expect(GridStore.showing).to.deep.equal(arrayShowing);
+            done();
+          });
+          after((done) => {
+            GridStore.resetColumns({});
+            done();
+          });
+          it('does not trigger with remove', (done) => {
+            const unsubscribe = GridStore.listen((params) => {
+              unsubscribe();
+              expect(params).to.deep.equal({
+                updateHeaders: {showing: {0: 'Mixed', 1: 'Int64', 2: 'Int32'} },
+                refresh: {oid: 'id2'}
+              });
+              done();
+            });
+            GridStore.elementRemoved(0, 'id2', true);
+          });
+          it('updates this.columns correctly', () => {
+            expect(GridStore.columns).to.deep.equal({
+              0: {id1: 'String', id2: 'Double'},
+              1: {id1: 'Int64'},
+              2: {id1: 'Int32'}
+            });
+          });
+          it('updates this.showing correctly', () => {
+            expect(GridStore.showing).to.deep.equal({
+              0: 'Mixed', 1: 'Int64', 2: 'Int32'
+            });
+          });
         });
       });
-      it('sets this.showing correctly', () => {
-        showing.field5 = 'Int32';
-        expect(GridStore.showing).to.deep.equal(showing);
+      describe('from end of array', () => {
+        describe('last column is now empty', () => {
+          before((done) => {
+            GridStore.resetColumns(arrayCols);
+            expect(GridStore.columns).to.deep.equal(arrayCols);
+            expect(GridStore.showing).to.deep.equal(arrayShowing);
+            done();
+          });
+          after((done) => {
+            GridStore.resetColumns({});
+            done();
+          });
+          it('does trigger with remove', (done) => {
+            const unsubscribe = GridStore.listen((params) => {
+              unsubscribe();
+              expect(params).to.deep.equal({
+                refresh: {oid: 'id1'},
+                remove: {colIds: [2]}
+              });
+              done();
+            });
+            GridStore.elementRemoved(2, 'id1', true);
+          });
+          it('updates this.columns correctly', () => {
+            expect(GridStore.columns).to.deep.equal({
+              0: {id1: 'String', id2: 'Int64'},
+              1: {id1: 'Int64', id2: 'Double'}
+            });
+          });
+          it('updates this.showing correctly', () => {
+            expect(GridStore.showing).to.deep.equal({
+              0: 'Mixed', 1: 'Mixed'
+            });
+          });
+        });
+        describe('last column is not empty', () => {
+          before((done) => {
+            GridStore.resetColumns(arrayCols);
+            expect(GridStore.columns).to.deep.equal(arrayCols);
+            expect(GridStore.showing).to.deep.equal(arrayShowing);
+            done();
+          });
+          after((done) => {
+            GridStore.resetColumns({});
+            done();
+          });
+          it('does not trigger with remove', (done) => {
+            const unsubscribe = GridStore.listen((params) => {
+              unsubscribe();
+              expect(params).to.deep.equal({
+                updateHeaders: {showing: {1: 'Int64', 2: 'Int32'} },
+                refresh: {oid: 'id2'}
+              });
+              done();
+            });
+            GridStore.elementRemoved(1, 'id2', true);
+          });
+          it('updates this.columns correctly', () => {
+            expect(GridStore.columns).to.deep.equal({
+              0: {id1: 'String', id2: 'Int64'},
+              1: {id1: 'Int64'},
+              2: {id1: 'Int32'}
+            });
+          });
+          it('updates this.showing correctly', () => {
+            expect(GridStore.showing).to.deep.equal({
+              0: 'Mixed', 1: 'Int64', 2: 'Int32'
+            });
+          });
+        });
       });
     });
-    describe('Removing the last item from a column', () => {
-      it('triggers correctly', (done) => {
-        const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({remove: {colIds: ['field5']}});
-          unsubscribe();
+    describe('with staged elements', () => {
+      describe('element being removed was staged', () => {
+        before((done) => {
+          GridStore.resetColumns(arrayCols);
+          GridStore.elementMarkRemoved(1, 'id1');
+          expect(GridStore.columns).to.deep.equal({
+            0: {id1: 'String', id2: 'Int64'},
+            1: {id2: 'Double'},
+            2: {id1: 'Int32' }
+          });
+          expect(GridStore.showing).to.deep.equal({
+            0: 'Mixed', 1: 'Double', 2: 'Int32'
+          });
+          expect(GridStore.stageRemove).to.deep.equal({
+            1: {id1: true}
+          });
           done();
         });
-        GridStore.elementRemoved('field5', '2');
-      });
-      it('sets this.columns correctly', () => {
-        expect(GridStore.columns).to.deep.equal({
-          field1: {3: 'Object'},
-          field2: {3: 'Array'},
-          field3: {3: 'Int32'},
-          field4: {3: 'Binary'}
+        after((done) => {
+          GridStore.resetColumns({});
+          done();
+        });
+        it('does trigger with remove', (done) => {
+          const unsubscribe = GridStore.listen((params) => {
+            unsubscribe();
+            expect(params).to.deep.equal({
+              updateHeaders: {showing: {
+                1: 'Mixed'
+              }},
+              refresh: {oid: 'id1'},
+              remove: {colIds: [2]}
+            });
+            done();
+          });
+          GridStore.elementRemoved(1, 'id1', true);
+        });
+        it('updates this.columns correctly', () => {
+          expect(GridStore.columns).to.deep.equal({
+            0: {id1: 'String', id2: 'Int64'},
+            1: {id1: 'Int32', id2: 'Double'}
+          });
+        });
+        it('updates this.showing correctly', () => {
+          expect(GridStore.showing).to.deep.equal({
+            0: 'Mixed', 1: 'Mixed'
+          });
+        });
+        it('updates this.stageRemoved correctly', () => {
+          expect(GridStore.stageRemove).to.deep.equal({});
         });
       });
-      it('sets this.showing correctly', () => {
-        delete showing.field5;
-        expect(GridStore.showing).to.deep.equal(showing);
+      describe('element being removed was not staged', () => {
+        describe('element marked as removed is after element removed', () => {
+          before((done) => {
+            GridStore.resetColumns(arrayCols);
+            GridStore.elementMarkRemoved(2, 'id1');
+            expect(GridStore.columns).to.deep.equal({
+              0: {id1: 'String', id2: 'Int64'},
+              1: {id1: 'Int64', id2: 'Double'}
+            });
+            expect(GridStore.showing).to.deep.equal({
+              0: 'Mixed', 1: 'Mixed', 2: 'Int32'
+            });
+            expect(GridStore.stageRemove).to.deep.equal({
+              2: {id1: true}
+            });
+            done();
+          });
+          after((done) => {
+            GridStore.resetColumns({});
+            done();
+          });
+          it('does trigger with remove', (done) => {
+            const unsubscribe = GridStore.listen((params) => {
+              unsubscribe();
+              expect(params).to.deep.equal({
+                updateHeaders: {showing: {
+                  1: 'Double'
+                }},
+                refresh: {oid: 'id1'},
+                remove: {colIds: [2]}
+              });
+              done();
+            });
+            GridStore.elementRemoved(1, 'id1', true);
+          });
+          it('updates this.columns correctly', () => {
+            expect(GridStore.columns).to.deep.equal({
+              0: {id1: 'String', id2: 'Int64'},
+              1: {id2: 'Double'}
+            });
+          });
+          it('updates this.showing correctly', () => {
+            expect(GridStore.showing).to.deep.equal({
+              0: 'Mixed', 1: 'Double'
+            });
+          });
+          it('updates this.stageRemoved correctly', () => {
+            expect(GridStore.stageRemove).to.deep.equal({
+              1: {id1: true}
+            });
+          });
+        });
       });
     });
   });
@@ -490,8 +756,8 @@ describe('GridStore', () => {
     describe('Changing the type of the last item', () => {
       it('triggers correctly', (done) => {
         const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({updateHeaders: {showing: {field1: 'Date'}}});
           unsubscribe();
+          expect(params).to.deep.equal({updateHeaders: {showing: {field1: 'Date'}}});
           done();
         });
         GridStore.elementTypeChanged('field1', 'Date', '3');
@@ -525,8 +791,8 @@ describe('GridStore', () => {
       });
       it('triggers correctly', (done) => {
         const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({updateHeaders: {showing: {field1: 'Mixed'}}});
           unsubscribe();
+          expect(params).to.deep.equal({updateHeaders: {showing: {field1: 'Mixed'}}});
           done();
         });
         GridStore.elementTypeChanged('field1', 'Double', '3');
@@ -541,8 +807,8 @@ describe('GridStore', () => {
     describe('Changing the type from Mixed', () => {
       it('triggers correctly', (done) => {
         const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({updateHeaders: {showing: {field1: 'Double'}}});
           unsubscribe();
+          expect(params).to.deep.equal({updateHeaders: {showing: {field1: 'Double'}}});
           done();
         });
         GridStore.elementTypeChanged('field1', 'Double', '2');
@@ -617,8 +883,8 @@ describe('GridStore', () => {
     describe('marking an element as removed with a different type no longer Mixed', () => {
       it('triggers correctly', (done) => {
         const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({updateHeaders: {showing: {field5: 'Int32'}}});
           unsubscribe();
+          expect(params).to.deep.equal({updateHeaders: {showing: {field5: 'Int32'}}});
           done();
         });
         GridStore.elementMarkRemoved('field5', '3');
@@ -664,8 +930,8 @@ describe('GridStore', () => {
     describe('calling elementAdded for a marked removed element adds it back', () => {
       it('triggers correctly', (done) => {
         const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({updateHeaders: {showing: {field1: 'String'}}});
           unsubscribe();
+          expect(params).to.deep.equal({updateHeaders: {showing: {field1: 'String'}}});
           done();
         });
         GridStore.elementAdded('field1', 'String', '1');
@@ -711,8 +977,8 @@ describe('GridStore', () => {
       });
       it('triggers if there are no  more marked removed elements in the column', (done) => {
         const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({remove: {colIds: ['field1']}});
           unsubscribe();
+          expect(params).to.deep.equal({remove: {colIds: ['field1']}});
           done();
         });
         GridStore.elementRemoved('field1', '3');
@@ -771,8 +1037,8 @@ describe('GridStore', () => {
       });
       it('triggers correctly', (done) => {
         const unsubscribe = GridStore.listen((params) => {
-          expect(params).to.deep.equal({remove: {colIds: ['field1', 'field2']}});
           unsubscribe();
+          expect(params).to.deep.equal({remove: {colIds: ['field1', 'field2']}});
           done();
         });
         GridStore.cleanCols();

@@ -266,29 +266,48 @@ const GridStore = Reflux.createStore( {
 
     /* If it's an array element, need to move subsequent elements up */
     if (isArray) {
-      for (let i = key; i < Object.keys(this.columns).length; i++) {
-        /* Move staged elements */
-        if ((i + 1) in this.stageRemove && oid in this.stageRemove[i + 1]) {
-          this.stageField(i, oid, true);
-        } else {
-          this.stageField(i, oid, false);
-        }
+      for (let i = key; i < Object.keys(this.showing).length; i++) {
         /* Move columns, updating headers or removing the last column if needed */
+
         if ((i + 1) in this.columns && oid in this.columns[i + 1]) {
+          if (!(i in this.columns)) {
+            this.columns[i] = {};
+          }
           this.columns[i][oid] = this.columns[i + 1][oid];
+
+          this.stageField(i, oid, false);
+
           if (this.showing[i] !== this.columns[i][oid]) {
             this.setShowing(i);
             newShowing[i] = this.showing[i];
           }
-        } else {
-          delete this.columns[i][oid];
-          if (_.isEmpty(this.columns[i])) {
-            params.remove = {colIds: [i]};
-          } else {
+        } else if ((i + 1) in this.stageRemove && oid in this.stageRemove[i + 1]) {
+          this.stageField(i, oid, true);
+          if (i in this.columns) {
+            delete this.columns[i][oid];
+            if (_.isEmpty(this.columns[i])) {
+              delete this.columns[i];
+            }
             this.setShowing(i);
             newShowing[i] = this.showing[i];
           }
-          break;
+        } else {
+          this.stageField(i, oid, false);
+
+          if (i in this.columns) {
+            delete this.columns[i][oid];
+            if (_.isEmpty(this.columns[i])) {
+              delete this.columns[i];
+            } else {
+              this.setShowing(i);
+              newShowing[i] = this.showing[i];
+            }
+          }
+
+          if (!(i in this.columns) && !(i in this.stageRemove)) {
+            params.remove = {colIds: [i]};
+            delete this.showing[i];
+          }
         }
       }
       params.refresh = {oid: oid};
