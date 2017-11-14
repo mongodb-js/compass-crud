@@ -1050,4 +1050,22 @@ describe('GridStore', () => {
       });
     });
   });
+
+  describe('#renameColumn', () => {
+    before((done) => {
+      GridStore.resetColumns({$new: {id1: 'Int32', id2: 'String'}});
+      GridStore.elementMarkRemoved('$new', 'id2');
+      done();
+    });
+    after((done) => {
+      GridStore.resetColumns({});
+      done();
+    });
+    it('updates objects', () => {
+      GridStore.renameColumn('$new', 'fieldname');
+      expect(GridStore.columns).to.deep.equal({fieldname: {id1: 'Int32'}});
+      expect(GridStore.showing).to.deep.equal({fieldname: 'Int32'});
+      expect(GridStore.stageRemove).to.deep.equal({fieldname: {id2: true}});
+    });
+  });
 });

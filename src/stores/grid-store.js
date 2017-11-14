@@ -150,13 +150,13 @@ const GridStore = Reflux.createStore( {
    * @param {String} newKey
    */
   renameColumn(oldKey, newKey) {
-    if (!this.columns[newKey]) {
+    if (!this.columns[oldKey]) {
       return;
     }
     this.columns[newKey] = this.columns[oldKey];
     this.setShowing(newKey);
     if (this.stageRemove[oldKey]) {
-      this.stageRemove[newKey] = true;
+      this.stageRemove[newKey] = this.stageRemove[oldKey];
     }
 
     delete this.columns[oldKey];
