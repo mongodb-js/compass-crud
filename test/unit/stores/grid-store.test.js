@@ -1088,7 +1088,7 @@ describe('GridStore', () => {
         const unsubscribe = GridStore.listen((params) => {
           unsubscribe();
           expect(params).to.deep.equal({updateHeaders: {showing: {
-            0: 'Int32', 1: 'Mixed'
+            0: 'Int32', 1: 'Mixed', 2: 'Int32'
           }}});
           done();
         });
@@ -1105,7 +1105,8 @@ describe('GridStore', () => {
       it('updates showing correctly', () => {
         expect(GridStore.showing).to.deep.equal({
           0: 'Int32',
-          1: 'Mixed'
+          1: 'Mixed',
+          2: 'Int32'
         });
       });
       it('updates stageRemove correctly', () => {
