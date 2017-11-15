@@ -17,6 +17,8 @@
     "link-plugin": "./scripts/link.sh",
     "unlink-plugin": "./scripts/unlink.sh",
     "prepublish": "npm run compile",
+    "pretest": "npm run compile && mongodb-runner install && mongodb-runner start --port 27018",
+    "posttest": "mongodb-runner stop --port 27018",
     "prestart": "npm run compile",
     "start": "electron ./electron",
     "test": "hadron-build test",
