@@ -44,9 +44,10 @@ const GridStore = Reflux.createStore( {
    * Helper to add/remove elements from the stageRemove object, which tracks
    * if an element is marked as deleted but not actually removed. Needed because
    * we want to delete columns that are empty, but not if something is staged.
+   * this.stagedRemove is a mapping of colId to objectId to boolean.
    *
    * @param {String} key - The column ID.
-   * @param {ObjectId} oid - The OID of the document.
+   * @param {String} oid - The OID string of the document.
    * @param {boolean} add - True if we are marking a field as deleted. False if
    * we are no longer tracking that field (either because it was actually
    * deleted or undo/cancel was clicked.
@@ -73,7 +74,8 @@ const GridStore = Reflux.createStore( {
    */
   resetColumns(columns) {
     this.showing = {};
-    this.columns = columns;
+    this.stageRemove = {};
+    this.columns = _.cloneDeep(columns);
 
     const columnNames = Object.keys(columns);
     for (let i = 0; i < columnNames.length; i++) {
@@ -110,7 +112,7 @@ const GridStore = Reflux.createStore( {
    * @param {ObjectId} oid - The ObjectId of the parent document.
    */
   elementAdded(key, type, oid) {
-    let oldType = null;
+    let oldType = -1;
 
     if (!(key in this.columns)) {
       this.columns[key] = {};
@@ -119,7 +121,9 @@ const GridStore = Reflux.createStore( {
     } else {
       this.columns[key][oid] = type;
       oldType = this.showing[key];
-      if (type !== oldType) {
+      if (Object.keys(this.columns[key]).length < 2) {
+        this.showing[key] = type;
+      } else if (type !== oldType) {
         this.showing[key] = MIXED;
       }
     }
@@ -188,6 +192,7 @@ const GridStore = Reflux.createStore( {
       delete this.columns[key];
       if (!(key in this.stageRemove)) {
         params.remove = {colIds: [key]};
+        delete this.showing[key];
       }
     } else {
       const oldType = this.showing[key];
@@ -235,9 +240,22 @@ const GridStore = Reflux.createStore( {
   },
 
   addColumn: function(columnBefore, rowIndex, path) {
+    const params = {
+      edit: {
+        colId: '$new', rowIndex: rowIndex
+      }
+    };
+    params.add = {
+      columnBefore: columnBefore, path: path
+    };
     this.trigger({add: {colId: columnBefore, rowIndex: rowIndex, path: path}});
   },
 
+  /**
+   * A column must be removed from the grid.
+   *
+   * @param {String} colId - The colId of the column to be removed.
+   */
   removeColumn: function(colId) {
     this.trigger({remove: {colIds: [colId]}});
   }

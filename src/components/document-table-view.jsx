@@ -63,7 +63,8 @@ class DocumentTableView extends React.Component {
       },
       fullWidthCellRendererFramework: FullWidthCellRenderer,
       fullWidthCellRendererParams: {
-        actions: Actions
+        actions: Actions,
+        dataService: ResetDocumentListStore.dataService
       },
       getRowNodeId: function(data) {
         const fid = data.isFooter ? '1' : '0';
@@ -236,7 +237,7 @@ class DocumentTableView extends React.Component {
 
     /* Update this.hadronDocs */
     for (let i = 0; i < this.hadronDocs.length; i++) {
-      if (this.hadronDocs[i].value === data._id) {
+      if (this.hadronDocs[i].getStringId() === newData.hadronDocument.getStringId()) {
         this.hadronDocs[i] = newData.hadronDocument;
         break;
       }
@@ -255,20 +256,20 @@ class DocumentTableView extends React.Component {
   /**
    * Add a column to the grid to the right of the column with colId.
    *
-   * @param {String} colId - The new column will be inserted after the column
+   * @param {String} colIdBefore - The new column will be inserted after the column
    * with colId.
    * @param {String} headerName - The field of a new column from insert document dialog
    * @param {String} colType - The type of a new column from document insert dialog
    * @param {Array} path - The series of field names. Empty at top-level.
    */
-  addColumn(colId, headerName, colType, path) {
+  addGridColumn(colIdBefore, headerName, colType, path) {
     const columnHeaders = _.map(this.columnApi.getAllGridColumns(), function(col) {
       return col.getColDef();
     });
 
     let i = 0;
     while (i < columnHeaders.length) {
-      if (columnHeaders[i].colId === colId) {
+      if (columnHeaders[i].colId === colIdBefore) {
         break;
       }
       if (columnHeaders[i].colId === headerName) {
@@ -315,7 +316,7 @@ class DocumentTableView extends React.Component {
   updateHeaders(showing, columnHeaders) {
     const colIds = Object.keys(showing);
     for (let i = 0; i < columnHeaders.length; i++) {
-      if (colIds.includes(columnHeaders[i].colId)) {
+      if (colIds.includes('' + columnHeaders[i].colId)) {
         columnHeaders[i].headerComponentParams.bsonType = showing[columnHeaders[i].colId];
       }
     }
@@ -329,21 +330,20 @@ class DocumentTableView extends React.Component {
    *
    * @param {Object} params - The set of optional params.
    *   Adding a column:
-   *    params.add.colId - The columnId that the new column will be added next to.
-   *    params.add.rowIndex - The index of row which added the new column. Required
-   *      so that we can open up the new field for editing.
+   *    params.add.colIdBefore - The columnId that the new column will be added next to.
    *    params.add.path - An array of field names. Will be empty for top level.
    *   Deleting columns:
    *    params.remove.colIds - The array of columnIds to be deleted.
    *   Updating headers:
    *    params.updateHeaders.showing - A mapping of columnId to BSON type. The
    *      new bson type will be forwarded to the column headers.
+   *   Editing:
+   *    params.edit.rowIndex - The index of row of the cell to start editing.
+   *    params.edit.colId - The colId of the cell to start editing.
    */
   modifyColumns(params) {
     if ('add' in params) {
-      this.addColumn(params.add.colId, '$new', '', params.add.path);
-      this.gridApi.setFocusedCell(params.add.rowIndex, '$new');
-      this.gridApi.startEditingCell({rowIndex: params.add.rowIndex, colKey: '$new'});
+      this.addGridColumn(params.add.colIdBefore, '$new', '', params.add.path);
     }
     if ('remove' in params) {
       this.removeColumns(params.remove.colIds);
@@ -355,6 +355,10 @@ class DocumentTableView extends React.Component {
 
       this.updateHeaders(params.updateHeaders.showing, columnHeaders);
       this.gridApi.refreshHeader();
+    }
+    if ('edit' in params) {
+      this.gridApi.setFocusedCell(params.edit.rowIndex, '$new');
+      this.gridApi.startEditingCell({rowIndex: params.edit.rowIndex, colKey: '$new'});
     }
   }
 
@@ -426,10 +430,10 @@ class DocumentTableView extends React.Component {
    * @param {Object} doc - The raw document that was inserted.
    * @param {boolean} clone - If the document was cloned, don't add row.
    */
-  handleInsert(error, doc, clone) { // TODO: handle nested insert
+  handleInsert(error, doc, clone) {
     if (!error && !clone) {
       Object.keys(doc).forEach((key) => {
-        this.addColumn(null, key, TypeChecker.type(doc[key]), []);
+        this.addGridColumn(null, key, TypeChecker.type(doc[key]), []);
       });
       this.insertRow(doc, 0, 1, false);
     }
@@ -480,14 +484,12 @@ class DocumentTableView extends React.Component {
   /**
    * When the BreadcrumbStore changes, update the grid.
    *
-   * TODO: When multi-doc expand is implemented, can drop the 'document' param
    * and just trigger with the path.
    *
    * @param {Object} params - Can contain collection, path, and/or types.
    *  collection {String} - The collection name.
    *  path {Array} - The array of field names/indexes.
    *  types {Array} - The array of types for each segment of the path array.
-   *  document {HadronDocument} - The document that we're drilling down into.
    */
   handleBreadcrumbChange(params) {
     if (params.path.length === 0) {
@@ -587,7 +589,19 @@ class DocumentTableView extends React.Component {
       },
 
       editable: function(params) {
-        return (isEditable && params.node.data.state !== 'deleting');
+        if (!isEditable || params.node.data.state === 'deleting') {
+          return false;
+        } else if (path.length <= 1) {
+          return true;
+        }
+        const parent = params.node.data.hadronDocument.getChild(
+          path.slice(0, path.length - 1)
+        );
+        if (parent.currentType === 'Array' &&
+            params.colDef.colId > parent.elements.lastElement.currentKey + 1) {
+          return false;
+        }
+        return true;
       },
 
       cellEditorFramework: CellEditor,
@@ -619,7 +633,7 @@ class DocumentTableView extends React.Component {
     headers.hadronRowNumber = {
       headerName: 'Row',
       field: 'rowNumber',
-      colId: '$rowNumber', // TODO: make sure user can't get duplicate
+      colId: '$rowNumber',
       width: 30,
       pinned: 'left',
       headerComponentFramework: HeaderComponent,
@@ -735,7 +749,7 @@ class DocumentTableView extends React.Component {
   render() {
     return (
       <div className="ag-parent">
-        <BreadcrumbComponent collection={this.collection}/>
+        <BreadcrumbComponent collection={this.collection} actions={Actions}/>
         {this.AGGrid}
       </div>
     );

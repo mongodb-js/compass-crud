@@ -11,8 +11,8 @@ const DataService = require('mongodb-data-service');
 const Connection = require('mongodb-connection-model');
 const DocumentList = require('../../lib/components/document-list');
 
-const DB = 'compass-crud';
-const COLL = 'test';
+const DB = 'Venues';
+const COLL = 'Restaurants';
 
 const CONNECTION = new Connection({
   hostname: '127.0.0.1',

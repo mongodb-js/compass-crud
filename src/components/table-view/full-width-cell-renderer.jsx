@@ -5,7 +5,6 @@ const PropTypes = require('prop-types');
 const DocumentFooter = require('../document-footer');
 const RemoveDocumentFooter = require('../remove-document-footer');
 const ClonedDocumentFooter = require('../cloned-document-footer');
-const ResetDocumentListStore = require('../../stores/reset-document-list-store');
 
 /**
  * The delete error message.
@@ -33,9 +32,9 @@ class FullWidthCellRenderer extends React.Component {
 
     // The update store needs to be scoped to a document and not a global
     // singleton.
-    this.updateStore = this.createUpdateStore(this.actions);
-    this.removeStore = this.createRemoveStore(this.actions);
-    this.insertStore = this.createInsertStore(this.actions);
+    this.updateStore = this.createUpdateStore(this.actions, this.props.dataService);
+    this.removeStore = this.createRemoveStore(this.actions, this.props.dataService);
+    this.insertStore = this.createInsertStore(this.actions, this.props.dataService);
   }
 
   /**
@@ -60,10 +59,11 @@ class FullWidthCellRenderer extends React.Component {
    * Create the scoped insert store for cloned documents.
    *
    * @param {Action} actions - The component reflux actions.
+   * @param {DataService} dataService
    *
    * @returns {Store} The scoped store.
    */
-  createInsertStore(actions) {
+  createInsertStore(actions, dataService) {
     return Reflux.createStore({
 
       /**
@@ -80,7 +80,7 @@ class FullWidthCellRenderer extends React.Component {
        * @param {Object} object - The new document.
        */
       insert: function(object) {
-        ResetDocumentListStore.dataService.insertOne(
+        dataService.insertOne(
           this.ns,
           object,
           {},
@@ -108,10 +108,11 @@ class FullWidthCellRenderer extends React.Component {
    * Create the scoped update store.
    *
    * @param {Action} actions - The component reflux actions.
+   * @param {DataService} dataService
    *
    * @returns {Store} The scoped store.
    */
-  createUpdateStore(actions) {
+  createUpdateStore(actions, dataService) {
     return Reflux.createStore({
 
       /**
@@ -131,7 +132,7 @@ class FullWidthCellRenderer extends React.Component {
        */
       update: function(object) {
         // TODO (@thomasr) this does not work for projections
-        ResetDocumentListStore.dataService.findOneAndReplace(
+        dataService.findOneAndReplace(
           this.ns,
           { _id: object._id },
           object,
@@ -158,10 +159,11 @@ class FullWidthCellRenderer extends React.Component {
    * Create the scoped remove store.
    *
    * @param {Action} actions - The component reflux actions.
+   * @param {DataService} dataService
    *
    * @returns {Store} The scoped store.
    */
-  createRemoveStore(actions) {
+  createRemoveStore(actions, dataService) {
     return Reflux.createStore({
 
       /**
@@ -180,7 +182,7 @@ class FullWidthCellRenderer extends React.Component {
       remove: function(object) {
         const id = object.getId();
         if (id) {
-          ResetDocumentListStore.dataService.deleteOne(this.ns, { _id: id }, {}, this.handleResult);
+          dataService.deleteOne(this.ns, { _id: id }, {}, this.handleResult);
         } else {
           this.handleResult(DELETE_ERROR);
         }
@@ -282,6 +284,7 @@ class FullWidthCellRenderer extends React.Component {
   }
 
   handleCancelClone() {
+    this.props.api.stopEditing();
     this.props.context.handleRemove(this.props.node);
   }
 
@@ -293,6 +296,7 @@ class FullWidthCellRenderer extends React.Component {
           updateStore={this.updateStore}
           actions={this.actions}
           cancelHandler={this.handleCancelUpdate.bind(this)}
+          api = {this.props.api}
         />
       );
     }
@@ -303,27 +307,32 @@ class FullWidthCellRenderer extends React.Component {
           insertStore={this.insertStore}
           actions={this.actions}
           cancelHandler={this.handleCancelClone.bind(this)}
+          api = {this.props.api}
         />
       );
     }
-    return (
-      <RemoveDocumentFooter
-        doc={this.doc}
-        removeStore={this.removeStore}
-        actions={this.actions}
-        cancelHandler={this.handleCancelDelete.bind(this)} />
-    );
+    if (this.state.mode === 'deleting') {
+      return (
+        <RemoveDocumentFooter
+          doc={this.doc}
+          removeStore={this.removeStore}
+          actions={this.actions}
+          cancelHandler={this.handleCancelDelete.bind(this)}
+          api = {this.props.api}
+        />
+      );
+    }
   }
 
 }
 
 FullWidthCellRenderer.propTypes = {
   api: PropTypes.any,
-  mode: PropTypes.any,
   data: PropTypes.any,
   context: PropTypes.any,
   node: PropTypes.any,
-  actions: PropTypes.any.isRequired
+  actions: PropTypes.any.isRequired,
+  dataService: PropTypes.any.isRequired
 };
 
 FullWidthCellRenderer.displayName = 'FullWidthCellRenderer';
