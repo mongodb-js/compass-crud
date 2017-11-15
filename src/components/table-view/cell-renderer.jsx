@@ -81,9 +81,14 @@ class CellRenderer extends React.Component {
       if (!parent || (props.parentType && parent.currentType !== props.parentType)) {
         this.wrongParentType = true;
         this.editable = false;
-      } else if (parent.currentType === 'Array' &&
-                 props.column.getColId() > parent.elements.lastElement.currentKey + 1) {
-        this.editable = false;
+      } else if (parent.currentType === 'Array') {
+        let maxKey = 0;
+        if (parent.elements.lastElement) {
+          maxKey = parent.elements.lastElement.currentKey + 1;
+        }
+        if (props.column.getColId() > maxKey) {
+          this.editable = false;
+        }
       }
     }
 

@@ -722,9 +722,14 @@ class DocumentTableView extends React.Component {
         if (!parent || parent.currentType !== parentType) {
           return false;
         }
-        if (parent.currentType === 'Array' && !('' + params.column.getColId()).includes('$') &&
-            params.column.getColId() > parent.elements.lastElement.currentKey + 1) {
-          return false;
+        if (parent.currentType === 'Array' && !('' + params.column.getColId()).includes('$')) {
+          let maxKey = 0;
+          if (parent.elements.lastElement) {
+            maxKey = parent.elements.lastElement.currentKey + 1;
+          }
+          if (params.column.getColId() > maxKey) {
+            return false;
+          }
         }
         return true;
       },
