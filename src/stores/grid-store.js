@@ -100,7 +100,7 @@ const GridStore = Reflux.createStore( {
    * @param {Object} newDoc
    */
   replaceDoc(oldOid, newOid, newDoc) {
-    const params = {};
+    const params = {refresh: {oid: newOid}};
 
     /* Replace types in this.columns */
     _.forEach(this.columns, (val, key) => {

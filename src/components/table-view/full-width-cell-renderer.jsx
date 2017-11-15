@@ -263,6 +263,10 @@ class FullWidthCellRenderer extends React.Component {
       parent = this.doc.getChild(this.props.context.path);
     }
 
+    if (!parent) {
+      return;
+    }
+
     this.doc.cancel();
     this.props.actions.replaceDoc(id, id, parent.generateObject());
     this.props.actions.cleanCols();

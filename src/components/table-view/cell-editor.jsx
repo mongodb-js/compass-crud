@@ -184,6 +184,7 @@ class CellEditor extends React.Component {
        Docs: https://www.ag-grid.com/javascript-grid-column-definitions
        */
     }
+    this.props.api.refreshCells({rowNodes: [this.props.node], force: true});
   }
 
   focus() {
