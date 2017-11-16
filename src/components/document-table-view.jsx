@@ -570,6 +570,12 @@ class DocumentTableView extends React.Component {
       const headers = this.createColumnHeaders(this.hadronDocs, params.path, params.types);
       headers.push(this.createObjectIdHeader());
 
+      if (headers.length <= 3) {
+        headers.push(this.createPlaceholderHeader(
+          params.types[params.types.length - 1] === 'Array', params.path)
+        );
+      }
+
       this.gridApi.gridOptionsWrapper.gridOptions.context.path = params.path;
       this.gridApi.setRowData(this.createRowData(this.hadronDocs, 1));
       this.gridApi.setColumnDefs(headers);
@@ -629,6 +635,12 @@ class DocumentTableView extends React.Component {
         this.addFooter(node, node.data, 'editing');
       }
     });
+  }
+
+  createPlaceholderHeader(isArray, path) {
+    const name = isArray ? 0 : '$new';
+    const type = isArray ? 'Array' : 'Object';
+    return this.createColumnHeader('String', true, [].concat(path, [name]), type);
   }
 
   createObjectIdHeader() {
@@ -722,7 +734,7 @@ class DocumentTableView extends React.Component {
         if (!parent || parent.currentType !== parentType) {
           return false;
         }
-        if (parent.currentType === 'Array' && !('' + params.column.getColId()).includes('$')) {
+        if (parent.currentType === 'Array' && params.column.getColId() !== '$_id') {
           let maxKey = 0;
           if (parent.elements.lastElement) {
             maxKey = parent.elements.lastElement.currentKey + 1;

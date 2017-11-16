@@ -76,7 +76,7 @@ class CellRenderer extends React.Component {
     /* Can't get the editable() function from here, so have to reevaluate */
     this.editable = true;
     this.wrongParentType = false;
-    if (props.context.path.length > 0 && !('' + props.column.getColId()).includes('$')) {
+    if (props.context.path.length > 0 && props.column.getColId() !== '$_id') {
       const parent = props.node.data.hadronDocument.getChild(props.context.path);
       if (!parent || (props.parentType && parent.currentType !== props.parentType)) {
         this.wrongParentType = true;
