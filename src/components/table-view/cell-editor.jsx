@@ -102,7 +102,9 @@ class CellEditor extends React.Component {
   }
 
   componentDidMount() {
-    this.props.reactContainer.addEventListener('keydown', this.onKeyDown);
+    if (this.props.reactContainer) {
+      this.props.reactContainer.addEventListener('keydown', this.onKeyDown);
+    }
     this.focus();
   }
 
@@ -111,7 +113,9 @@ class CellEditor extends React.Component {
   }
 
   componentWillUnmount() {
-    this.props.reactContainer.removeEventListener('keydown', this.onKeyDown);
+    if (this.props.reactContainer) {
+      this.props.reactContainer.removeEventListener('keydown', this.onKeyDown);
+    }
     this.props.api.stopEditing();
   }
 
