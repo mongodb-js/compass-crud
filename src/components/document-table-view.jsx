@@ -59,10 +59,7 @@ class DocumentTableView extends React.Component {
         rowHeight: 28,  // .document-footer row needs 28px, ag-grid default is 25px
         getRowStyle: this.updateWidth,
         onGridSizeChanged: this.updateActionsPlacement,
-        suppressPreventDefaultOnMouseWheel: true,
-        /* TODO: implement for hotkeys */
-        navigateToNextCell: () => {},
-        tabToNextCell: () => {}
+        suppressPreventDefaultOnMouseWheel: true
       },
       onGridReady: this.onGridReady.bind(this),
       isFullWidthCell: function(rowNode) {
