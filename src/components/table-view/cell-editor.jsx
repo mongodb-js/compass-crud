@@ -20,8 +20,6 @@ const EMPTY_TYPE = {
   Undefined: undefined, Null: null
 };
 
-// const util = require('util');
-
 /**
  * BEM BASE
  */
@@ -110,7 +108,7 @@ class CellEditor extends React.Component {
       this.fieldNameNode, this.inputNode, this.typesNode,
       this.expandNode, this.addFieldNode, this.removeNode
     ];
-    this.nodeIndex = 0;
+    this.nodeIndex = 1;
     this.maxNodes = this.nodes.length - 1;
     while (this.nodes[this.maxNodes] === undefined) {
       this.maxNodes--;
@@ -119,10 +117,6 @@ class CellEditor extends React.Component {
     while (this.nodes[this.minNodes] === undefined) {
       this.minNodes++;
     }
-    this.focus();
-  }
-
-  componentDidUpdate() {
     this.focus();
   }
 
@@ -139,10 +133,12 @@ class CellEditor extends React.Component {
    * @param {Object} event
    */
   onKeyDown(event) {
-    if (event.keyCode === 27) {
+    event.stopPropagation();
+    if (event.keyCode === 27 || event.keyCode === 13) {
       this.props.api.stopEditing();
     }
     if (event.shiftKey && event.keyCode === 9) {
+      event.preventDefault();
       while (this.nodeIndex > -1 && this.nodes[this.nodeIndex] === undefined) {
         this.nodeIndex--;
       }
@@ -154,18 +150,18 @@ class CellEditor extends React.Component {
         this.nodeIndex--;
       }
     } else if (event.keyCode === 9) {
+      event.preventDefault();
       while (this.nodeIndex < 6 && this.nodes[this.nodeIndex] === undefined) {
         this.nodeIndex++;
       }
       const node = this.nodes[this.nodeIndex];
-      if (this.nodeIndex >= this.maxNodes || node === undefined) {
+      if (this.nodeIndex > this.maxNodes || node === undefined) {
         this.props.api.tabToNextCell();
       } else {
         node.focus();
         this.nodeIndex++;
       }
     }
-    event.stopPropagation();
   }
 
   /**
@@ -242,7 +238,6 @@ class CellEditor extends React.Component {
   }
 
   focus() {
-    // TODO: why this?
     setTimeout(() => {
       const container = ReactDOM.findDOMNode(this.props.reactContainer);
       if (container) {
@@ -396,7 +391,7 @@ class CellEditor extends React.Component {
             <input
               type="text"
               onChange={this.handleFieldNameChange.bind(this)}
-              onClick={() => {this.nodeIndex = 0;}}
+              onClick={() => {this.nodeIndex = 1;}}
               className={this.styleField(true)}
               value={this.state.fieldName}
               ref={(c) => {this.fieldNameNode = c;}}
@@ -422,7 +417,7 @@ class CellEditor extends React.Component {
     return (
       <div className={`${BEM_BASE}-input-types`}
            onBlur={this.handleTypeChange.bind(this)}
-           onClick={() => {this.nodeIndex = 2;}}>
+           onClick={() => {this.nodeIndex = 3;}}>
         <Types element={this.element} className={`${BEM_BASE}-types btn btn-default btn-xs`}
                buttonRef={(c) => { this.typesNode = c; }}/>
       </div>
@@ -457,7 +452,7 @@ class CellEditor extends React.Component {
             style={{ width: `${length}px`}}
             className={this.styleValue()}
             onChange={this.handleInputChange.bind(this)}
-            onClick={() => {this.nodeIndex = 0;}}
+            onClick={() => {this.nodeIndex = 2;}}
             onPaste={this.handlePaste.bind(this)}
             value={this.editor().value(true)}
             placeholder="Value"/>
@@ -523,7 +518,7 @@ class CellEditor extends React.Component {
     return (
       <span className={`${BEM_BASE}-actions`}>
         {this.renderExpand(showExpand)}
-        <span onClick={()=>{this.nodeIndex = 4;}}>
+        <span onClick={()=>{this.nodeIndex = 5;}}>
           <AddFieldButton {...this.props}
                           displace={displace}
                           buttonRef={(c) => { this.addFieldNode = c; }}
