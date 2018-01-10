@@ -33,7 +33,8 @@ class DocumentList extends React.Component {
     this.state = {
       docs: [],
       namespace: this.NamespaceStore.ns,
-      activeDocumentView: 'List'
+      activeDocumentView: 'List',
+      startIndex: 1
     };
   }
 
@@ -63,12 +64,14 @@ class DocumentList extends React.Component {
    *
    * @param {Object} error - Error when trying to click next or prev page.
    * @param {Array} documents - The new documents.
+   * @param {Number} start - The start index of the document in the page.
    */
-  handlePageChanged(error, documents) {
+  handlePageChanged(error, documents, start) {
     if (error) {
-      this.setState({error: error});
+      this.setState({ error: error });
     } else {
-      this.setState({ docs: documents, error: error });
+      Actions.pathChanged([], []);
+      this.setState({ docs: documents, error: error, startIndex: start });
     }
   }
 
@@ -86,11 +89,13 @@ class DocumentList extends React.Component {
       // If resetting, then we need to go back to page one with
       // the documents as the filter changed. The loaded count and
       // total count are reset here as well.
+      Actions.pathChanged([], []);
       this.setState({
         docs: documents,
         count: count,
         namespace: this.NamespaceStore.ns,
-        error: error
+        error: error,
+        startIndex: 1
       });
     }
   }
@@ -173,7 +178,8 @@ class DocumentList extends React.Component {
     return (
       <DocumentTableView docs={this.state.docs}
                          isEditable={isEditable}
-                         ns={this.state.namespace}/>
+                         ns={this.state.namespace}
+                         startIndex={this.state.startIndex} />
     );
   }
 
