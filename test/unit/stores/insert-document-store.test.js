@@ -5,10 +5,9 @@ const AppRegistry = require('hadron-app-registry');
 const InsertDocumentStore = require('../../../lib/stores/insert-document-store');
 
 const CONNECTION = new Connection({
-  hostname: '127.0.0.1',
+  hostname: 'localhost',
   port: 27018,
-  ns: 'compass-crud',
-  mongodb_database_name: 'admin'
+  ns: 'compass-crud-test'
 });
 
 describe('InsertDocumentStore', () => {

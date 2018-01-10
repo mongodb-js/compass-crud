@@ -1,10 +1,8 @@
 const _ = require('lodash');
 const React = require('react');
 const ObjectId = require('bson').ObjectId;
-const Action = require('../actions');
 const { StatusRow } = require('hadron-react-components');
 const ResetDocumentListStore = require('../stores/reset-document-list-store');
-const LoadMoreDocumentsStore = require('../stores/load-more-documents-store');
 const RemoveDocumentStore = require('../stores/remove-document-store');
 const InsertDocumentStore = require('../stores/insert-document-store');
 const InsertDocumentDialog = require('./insert-document-dialog');
@@ -13,16 +11,6 @@ const DocumentListView = require('./document-list-view');
 const DocumentTableView = require('./document-table-view');
 const Toolbar = require('./toolbar');
 const Actions = require('../actions');
-
-/**
- * The loading more class.
- */
-const LOADING = 'loading-indicator';
-
-/**
- * Loading indicator is loading.
- */
-const IS_LOADING = `${LOADING}-is-loading`;
 
 /**
  * Component for the entire document list.
@@ -44,9 +32,7 @@ class DocumentList extends React.Component {
     this.projection = false;
     this.state = {
       docs: [],
-      nextSkip: 0,
       namespace: this.NamespaceStore.ns,
-      loading: false,
       activeDocumentView: 'List'
     };
   }
@@ -56,7 +42,6 @@ class DocumentList extends React.Component {
    */
   componentDidMount() {
     this.unsubscribeReset = ResetDocumentListStore.listen(this.handleReset.bind(this));
-    this.unsubscribeLoadMore = LoadMoreDocumentsStore.listen(this.handleLoadMore.bind(this));
     this.unsubscribePageChanged = PageChangedStore.listen(this.handlePageChanged.bind(this));
     this.unsubscribeRemove = RemoveDocumentStore.listen(this.handleRemove.bind(this));
     this.unsubscribeInsert = InsertDocumentStore.listen(this.handleInsert.bind(this));
@@ -68,39 +53,22 @@ class DocumentList extends React.Component {
    */
   componentWillUnmount() {
     this.unsubscribeReset();
-    this.unsubscribeLoadMore();
     this.unsubscribeRemove();
     this.unsubscribeInsert();
     this.unsubscribePageChanged();
   }
 
   /**
-   * Handle the loading of more documents.
-   *
-   * @param {Object} error - Error when trying to load more documents.
-   * @param {Array} documents - The next batch of documents.
-   */
-  handleLoadMore(error, documents) {
-    // If not resetting we append the documents to the existing
-    // list and increment the page. The loaded count is incremented
-    // by the number of new documents.
-    this.setState({
-      docs: this.state.docs.concat(documents),
-      nextSkip: (this.state.nextSkip + documents.length),
-      loadedCount: (this.state.loadedCount + documents.length),
-      error: error,
-      loading: false
-    });
-  }
-
-  /**
    * If an error occurs when we press 'next page'
    *
    * @param {Object} error - Error when trying to click next or prev page.
+   * @param {Array} documents - The new documents.
    */
-  handlePageChanged(error) {
+  handlePageChanged(error, documents) {
     if (error) {
       this.setState({error: error});
+    } else {
+      this.setState({ docs: documents, error: error });
     }
   }
 
@@ -120,9 +88,7 @@ class DocumentList extends React.Component {
       // total count are reset here as well.
       this.setState({
         docs: documents,
-        nextSkip: documents.length,
         count: count,
-        loadedCount: documents.length,
         namespace: this.NamespaceStore.ns,
         error: error
       });
@@ -143,23 +109,7 @@ class DocumentList extends React.Component {
       return _id === id;
     });
     this.state.docs.splice(index, 1);
-    this.setState({
-      docs: this.state.docs,
-      loadedCount: (this.state.loadedCount - 1),
-      nextSkip: (this.state.nextSkip - 1)
-    });
-  }
-
-  /**
-   * Handle the scroll event of the parent container.
-   *
-   * @param {Event} evt - The scroll event.
-   */
-  handleScroll(evt) {
-    const container = evt.srcElement;
-    if (container.scrollTop === (container.scrollHeight - container.offsetHeight)) {
-      this.loadMore();
-    }
+    this.setState({ docs: this.state.docs });
   }
 
   /**
@@ -180,8 +130,6 @@ class DocumentList extends React.Component {
       const newDocs = [doc].concat(this.state.docs);
       this.setState({
         docs: newDocs,
-        nextSkip: (this.state.nextSkip + 1),
-        loadedCount: (this.state.loadedCount + 1),
         count: this.state.count + 1
       });
     }
@@ -209,17 +157,6 @@ class DocumentList extends React.Component {
   }
 
   /**
-   * Get the next batch of documents. Will only fire if there are more documents
-   * in the collection to load.
-   */
-  loadMore() {
-    if (!this.state.loading && (this.state.loadedCount < this.state.count)) {
-      this.setState({ loading: true });
-      Action.fetchNextDocuments(this.state.nextSkip);
-    }
-  }
-
-  /**
    * Render the views for the document list.
    *
    * @returns {React.Component} The document list views.
@@ -230,8 +167,7 @@ class DocumentList extends React.Component {
       return (
         <DocumentListView
           docs={this.state.docs}
-          isEditable={isEditable}
-          scrollHandler={this.handleScroll.bind(this)} />
+          isEditable={isEditable} />
       );
     }
     return (
@@ -258,9 +194,6 @@ class DocumentList extends React.Component {
       <div className="column-container">
         <div className="column main">
           {this.renderViews()}
-          <div className={this.state.loading ? `${LOADING} ${IS_LOADING}` : LOADING}>
-            <i className="fa fa-circle-o-notch fa-spin" aria-hidden="true"></i>
-          </div>
         </div>
       </div>
     );
