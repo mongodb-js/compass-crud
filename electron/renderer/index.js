@@ -63,6 +63,7 @@ dataService.connect((error, ds) => {
   // Set the namespace for the CRUD plugin.
   CollectionStore.setCollection({ _id: `${DB}.${COLL}` });
   QueryChangedStore.onQueryStoreChanged({ns: `${DB}.${COLL}`});
+  appRegistry.emit('collection-changed', `${DB}.${COLL}`);
 });
 
 ReactDOM.render(

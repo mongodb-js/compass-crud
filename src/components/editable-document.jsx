@@ -160,6 +160,9 @@ class EditableDocument extends React.Component {
       init() {
         this.ns = global.hadronApp.appRegistry.getStore('App.NamespaceStore').ns;
         this.listenTo(actions.update, this.update);
+        global.hadronApp.appRegistry.on('collection-changed', (ns) => {
+          this.ns = ns;
+        });
       },
 
       /**
@@ -210,6 +213,9 @@ class EditableDocument extends React.Component {
       init: function() {
         this.ns = global.hadronApp.appRegistry.getStore('App.NamespaceStore').ns;
         this.listenTo(actions.remove, this.remove);
+        global.hadronApp.appRegistry.on('collection-changed', (ns) => {
+          this.ns = ns;
+        });
       },
 
       /**
