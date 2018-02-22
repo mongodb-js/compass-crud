@@ -242,6 +242,7 @@ class EditableElement extends React.Component {
           edit={this.props.edit}
           closeAllMenus={this.props.closeAllMenus}
           expandAll={this.props.expandAll}
+          hadronAppVersion={this.props.hadronAppVersion}
         />
       ));
       index++;
@@ -287,7 +288,7 @@ class EditableElement extends React.Component {
    */
   renderTypes() {
     if (this.props.editing) {
-      return (<Types element={this.element} />);
+      return (<Types element={this.element} hadronAppVersion={this.props.hadronAppVersion}/>);
     }
   }
 
@@ -348,7 +349,13 @@ class EditableElement extends React.Component {
    */
   renderValue() {
     if (this.props.editing && this.element.isValueEditable()) {
-      return (<EditableValue element={this.element} isFocused={this.state.focusValue} />);
+      return (
+        <EditableValue
+          element={this.element}
+          isFocused={this.state.focusValue}
+          hadronAppVersion={this.props.hadronAppVersion}
+        />
+      );
     }
     const component = getComponent(this.element.currentType);
     const reactComponent = React.createElement(
@@ -420,7 +427,8 @@ EditableElement.propTypes = {
   closeAllMenus: PropTypes.func.isRequired,
   index: PropTypes.number,
   indent: PropTypes.number,
-  expandAll: PropTypes.bool
+  expandAll: PropTypes.bool,
+  hadronAppVersion: PropTypes.string.isRequired
 };
 
 export default EditableElement;

@@ -34,7 +34,7 @@ class Types extends React.Component {
     super(props);
     this.state = { isOpen: false };
     this.element = props.element;
-    this._version = global.hadronApp.instance.build.version;
+    this._version = props.hadronAppVersion;
     this.className = props.className ? props.className : 'editable-element';
   }
 
@@ -164,7 +164,8 @@ Types.displayName = 'Types';
 Types.propTypes = {
   element: PropTypes.object.isRequired,
   className: PropTypes.string,
-  buttonRef: PropTypes.any
+  buttonRef: PropTypes.any,
+  hadronAppVersion: PropTypes.string
 };
 
 export default Types;

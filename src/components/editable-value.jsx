@@ -45,7 +45,7 @@ class EditableValue extends React.Component {
     this.element = props.element;
     this.state = { editing: false };
     this._pasting = false;
-    this._version = global.hadronApp.instance.build.version;
+    this._version = props.hadronAppVersion;
     this._editors = initEditors(this.element);
   }
 
@@ -270,7 +270,8 @@ EditableValue.displayName = 'EditableValue';
 
 EditableValue.propTypes = {
   element: PropTypes.object.isRequired,
-  isFocused: PropTypes.bool.isRequired
+  isFocused: PropTypes.bool.isRequired,
+  hadronAppVersion: PropTypes.string.isRequired
 };
 
 export default EditableValue;

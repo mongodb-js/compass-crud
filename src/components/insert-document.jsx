@@ -94,7 +94,8 @@ InsertDocument.displayName = 'InsertDocument';
 
 InsertDocument.propTypes = {
   doc: PropTypes.object.isRequired,
-  closeAllMenus: PropTypes.func.isRequired
+  closeAllMenus: PropTypes.func.isRequired,
+  hadronAppVersion: PropTypes.string.isRequired
 };
 
 export default InsertDocument;

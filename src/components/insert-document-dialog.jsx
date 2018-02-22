@@ -122,7 +122,9 @@ class InsertDocumentDialog extends React.PureComponent {
       return (
         <InsertDocument
           doc={this.props.doc}
-          closeAllMenus={this.props.closeAllMenus} />
+          closeAllMenus={this.props.closeAllMenus}
+          hadronAppVersion={this.props.hadronAppVersion}
+        />
       );
     }
   }
@@ -175,7 +177,8 @@ InsertDocumentDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   message: PropTypes.string.isRequired,
   mode: PropTypes.string.isRequired,
-  doc: PropTypes.object
+  doc: PropTypes.object,
+  hadronAppVersion: PropTypes.string.isRequired
 };
 
 export default InsertDocumentDialog;

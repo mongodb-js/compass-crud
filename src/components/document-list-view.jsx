@@ -41,7 +41,9 @@ class DocumentListView extends React.Component {
             removeDocument={this.props.removeDocument}
             updateDocument={this.props.updateDocument}
             openInsertDocumentDialog={this.props.openInsertDocumentDialog}
-            closeAllMenus={this.props.closeAllMenus} />
+            closeAllMenus={this.props.closeAllMenus}
+            hadronAppVersion={this.props.hadronAppVersion}
+          />
         </li>
       );
     });
@@ -68,7 +70,8 @@ DocumentListView.propTypes = {
   removeDocument: PropTypes.func,
   updateDocument: PropTypes.func,
   openInsertDocumentDialog: PropTypes.func,
-  closeAllMenus: PropTypes.func
+  closeAllMenus: PropTypes.func,
+  hadronAppVersion: PropTypes.string.isRequired
 };
 
 DocumentListView.displayName = 'DocumentListView';

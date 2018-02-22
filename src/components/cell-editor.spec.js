@@ -11,11 +11,6 @@ describe('<CellEditor />', () => {
   before(() => {
     global.hadronApp = app;
     global.hadronApp.appRegistry = new AppRegistry();
-    global.hadronApp.instance = {
-      build: {
-        version: '3.4.0'
-      }
-    };
   });
 
   after(() => {
@@ -48,7 +43,8 @@ describe('<CellEditor />', () => {
                                       elementMarkRemoved={actions.elementMarkRemoved}
                                       drillDown={actions.drillDown}
                                       addColumn={actions.addColumn}
-                                      columnApi={columnApi} context={context}/>);
+                                      columnApi={columnApi} context={context}
+                                      hadronAppVersion="3.4.0"/>);
         done();
       });
       it('renders the input field', () => {
@@ -95,7 +91,8 @@ describe('<CellEditor />', () => {
                                       elementMarkRemoved={actions.elementMarkRemoved}
                                       drillDown={actions.drillDown}
                                       addColumn={actions.addColumn}
-                                      columnApi={columnApi} context={context}/>);
+                                      columnApi={columnApi} context={context}
+                                      hadronAppVersion="3.4.0"/>);
         done();
       });
       it('renders the fieldname input field', () => {
@@ -137,7 +134,8 @@ describe('<CellEditor />', () => {
                                       elementMarkRemoved={actions.elementMarkRemoved}
                                       drillDown={actions.drillDown}
                                       addColumn={actions.addColumn}
-                                      columnApi={columnApi} context={context}/>);
+                                      columnApi={columnApi} context={context}
+                                      hadronAppVersion="3.4.0"/>);
         done();
       });
       it('renders the input field', () => {
@@ -179,7 +177,8 @@ describe('<CellEditor />', () => {
                                       elementMarkRemoved={actions.elementMarkRemoved}
                                       drillDown={actions.drillDown}
                                       addColumn={actions.addColumn}
-                                      columnApi={columnApi} context={context}/>);
+                                      columnApi={columnApi} context={context}
+                                      hadronAppVersion="3.4.0"/>);
         done();
       });
       it('renders the type cast dropdown', () => {
@@ -228,7 +227,8 @@ describe('<CellEditor />', () => {
                                         elementMarkRemoved={actions.elementMarkRemoved}
                                         drillDown={actions.drillDown}
                                         addColumn={actions.addColumn}
-                                        columnApi={columnApi} context={context}/>);
+                                        columnApi={columnApi} context={context}
+                                        hadronAppVersion="3.4.0"/>);
           done();
         });
         it('renders the add field button', () => {
@@ -260,7 +260,8 @@ describe('<CellEditor />', () => {
                                         elementMarkRemoved={actions.elementMarkRemoved}
                                         drillDown={actions.drillDown}
                                         addColumn={actions.addColumn}
-                                        columnApi={columnApi} context={context}/>);
+                                        columnApi={columnApi} context={context}
+                                        hadronAppVersion="3.4.0"/>);
           done();
         });
         it('renders the type cast dropdown', () => {
@@ -314,7 +315,8 @@ describe('<CellEditor />', () => {
                                         elementMarkRemoved={actions.elementMarkRemoved}
                                         drillDown={actions.drillDown}
                                         addColumn={actions.addColumn}
-                                        context={context} columnApi={columnApi}/>);
+                                        context={context} columnApi={columnApi}
+                                        hadronAppVersion="3.4.0"/>);
           const wrapper = component.find('.editable-element-value-is-string');
           wrapper.simulate('change', {target: {value: 'new input'}});
           expect(wrapper.props().value).to.equal('new input');
@@ -357,7 +359,8 @@ describe('<CellEditor />', () => {
                                           elementMarkRemoved={actions.elementMarkRemoved}
                                           drillDown={actions.drillDown}
                                           addColumn={actions.addColumn}
-                                          context={context} columnApi={columnApi}/>);
+                                          context={context} columnApi={columnApi}
+                                          hadronAppVersion="3.4.0"/>);
             const item = component.find('.table-view-cell-editor-input-types');
             const item2 = component.find('.editable-element-type-int32');
             expect(item2).to.be.present();
@@ -405,7 +408,8 @@ describe('<CellEditor />', () => {
                                           elementMarkRemoved={actions.elementMarkRemoved}
                                           drillDown={actions.drillDown}
                                           addColumn={actions.addColumn}
-                                          context={context} column={column}/>);
+                                          context={context} column={column}
+                                          hadronAppVersion="3.4.0"/>);
             const item = component.find('.table-view-cell-editor-input-types');
             const item2 = component.find('.editable-element-type-date');
             expect(item2).to.be.present();
@@ -456,7 +460,8 @@ describe('<CellEditor />', () => {
                                           elementMarkRemoved={actions.elementMarkRemoved}
                                           drillDown={actions.drillDown}
                                           addColumn={actions.addColumn}
-                                          context={context} columnApi={columnApi}/>);
+                                          context={context} columnApi={columnApi}
+                                          hadronAppVersion="3.4.0"/>);
             const wrapper = component.find('.fa-trash');
             expect(wrapper).to.be.present();
             wrapper.simulate('mousedown');
@@ -500,7 +505,8 @@ describe('<CellEditor />', () => {
                                         elementMarkRemoved={actions.elementMarkRemoved}
                                         drillDown={actions.drillDown}
                                         addColumn={actions.addColumn}
-                                        context={context} columnApi={columnApi}/>);
+                                        context={context} columnApi={columnApi}
+                                        hadronAppVersion="3.4.0"/>);
           const wrapper = component.find('.fa-trash');
           expect(wrapper).to.be.present();
           wrapper.simulate('mousedown');
@@ -551,7 +557,8 @@ describe('<CellEditor />', () => {
                                         drillDown={actions.drillDown}
                                         addColumn={actions.addColumn}
                                         context={context} column={column}
-                                        columnApi={columnApi}/>);
+                                        columnApi={columnApi}
+                                        hadronAppVersion="3.4.0"/>);
           const wrapper = component.find('.editable-element-field');
           wrapper.simulate('change', {target: {value: 'fieldname'}});
           expect(wrapper.props().value).to.equal('fieldname');
@@ -613,7 +620,8 @@ describe('<CellEditor />', () => {
                                         drillDown={actions.drillDown}
                                         addColumn={actions.addColumn}
                                         context={context} column={column}
-                                        columnApi={columnApi}/>);
+                                        columnApi={columnApi}
+                                        hadronAppVersion="3.4.0"/>);
           const wrapper = component.find('.editable-element-field');
           wrapper.simulate('change', {target: {value: 'fieldname'}});
           expect(wrapper.props().value).to.equal('fieldname');
@@ -656,7 +664,8 @@ describe('<CellEditor />', () => {
                                         drillDown={actions.drillDown}
                                         addColumn={actions.addColumn}
                                         context={context} column={column}
-                                        columnApi={columnApi}/>);
+                                        columnApi={columnApi}
+                                        hadronAppVersion="3.4.0"/>);
           component.instance().isCancelAfterEnd();
           done();
         });
@@ -695,7 +704,8 @@ describe('<CellEditor />', () => {
                                         drillDown={actions.drillDown}
                                         addColumn={actions.addColumn}
                                         context={context} column={column}
-                                        columnApi={columnApi}/>);
+                                        columnApi={columnApi}
+                                        hadronAppVersion="3.4.0"/>);
           const wrapper = component.find('.editable-element-value-is-string');
           wrapper.simulate('change', {target: {value: 'new input'}});
           expect(wrapper.props().value).to.equal('new input');
@@ -741,7 +751,8 @@ describe('<CellEditor />', () => {
                                               drillDown={actions.drillDown}
                                               addColumn={actions.addColumn}
                                               columnApi={columnApi}
-                                              context={context}/>);
+                                              context={context}
+                                              hadronAppVersion="3.4.0"/>);
           done();
         });
         it('sets the initial type to what the header has', () => {
@@ -776,7 +787,8 @@ describe('<CellEditor />', () => {
                                               drillDown={actions.drillDown}
                                               addColumn={actions.addColumn}
                                               columnApi={columnApi}
-                                              context={context}/>);
+                                              context={context}
+                                              hadronAppVersion="3.4.0"/>);
           done();
         });
         it('sets the initial type to what the header has', () => {
@@ -811,7 +823,8 @@ describe('<CellEditor />', () => {
                                               drillDown={actions.drillDown}
                                               addColumn={actions.addColumn}
                                               columnApi={columnApi}
-                                              context={context}/>);
+                                              context={context}
+                                              hadronAppVersion="3.4.0"/>);
           component.instance().isCancelAfterEnd();
           done();
         });
@@ -847,7 +860,8 @@ describe('<CellEditor />', () => {
                                               drillDown={actions.drillDown}
                                               addColumn={actions.addColumn}
                                               columnApi={columnApi}
-                                              context={context}/>);
+                                              context={context}
+                                              hadronAppVersion="3.4.0"/>);
           const wrapper = component.find('.editable-element-value-is-string');
           wrapper.simulate('change', {target: {value: 'new input'}});
           expect(wrapper.props().value).to.equal('new input');
@@ -894,7 +908,8 @@ describe('<CellEditor />', () => {
                                               drillDown={actions.drillDown}
                                               addColumn={actions.addColumn}
                                               columnApi={columnApi}
-                                              context={context}/>);
+                                              context={context}
+                                              hadronAppVersion="3.4.0"/>);
           const wrapper = component.find('.editable-element-value-is-string');
           wrapper.simulate('change', {target: {value: 'new input'}});
           expect(wrapper.props().value).to.equal('new input');
@@ -941,7 +956,8 @@ describe('<CellEditor />', () => {
                                             drillDown={actions.drillDown}
                                             addColumn={actions.addColumn}
                                             columnApi={columnApi}
-                                            context={context}/>);
+                                            context={context}
+                                            hadronAppVersion="3.4.0"/>);
         const wrapper = component.find('.fa-expand');
         expect(wrapper).to.be.present();
         wrapper.simulate('mousedown');

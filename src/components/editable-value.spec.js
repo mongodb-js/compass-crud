@@ -7,11 +7,6 @@ import EditableValue from 'components/editable-value';
 describe('<EditableValue />', () => {
   before(() => {
     global.hadronApp = app;
-    global.hadronApp.instance = {
-      build: {
-        version: '3.4.0'
-      }
-    };
   });
 
   after(() => {
@@ -24,7 +19,7 @@ describe('<EditableValue />', () => {
 
       before(() => {
         const element = new Element('_id', 1, false);
-        wrapper = mount(<EditableValue element={element} isFocused={false} />);
+        wrapper = mount(<EditableValue element={element} isFocused={false} hadronAppVersion="3.4.0"/>);
       });
 
       it('auto focuses the input', () => {
@@ -39,7 +34,7 @@ describe('<EditableValue />', () => {
       before(() => {
         const parentElement = new Element('parent', {}, false);
         const element = new Element('name', 'test', false, parentElement);
-        wrapper = mount(<EditableValue element={element} isFocused={false} />);
+        wrapper = mount(<EditableValue element={element} isFocused={false} hadronAppVersion="3.4.0"/>);
       });
 
       it('does not auto focus the input', () => {

@@ -417,7 +417,7 @@ class CellEditor extends React.Component {
            onBlur={this.handleTypeChange.bind(this)}
            onClick={() => {this.nodeIndex = 3;}}>
         <Types element={this.element} className={`${BEM_BASE}-types btn btn-default btn-xs`}
-               buttonRef={(c) => { this.typesNode = c; }}/>
+               buttonRef={(c) => { this.typesNode = c; }} hadronAppVersion={this.props.hadronAppVersion}/>
       </div>
     );
   }
@@ -563,7 +563,8 @@ CellEditor.propTypes = {
   elementTypeChanged: PropTypes.func.isRequired,
   elementMarkRemoved: PropTypes.func.isRequired,
   drillDown: PropTypes.func.isRequired,
-  eGridCell: PropTypes.any
+  eGridCell: PropTypes.any,
+  hadronAppVersion: PropTypes.string
 };
 
 CellEditor.displayName = 'CellEditor';

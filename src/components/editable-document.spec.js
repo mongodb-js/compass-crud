@@ -52,7 +52,6 @@ describe('<EditableDocument />', () => {
       // element, jump straight to the last array element
       const _focus = window.HTMLElement.prototype.focus;
       let spy;
-      let _instance;
       let secondLastInput;
       let lastInput;
       before(() => {
@@ -66,11 +65,9 @@ describe('<EditableDocument />', () => {
                           closeAllMenus={sinon.spy(action)}
                           removeDocument={sinon.spy(action)}
                           updateDocument={sinon.spy(action)}
-                          openInsertDocumentDialog={sinon.spy(action)} />);
+                          openInsertDocumentDialog={sinon.spy(action)}
+                          hadronAppVersion="3.4.7" />);
 
-        // Set build version, so setState does not throw an error
-        _instance = global.hadronApp.instance;
-        global.hadronApp.instance = {build: {version: '3.4.7'}};
         wrapper.setState({
           editing: true,
           expandAll: true
@@ -84,7 +81,6 @@ describe('<EditableDocument />', () => {
 
       after(() => {
         // Restore global variables so they shouldn't leak into other tests
-        global.hadronApp.instance = _instance;
         window.HTMLElement.prototype.focus = _focus;
       });
 

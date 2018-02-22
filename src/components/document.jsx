@@ -34,7 +34,8 @@ Document.propTypes = {
   removeDocument: PropTypes.func,
   updateDocument: PropTypes.func,
   openInsertDocumentDialog: PropTypes.func,
-  closeAllMenus: PropTypes.func
+  closeAllMenus: PropTypes.func,
+  hadronAppVersion: PropTypes.string.isRequired
 };
 
 export default Document;

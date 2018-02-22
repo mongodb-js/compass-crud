@@ -249,6 +249,7 @@ class EditableDocument extends React.Component {
           closeAllMenus={this.props.closeAllMenus}
           edit={this.handleEdit.bind(this)}
           expandAll={this.state.expandAll}
+          hadronAppVersion={this.props.hadronAppVersion}
         />
       ));
       index++;
@@ -338,7 +339,8 @@ EditableDocument.propTypes = {
   editable: PropTypes.bool,
   expandAll: PropTypes.bool,
   openInsertDocumentDialog: PropTypes.func.isRequired,
-  copyToClipboard: PropTypes.func.isRequired
+  copyToClipboard: PropTypes.func.isRequired,
+  hadronAppVersion: PropTypes.string.isRequired
 };
 
 export default EditableDocument;
