@@ -163,7 +163,7 @@ describe('<RowActionsRenderer />', () => {
           component = mount(<RowActionsRenderer api={api} value={value}
                                                 node={rowNode} context={context}
                                                 data={data} nested={true} />);
-          const wrapper = component.find({title: 'Edit Document'});
+          const wrapper = component.find('[title="Edit Document"]');
           wrapper.simulate('click');
           done();
         });

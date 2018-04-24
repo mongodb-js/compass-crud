@@ -34,37 +34,41 @@ describe('<Types />', () => {
       });
 
       it('sets the dropdown to closed', () => {
-        expect(wrapper.hasClass('closed')).to.be.true;
+        expect(wrapper).to.have.className('closed');
       });
 
       context('when clicking the button', () => {
         beforeEach(() => {
           const button = wrapper.find('#types-dropdown');
           button.simulate('click');
+          wrapper.update();
         });
 
         afterEach(() => {
           const button = wrapper.find('#types-dropdown');
           button.simulate('click');
+          wrapper.update();
         });
 
         it('sets the dropdown to open', () => {
-          expect(wrapper.hasClass('open')).to.be.true;
+          expect(wrapper).to.have.className('open');
         });
 
         context('when clicking the button again', () => {
           beforeEach(() => {
             const button = wrapper.find('#types-dropdown');
             button.simulate('click');
+            wrapper.update();
           });
 
           afterEach(() => {
             const button = wrapper.find('#types-dropdown');
             button.simulate('click');
+            wrapper.update();
           });
 
           it('sets the dropdown to closed', () => {
-            expect(wrapper.hasClass('closed')).to.be.true;
+            expect(wrapper).to.have.className('closed');
           });
         });
       });

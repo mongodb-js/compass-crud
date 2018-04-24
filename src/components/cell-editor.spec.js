@@ -312,7 +312,7 @@ describe('<CellEditor />', () => {
                                         context={context} columnApi={columnApi}/>);
           const wrapper = component.find('.editable-element-value-is-string');
           wrapper.simulate('change', {target: {value: 'new input'}});
-          expect(wrapper.props().value).to.equal('new input');
+          expect(component.find('.editable-element-value-is-string').props().value).to.equal('new input');
           /*  Have to call isCancelAfterEnd directly because
            *  props.api.stopEditing doesn't call it because it's a spy */
           component.instance().isCancelAfterEnd();
@@ -549,7 +549,7 @@ describe('<CellEditor />', () => {
                                         columnApi={columnApi}/>);
           const wrapper = component.find('.editable-element-field');
           wrapper.simulate('change', {target: {value: 'fieldname'}});
-          expect(wrapper.props().value).to.equal('fieldname');
+          expect(component.find('.editable-element-field').props().value).to.equal('fieldname');
           component.instance().isCancelAfterEnd();
           done();
         });
@@ -611,7 +611,8 @@ describe('<CellEditor />', () => {
                                         columnApi={columnApi}/>);
           const wrapper = component.find('.editable-element-field');
           wrapper.simulate('change', {target: {value: 'fieldname'}});
-          expect(wrapper.props().value).to.equal('fieldname');
+          component.update();
+          expect(component.find('.editable-element-field').props().value).to.equal('fieldname');
           expect(wrapper.find('.editable-element-field-is-duplicate')).to.be.present();
           component.instance().isCancelAfterEnd();
           done();
@@ -693,7 +694,7 @@ describe('<CellEditor />', () => {
                                         columnApi={columnApi}/>);
           const wrapper = component.find('.editable-element-value-is-string');
           wrapper.simulate('change', {target: {value: 'new input'}});
-          expect(wrapper.props().value).to.equal('new input');
+          expect(component.find('.editable-element-value-is-string').props().value).to.equal('new input');
           component.instance().isCancelAfterEnd();
           done();
         });
@@ -845,7 +846,7 @@ describe('<CellEditor />', () => {
                                               context={context}/>);
           const wrapper = component.find('.editable-element-value-is-string');
           wrapper.simulate('change', {target: {value: 'new input'}});
-          expect(wrapper.props().value).to.equal('new input');
+          expect(component.find('.editable-element-value-is-string').props().value).to.equal('new input');
           component.instance().isCancelAfterEnd();
           done();
         });
@@ -892,7 +893,7 @@ describe('<CellEditor />', () => {
                                               context={context}/>);
           const wrapper = component.find('.editable-element-value-is-string');
           wrapper.simulate('change', {target: {value: 'new input'}});
-          expect(wrapper.props().value).to.equal('new input');
+          expect(component.find('.editable-element-value-is-string').props().value).to.equal('new input');
           component.instance().isCancelAfterEnd();
           done();
         });

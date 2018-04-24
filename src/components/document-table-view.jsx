@@ -1,7 +1,7 @@
 /* eslint-disable no-loop-func */
 import React from 'react';
 import PropTypes from 'prop-types';
-import {AgGridReact} from 'ag-grid-react';
+import { AgGridReact } from 'ag-grid-react';
 import map from 'lodash.map';
 import HadronDocument from 'hadron-document';
 import mongodbns from 'mongodb-ns';
