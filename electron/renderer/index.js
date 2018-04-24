@@ -14,8 +14,8 @@ window.jQuery = require('jquery');
 import 'bootstrap/less/bootstrap.less';
 import 'less/index.less';
 
-const DB = 'citibike';
-const COLL = 'trips';
+const DB = 'Venues';
+const COLL = 'Restaurants';
 
 const appRegistry = new AppRegistry();
 
