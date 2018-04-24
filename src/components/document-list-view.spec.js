@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import HadronDocument from 'hadron-document';
 import DocumentListView from 'components/document-list-view';
 
@@ -8,11 +8,10 @@ describe('<DocumentListView />', () => {
     context('when the documents have objects for ids', () => {
       const docs = [{ _id: { name: 'test-1' }}, { _id: { name: 'test-2' }}];
       const hadronDocs = docs.map(doc => new HadronDocument(doc));
-      const scrollHandler = sinon.spy();
-      const component = mount(
+      const component = shallow(
         <DocumentListView
           docs={hadronDocs}
-          scrollHandler={scrollHandler}
+          version="3.6.0"
           isEditable={false}
           removeDocument={sinon.spy()}
           updateDocument={sinon.spy()}

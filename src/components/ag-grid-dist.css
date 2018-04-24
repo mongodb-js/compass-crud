@@ -438,6 +438,7 @@ ag-grid-polymer {
 }
 .ag-pinned-right-cols-viewport {
   float: right;
+  z-index: 100;
 }
 .ag-ltr .ag-pinned-right-cols-viewport {
   overflow-x: hidden;

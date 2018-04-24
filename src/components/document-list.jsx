@@ -7,8 +7,8 @@ import DocumentListView from 'components/document-list-view';
 import DocumentTableView from 'components/document-table-view';
 import Toolbar from 'components/toolbar';
 
-import './index.less';
 import './ag-grid-dist.css';
+import './index.less';
 
 /**
  * Component for the entire document list.
