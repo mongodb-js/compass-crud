@@ -5,6 +5,7 @@ import AppRegistry from 'hadron-app-registry';
 import { AppContainer } from 'react-hot-loader';
 import { activate } from 'plugin';
 import ConnectedDocumentList from 'components/connected-document-list';
+import { activate as statusActivate } from '@mongodb-js/compass-status';
 
 window.jQuery = require('jquery');
 
@@ -14,8 +15,8 @@ window.jQuery = require('jquery');
 import 'bootstrap/less/bootstrap.less';
 import 'less/index.less';
 
-const DB = 'Venues';
-const COLL = 'Restaurants';
+const DB = 'crunchbase';
+const COLL = 'companies';
 
 const appRegistry = new AppRegistry();
 
@@ -34,6 +35,7 @@ appRegistry.registerStore('Query.ChangedStore', QueryChangedStore);
 appRegistry.registerComponent('Query.QueryBar', QueryBar);
 appRegistry.registerComponent('DeploymentAwareness.TextWriteButton', TextWriteButton);
 
+statusActivate(appRegistry);
 activate(appRegistry);
 appRegistry.onActivated();
 
