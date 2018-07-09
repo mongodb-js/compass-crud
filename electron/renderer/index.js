@@ -48,9 +48,14 @@ document.body.appendChild(root);
 
 // Create a HMR enabled render function
 const render = Component => {
+  const Status = global.hadronApp.appRegistry.getRole('Application.Status')[0].component;
+
   ReactDOM.render(
     <AppContainer>
-      <Component />
+        <div>
+          <Status />
+          <Component />
+        </div>
     </AppContainer>,
     document.getElementById('root')
   );
@@ -80,6 +85,8 @@ const dataService = new DataService(connection);
 appRegistry.emit('data-service-initialized', dataService);
 
 dataService.connect((error, ds) => {
+  if (!error) appRegistry.getAction('Status.Actions').done();
+
   appRegistry.emit('data-service-connected', error, ds);
 
   // Set the namespace for the CRUD plugin.
