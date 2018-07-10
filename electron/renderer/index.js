@@ -48,14 +48,13 @@ document.body.appendChild(root);
 
 // Create a HMR enabled render function
 const render = Component => {
-  const Status = global.hadronApp.appRegistry.getRole('Application.Status')[0].component;
+  // if needing to debug the Status Plugin within this component, uncomment
+  // this line and a <Status/> div to the below render function.
+  // const Status = global.hadronApp.appRegistry.getRole('Application.Status')[0].component;
 
   ReactDOM.render(
     <AppContainer>
-        <div>
-          <Status />
-          <Component />
-        </div>
+        <Component />
     </AppContainer>,
     document.getElementById('root')
   );
