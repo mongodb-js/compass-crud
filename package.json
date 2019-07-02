@@ -47,8 +47,8 @@
     "react-tooltip": "^3.2.6"
   },
   "devDependencies": {
-    "@mongodb-js/compass-status": "^3.5.0",
     "@mongodb-js/compass-query-bar": "^4.0.2",
+    "@mongodb-js/compass-status": "^3.5.0",
     "autoprefixer": "^9.4.6",
     "babel-cli": "^6.10.1",
     "babel-core": "^6.24.1",
@@ -88,7 +88,7 @@
     "hadron-ipc": "0.0.8",
     "hadron-react-bson": "^3.1.2",
     "hadron-react-buttons": "^3.1.0",
-    "hadron-react-components": "^3.2.1",
+    "hadron-react-components": "^3.3.0",
     "html-webpack-plugin": "^3.2.0",
     "ignore-loader": "^0.1.2",
     "istanbul-instrumenter-loader": "^3.0.0",

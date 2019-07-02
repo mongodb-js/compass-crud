@@ -28,8 +28,12 @@ class DocumentList extends React.Component {
   /**
    * Handle opening of the insert dialog.
    */
-  handleOpenInsert() {
-    this.props.openInsertDocumentDialog({ _id: new ObjectId(), '': '' }, false);
+  handleOpenInsert(key, event) {
+    if (key === 'insert-document') {
+      this.props.openInsertDocumentDialog({ _id: new ObjectId(), '': '' }, false);
+    } else if (key === 'import-file') {
+      this.props.openImportFileDialog();
+    }
   }
 
   /**
@@ -135,6 +139,7 @@ DocumentList.propTypes = {
   isExportable: PropTypes.bool.isRequired,
   store: PropTypes.object.isRequired,
   openInsertDocumentDialog: PropTypes.func,
+  openImportFileDialog: PropTypes.func,
   view: PropTypes.string.isRequired,
   version: PropTypes.string.isRequired,
   viewChanged: PropTypes.func.isRequired,

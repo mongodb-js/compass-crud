@@ -465,6 +465,14 @@ const configureStore = (options = {}) => {
     },
 
     /**
+     * Open an import file dialog from compass-import-export-plugin.
+     * Emits a global app registry event the plugin listens to.
+     */
+    openImportFileDialog() {
+      this.globalAppRegistry.emit('import-file')
+    },
+
+    /**
      * Insert the document.
      *
      * @param {Document} hadronDoc - The hadron document to insert.
