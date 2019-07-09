@@ -150,8 +150,10 @@ const configureStore = (options = {}) => {
     getInitialInsertState() {
       return {
         doc: null,
+        jsonDoc: null,
         message: '',
         mode: MODIFYING,
+        jsonView: false,
         isOpen: false
       };
     },
@@ -457,6 +459,8 @@ const configureStore = (options = {}) => {
       this.setState({
         insert: {
           doc: hadronDoc,
+          jsonDoc: '',
+          jsonView: true,
           message: '',
           mode: MODIFYING,
           isOpen: true
@@ -469,7 +473,25 @@ const configureStore = (options = {}) => {
      * Emits a global app registry event the plugin listens to.
      */
     openImportFileDialog() {
-      this.globalAppRegistry.emit('import-file')
+      this.globalAppRegistry.emit('import-file');
+    },
+
+    /**
+     * As we are editing a JSON document in Insert Document Dialog, update the
+     * state with the inputed json data.
+     *
+     * @param {String} value - JSON string we are updating.
+     */
+    updateJsonDoc(value) {
+      this.setState({
+        insert: {
+          doc: {},
+          jsonDoc: value,
+          message: '',
+          mode: MODIFYING,
+          isOpen: true
+        }
+      });
     },
 
     /**

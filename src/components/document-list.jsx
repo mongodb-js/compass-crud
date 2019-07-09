@@ -27,8 +27,10 @@ class DocumentList extends React.Component {
 
   /**
    * Handle opening of the insert dialog.
+   *
+   * @param {String} key - Selected option from the Add Data dropdown menu.
    */
-  handleOpenInsert(key, event) {
+  handleOpenInsert(key) {
     if (key === 'insert-document') {
       this.props.openInsertDocumentDialog({ _id: new ObjectId(), '': '' }, false);
     } else if (key === 'import-file') {
@@ -81,6 +83,8 @@ class DocumentList extends React.Component {
         <InsertDocumentDialog
           closeInsertDocumentDialog={this.props.closeInsertDocumentDialog}
           insertDocument={this.props.insertDocument}
+          updateJsonDoc={this.props.updateJsonDoc}
+          jsonView
           version={this.props.version}
           tz={this.props.tz}
           {...this.props.insert} />
@@ -141,6 +145,7 @@ DocumentList.propTypes = {
   openInsertDocumentDialog: PropTypes.func,
   openImportFileDialog: PropTypes.func,
   view: PropTypes.string.isRequired,
+  updateJsonDoc: PropTypes.func.isRequired,
   version: PropTypes.string.isRequired,
   viewChanged: PropTypes.func.isRequired,
   tz: PropTypes.string

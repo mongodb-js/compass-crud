@@ -88,7 +88,7 @@ class Toolbar extends React.Component {
 
   renderInsertButton() {
     if (!this.props.readonly) {
-      const dropdownOptions = { 'import-file': 'Import File', 'insert-document': 'Insert Document' }
+      const dropdownOptions = { 'import-file': 'Import File', 'insert-document': 'Insert Document' };
       const OptionWriteSelector = global.hadronApp.appRegistry.
         getComponent('DeploymentAwareness.OptionWriteSelector');
       return (

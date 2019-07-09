@@ -25,6 +25,7 @@ const configureActions = () => {
     'replaceDoc',
     'resetHeaders',
     'updateDocument',
+    'updateJsonDoc',
     'viewChanged'
   ]);
 
