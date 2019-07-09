@@ -9,7 +9,11 @@ import InsertDocument from 'components/insert-document';
 import InsertDocumentFooter from 'components/insert-document-footer';
 import { TextButton } from 'hadron-react-buttons';
 import { ViewSwitcher } from 'hadron-react-components';
+<<<<<<< HEAD
 import { Element } from 'hadron-document';
+=======
+import HadronDocument, { Element } from 'hadron-document';
+>>>>>>> COMPASS-3740 + COMPASS-3741: insert document toggles between json and list view
 
 /**
  * The insert invalid message.
@@ -110,6 +114,10 @@ class InsertDocumentDialog extends React.PureComponent {
     this.props.toggleInsertDocumentView(view);
   }
 
+  switchInsertDocumentView(view) {
+    this.props.toggleInsertDocumentView(view);
+  }
+
   /**
    * Does the document have errors with the bson types?  Checks for
    * invalidElements in hadron doc if in HadronDocument view, or parsing error
@@ -171,11 +179,18 @@ class InsertDocumentDialog extends React.PureComponent {
 
         <Modal.Body onFocus={this.handleBlur.bind(this)}>
           <div className="insert-document-views">
+<<<<<<< HEAD
             <p>VIEW</p>
             <ViewSwitcher
               buttonLabels={['JSON', 'List']}
               activeButton={currentView}
               disabled={this.hasErrors()}
+=======
+            <p> VIEW </p>
+            <ViewSwitcher
+              buttonLabels={['JSON', 'List']}
+              activeButton={currentView}
+>>>>>>> COMPASS-3740 + COMPASS-3741: insert document toggles between json and list view
               onClick={this.switchInsertDocumentView.bind(this)} />
           </div>
           {this.renderDocumentOrJsonView()}
@@ -206,7 +221,11 @@ InsertDocumentDialog.displayName = 'InsertDocumentDialog';
 InsertDocumentDialog.propTypes = {
   closeInsertDocumentDialog: PropTypes.func.isRequired,
   toggleInsertDocumentView: PropTypes.func.isRequired,
+<<<<<<< HEAD
   handleInsertDocument: PropTypes.func.isRequired,
+=======
+  insertDocument: PropTypes.func.isRequired,
+>>>>>>> COMPASS-3740 + COMPASS-3741: insert document toggles between json and list view
   isOpen: PropTypes.bool.isRequired,
   message: PropTypes.string.isRequired,
   mode: PropTypes.string.isRequired,
