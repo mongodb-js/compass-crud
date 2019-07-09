@@ -111,7 +111,9 @@ class InsertDocumentDialog extends React.PureComponent {
   }
 
   /**
-   * Does the document have errors with the bson types?
+   * Does the document have errors with the bson types?  Checks for
+   * invalidElements in hadron doc if in HadronDocument view, or parsing error
+   * in JsonView of the modal
    *
    * Checks for invalidElements in hadron doc if in HadronDocument view, or
    * parsing error in JsonView of the modal
