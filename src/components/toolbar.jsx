@@ -11,7 +11,7 @@ const MESSAGE_CLASS = `${ACTION_BAR_CLASS}-message`;
 const REFRESH_CLASS = `${ACTION_BAR_CLASS}-refresh`;
 const PAGINATION_CLASS = `${ACTION_BAR_CLASS}-pagination`;
 const VIEW_SWITCHER_CLASS = `${ACTION_BAR_CLASS}-view-switcher`;
-const INSERT_DATA = `${ACTION_BAR_CLASS}-insert-data btn-primary`;
+const INSERT_DATA = `btn-primary ${ACTION_BAR_CLASS}-insert-data`;
 const INSERT_DATA_TITLE = `${ACTION_BAR_CLASS}-insert-data-title`;
 
 /**

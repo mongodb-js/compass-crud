@@ -82,8 +82,9 @@ class DocumentList extends React.Component {
       return (
         <InsertDocumentDialog
           closeInsertDocumentDialog={this.props.closeInsertDocumentDialog}
-          insertDocument={this.props.insertDocument}
+          handleInsertDocument={this.props.handleInsertDocument}
           updateJsonDoc={this.props.updateJsonDoc}
+          toggleInsertDocumentView={this.props.toggleInsertDocumentView}
           jsonView
           version={this.props.version}
           tz={this.props.tz}
@@ -136,9 +137,10 @@ DocumentList.displayName = 'DocumentList';
 
 DocumentList.propTypes = {
   closeInsertDocumentDialog: PropTypes.func,
+  toggleInsertDocumentView: PropTypes.func.isRequired,
   error: PropTypes.object,
   insert: PropTypes.object,
-  insertDocument: PropTypes.func,
+  handleInsertDocument: PropTypes.func,
   isEditable: PropTypes.bool.isRequired,
   isExportable: PropTypes.bool.isRequired,
   store: PropTypes.object.isRequired,

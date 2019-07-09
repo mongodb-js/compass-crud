@@ -8,7 +8,8 @@ import AceEditor from 'components/ace-editor';
 import InsertDocument from 'components/insert-document';
 import InsertDocumentFooter from 'components/insert-document-footer';
 import { TextButton } from 'hadron-react-buttons';
-import HadronDocument, { Element } from 'hadron-document';
+import { ViewSwitcher } from 'hadron-react-components';
+import { Element } from 'hadron-document';
 
 /**
  * The insert invalid message.
@@ -38,14 +39,15 @@ class InsertDocumentDialog extends React.PureComponent {
    * @param {Object} nextProps - The new properties.
    */
   componentWillReceiveProps(nextProps) {
-    if (nextProps.isOpen && !this.props.isOpen && !this.props.jsonView) {
+    if (nextProps.isOpen && this.props.jsonView && !nextProps.jsonView) {
       // Opening the modal - reset the invalid elements list, which contains the
       // uuids of each element that current has BSON type cast errors. Subscribe
       // to the validation errors for BSON types on the document.
       this.invalidElements = [];
       nextProps.doc.on(Element.Events.Invalid, this.unsubscribeInvalid);
       nextProps.doc.on(Element.Events.Valid, this.unsubscribeValid);
-    } else if (!nextProps.isOpen && this.props.isOpen && !this.props.jsonView) {
+    } else if ((!nextProps.isOpen && this.props.isOpen && !this.props.jsonView)
+               || (this.props.isOpen && nextProps.isOpen && !this.props.jsonView && nextProps.jsonView)) {
       // Closing the modal. Remove the listeners to the BSON type validation errors
       // in order to clean up properly.
       this.props.doc.removeListener(Element.Events.Invalid, this.unsubscribeInvalid);
@@ -101,22 +103,23 @@ class InsertDocumentDialog extends React.PureComponent {
    */
   handleInsert() {
     this.setState({ message: 'Inserting Document', mode: 'progress' });
-    let doc;
-    if (this.props.jsonView) {
-      doc = new HadronDocument(jsonParse(this.props.jsonDoc).value, true);
-    } else {
-      doc = this.props.doc;
-    }
-    this.props.insertDocument(doc);
+    this.props.handleInsertDocument();
+  }
+
+  switchInsertDocumentView(view) {
+    this.props.toggleInsertDocumentView(view);
   }
 
   /**
    * Does the document have errors with the bson types?
    *
+   * Checks for invalidElements in hadron doc if in HadronDocument view, or
+   * parsing error in JsonView of the modal
+   *
    * @returns {Boolean} If the document has errors.
    */
   hasErrors() {
-    if (this.props.jsonDoc !== '') {
+    if (this.props.jsonView && this.props.jsonDoc !== '') {
       return !!jsonParse(this.props.jsonDoc).err;
     }
     return this.invalidElements.length > 0;
@@ -153,6 +156,8 @@ class InsertDocumentDialog extends React.PureComponent {
    * @returns {React.Component} The react component.
    */
   render() {
+    const currentView = this.props.jsonView ? 'JSON' : 'List';
+
     return (
       <Modal
         show={this.props.isOpen}
@@ -163,6 +168,14 @@ class InsertDocumentDialog extends React.PureComponent {
         </Modal.Header>
 
         <Modal.Body onFocus={this.handleBlur.bind(this)}>
+          <div className="insert-document-views">
+            <p>VIEW</p>
+            <ViewSwitcher
+              buttonLabels={['JSON', 'List']}
+              activeButton={currentView}
+              disabled={this.hasErrors()}
+              onClick={this.switchInsertDocumentView.bind(this)} />
+          </div>
           {this.renderDocumentOrJsonView()}
           <InsertDocumentFooter
             message={this.hasErrors() ? INSERT_INVALID_MESSAGE : this.state.message}
@@ -190,7 +203,8 @@ InsertDocumentDialog.displayName = 'InsertDocumentDialog';
 
 InsertDocumentDialog.propTypes = {
   closeInsertDocumentDialog: PropTypes.func.isRequired,
-  insertDocument: PropTypes.func.isRequired,
+  toggleInsertDocumentView: PropTypes.func.isRequired,
+  handleInsertDocument: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   message: PropTypes.string.isRequired,
   mode: PropTypes.string.isRequired,

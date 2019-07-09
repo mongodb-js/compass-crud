@@ -15,6 +15,8 @@ const configureActions = () => {
     'getNextPage',
     'getPrevPage',
     'insertDocument',
+    'handleInsertDocument',
+    'toggleInsertDocumentView',
     'openInsertDocumentDialog',
     'openImportFileDialog',
     'pathChanged',

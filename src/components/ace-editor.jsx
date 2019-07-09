@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
+import jsBeautify from 'js-beautify';
 import PropTypes from 'prop-types';
 import Ace from 'react-ace';
 
@@ -12,7 +13,7 @@ import 'mongodb-ace-theme';
 
 import styles from './ace-editor.less';
 
-const EDITOR_COMMENT = '/** \n* Paste one or more documents here\n*/';
+const EDITOR_COMMENT = '/** \n* Paste one or more documents here\n*/\n';
 
 class AceEditor extends Component {
   /**
@@ -24,14 +25,21 @@ class AceEditor extends Component {
     super(props);
   }
 
-  shouldComponentUpdate(nextProps) {
-    return (
-      nextProps.jsonDoc !== this.props.jsonDoc
-    );
+  componentDidMount() {
+    if (this.props.jsonDoc !== '') {
+      const doc = jsBeautify(this.props.jsonDoc);
+      this.editor.setValue(`${EDITOR_COMMENT}${doc}`);
+      this.editor.clearSelection();
+    }
   }
 
+  shouldComponentUpdate(nextProps) {
+    return (nextProps.jsonDoc !== this.props.jsonDoc);
+  }
+
+
   onChange(value) {
-    this.props.updateJsonDoc(value.split('*/').pop());
+    this.props.updateJsonDoc(value.split('*/\n').pop());
   }
 
   render() {
