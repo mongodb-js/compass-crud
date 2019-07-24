@@ -16,6 +16,7 @@ const configureActions = () => {
     'getPrevPage',
     'insertDocument',
     'handleInsertDocument',
+    'insertMany',
     'toggleInsertDocumentView',
     'openInsertDocumentDialog',
     'openImportFileDialog',

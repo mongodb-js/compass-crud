@@ -9,11 +9,7 @@ import InsertDocument from 'components/insert-document';
 import InsertDocumentFooter from 'components/insert-document-footer';
 import { TextButton } from 'hadron-react-buttons';
 import { ViewSwitcher } from 'hadron-react-components';
-<<<<<<< HEAD
-import { Element } from 'hadron-document';
-=======
 import HadronDocument, { Element } from 'hadron-document';
->>>>>>> COMPASS-3740 + COMPASS-3741: insert document toggles between json and list view
 
 /**
  * The insert invalid message.
@@ -107,11 +103,20 @@ class InsertDocumentDialog extends React.PureComponent {
    */
   handleInsert() {
     this.setState({ message: 'Inserting Document', mode: 'progress' });
-    this.props.handleInsertDocument();
-  }
-
-  switchInsertDocumentView(view) {
-    this.props.toggleInsertDocumentView(view);
+    // this.props.handleInsertDocument();
+    // TODO: do this inside crud-store
+    const jsonDoc = jsonParse(this.props.jsonDoc).value;
+    if (Array.isArray(jsonDoc)) {
+      this.props.insertMany(jsonDoc);
+    } else {
+      let doc;
+      if (this.props.jsonView) {
+        doc = new HadronDocument(jsonParse(this.props.jsonDoc).value, true);
+      } else {
+        doc = this.props.doc;
+      }
+      this.props.insertDocument(doc);
+    }
   }
 
   switchInsertDocumentView(view) {
@@ -179,18 +184,11 @@ class InsertDocumentDialog extends React.PureComponent {
 
         <Modal.Body onFocus={this.handleBlur.bind(this)}>
           <div className="insert-document-views">
-<<<<<<< HEAD
             <p>VIEW</p>
             <ViewSwitcher
               buttonLabels={['JSON', 'List']}
               activeButton={currentView}
               disabled={this.hasErrors()}
-=======
-            <p> VIEW </p>
-            <ViewSwitcher
-              buttonLabels={['JSON', 'List']}
-              activeButton={currentView}
->>>>>>> COMPASS-3740 + COMPASS-3741: insert document toggles between json and list view
               onClick={this.switchInsertDocumentView.bind(this)} />
           </div>
           {this.renderDocumentOrJsonView()}
@@ -221,11 +219,9 @@ InsertDocumentDialog.displayName = 'InsertDocumentDialog';
 InsertDocumentDialog.propTypes = {
   closeInsertDocumentDialog: PropTypes.func.isRequired,
   toggleInsertDocumentView: PropTypes.func.isRequired,
-<<<<<<< HEAD
   handleInsertDocument: PropTypes.func.isRequired,
-=======
   insertDocument: PropTypes.func.isRequired,
->>>>>>> COMPASS-3740 + COMPASS-3741: insert document toggles between json and list view
+  insertMany: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   message: PropTypes.string.isRequired,
   mode: PropTypes.string.isRequired,

@@ -546,6 +546,54 @@ const configureStore = (options = {}) => {
     /**
      * Insert a single document.
      *
+     * @param {Array} doc - Documents to insert.
+     */
+    insertMany(docs) {
+      this.dataService.insertMany(this.state.ns, docs, {}, (error) => {
+        if (error) {
+          return this.setState({
+            insert: {
+              doc: {},
+              jsonDoc: JSON.stringify(docs),
+              jsonView: this.state.jsonView,
+              message: error.message,
+              mode: ERROR,
+              isOpen: true
+            }
+          });
+        }
+        // check if the newly inserted document matches the current filter, by
+        // running the same filter but targeted only to the doc's _id.
+        // const filter = Object.assign({}, this.state.query.filter, { _id: doc._id });
+        // this.dataService.count(this.state.ns, filter, {}, (err, count) => {
+        //   if (err) {
+        //     return this.setState({
+        //       insert: this.getInitialInsertState()
+        //     });
+        //   }
+
+        const count = docs.length;
+        // TODO: create event to handle multiple documents inserted;
+        const hadronDocs = [];
+        for (let i = 0; i < docs.length; i++) {
+          hadronDocs.push(new HadronDocument(docs[i]));
+          this.localAppRegistry.emit('document-inserted', this.state.view, docs[i]);
+          this.globalAppRegistry.emit('document-inserted', this.state.view, docs[i]);
+        }
+        // count is greater than 0, if 1 then the new doc matches the filter
+        // if (count > 0) {
+        return this.setState({
+          docs: this.state.docs.concat(hadronDocs),
+          count: this.state.count + count,
+          end: this.state.end + count,
+          insert: this.getInitialInsertState()
+        });
+      });
+    },
+
+    /**
+     * Insert the document.
+     *
      * @param {Object} doc - The hadron document to insert.
      */
     insertDocument(doc) {
