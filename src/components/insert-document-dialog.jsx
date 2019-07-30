@@ -9,7 +9,7 @@ import InsertDocument from 'components/insert-document';
 import InsertDocumentFooter from 'components/insert-document-footer';
 import { TextButton } from 'hadron-react-buttons';
 import { ViewSwitcher } from 'hadron-react-components';
-import HadronDocument, { Element } from 'hadron-document';
+import { Element } from 'hadron-document';
 
 /**
  * The insert invalid message.
@@ -39,15 +39,15 @@ class InsertDocumentDialog extends React.PureComponent {
    * @param {Object} nextProps - The new properties.
    */
   componentWillReceiveProps(nextProps) {
-    if (nextProps.isOpen && this.props.jsonView && !nextProps.jsonView) {
-      // Opening the modal - reset the invalid elements list, which contains the
+    if (nextProps.isOpen && this.props.jsonView && !nextProps.jsonView && !this.hasManyDocuments()) {
+      // When switching to Hadron Document View - reset the invalid elements list, which contains the
       // uuids of each element that current has BSON type cast errors. Subscribe
       // to the validation errors for BSON types on the document.
       this.invalidElements = [];
       nextProps.doc.on(Element.Events.Invalid, this.unsubscribeInvalid);
       nextProps.doc.on(Element.Events.Valid, this.unsubscribeValid);
-    } else if ((!nextProps.isOpen && this.props.isOpen && !this.props.jsonView)
-               || (this.props.isOpen && nextProps.isOpen && !this.props.jsonView && nextProps.jsonView)) {
+    } else if ((!nextProps.isOpen && this.props.isOpen && !this.props.jsonView && !this.hasManyDocuments())
+               || (this.props.isOpen && nextProps.isOpen && !this.props.jsonView && nextProps.jsonView && !this.hasManyDocuments())) {
       // Closing the modal. Remove the listeners to the BSON type validation errors
       // in order to clean up properly.
       this.props.doc.removeListener(Element.Events.Invalid, this.unsubscribeInvalid);
@@ -103,24 +103,25 @@ class InsertDocumentDialog extends React.PureComponent {
    */
   handleInsert() {
     this.setState({ message: 'Inserting Document', mode: 'progress' });
-    // this.props.handleInsertDocument();
-    // TODO: do this inside crud-store
-    const jsonDoc = jsonParse(this.props.jsonDoc).value;
-    if (Array.isArray(jsonDoc)) {
-      this.props.insertMany(jsonDoc);
+    if (this.hasManyDocuments()) {
+      this.props.insertMany();
     } else {
-      let doc;
-      if (this.props.jsonView) {
-        doc = new HadronDocument(jsonParse(this.props.jsonDoc).value, true);
-      } else {
-        doc = this.props.doc;
-      }
-      this.props.insertDocument(doc);
+      this.props.handleInsertDocument();
     }
   }
 
+  /**
+   * Switches between JSON and Hadron Document views.
+   *
+   * In case of multiple documents, only switches the this.props.insert.jsonView
+   * In other cases, also modifies this.props.insert.doc/jsonDoc to keep data in place.
+   */
   switchInsertDocumentView(view) {
-    this.props.toggleInsertDocumentView(view);
+    if (!this.hasManyDocuments()) {
+      this.props.toggleInsertDocument(view);
+    } else {
+      this.props.toggleInsertDocumentView(view);
+    }
   }
 
   /**
@@ -141,6 +142,14 @@ class InsertDocumentDialog extends React.PureComponent {
   }
 
   /**
+   * Check if the json pasted is multiple documents (array).
+   */
+  hasManyDocuments() {
+    const jsonDoc = jsonParse(this.props.jsonDoc).value;
+    return Array.isArray(jsonDoc);
+  }
+
+  /**
    * Render the document component.
    *
    * @returns {React.Component} The component.
@@ -155,6 +164,15 @@ class InsertDocumentDialog extends React.PureComponent {
 
   renderDocumentOrJsonView() {
     if (!this.props.jsonView) {
+      if (this.hasManyDocuments()) {
+        return (
+          <div className="view-not-supported">
+            <p>This view is not supported for mutliple documents. To specify data
+               types and use other functionality of this view, please insert
+               documents one at a time.</p>
+          </div>
+        );
+      }
       return (
         this.renderDocument()
       );
@@ -219,6 +237,7 @@ InsertDocumentDialog.displayName = 'InsertDocumentDialog';
 InsertDocumentDialog.propTypes = {
   closeInsertDocumentDialog: PropTypes.func.isRequired,
   toggleInsertDocumentView: PropTypes.func.isRequired,
+  toggleInsertDocument: PropTypes.func.isRequired,
   handleInsertDocument: PropTypes.func.isRequired,
   insertDocument: PropTypes.func.isRequired,
   insertMany: PropTypes.func.isRequired,

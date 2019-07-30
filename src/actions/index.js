@@ -18,6 +18,7 @@ const configureActions = () => {
     'handleInsertDocument',
     'insertMany',
     'toggleInsertDocumentView',
+    'toggleInsertDocument',
     'openInsertDocumentDialog',
     'openImportFileDialog',
     'pathChanged',
