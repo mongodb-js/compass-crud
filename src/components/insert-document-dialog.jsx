@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import jsonParse from 'fast-json-parse';
-import AceEditor from 'components/ace-editor';
+import InsertJsonDocument from 'components/insert-json-document';
 import InsertDocument from 'components/insert-document';
 import InsertDocumentFooter from 'components/insert-document-footer';
 import { TextButton } from 'hadron-react-buttons';
@@ -183,7 +183,7 @@ class InsertDocumentDialog extends React.PureComponent {
     }
 
     return (
-      <AceEditor updateJsonDoc={this.props.updateJsonDoc} jsonDoc={this.props.jsonDoc}/>
+      <InsertJsonDocument updateJsonDoc={this.props.updateJsonDoc} jsonDoc={this.props.jsonDoc}/>
     );
   }
 
