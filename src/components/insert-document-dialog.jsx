@@ -104,7 +104,7 @@ class InsertDocumentDialog extends React.PureComponent {
   handleInsert() {
     this.setState({ message: 'Inserting Document', mode: 'progress' });
     if (this.hasManyDocuments()) {
-      this.props.insertMany();
+      this.props.insertMany(jsonParse(this.props.jsonDoc).value);
     } else {
       this.props.handleInsertDocument();
     }
