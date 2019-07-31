@@ -525,7 +525,7 @@ const configureStore = (options = {}) => {
      * @param {String} view - view we are switching to.
      */
     toggleInsertDocumentView(view) {
-      const jsonView = view === 'JSON' ? true : false;
+      const jsonView = view === 'JSON';
       this.setState({
         insert: {
           doc: {},
@@ -558,41 +558,24 @@ const configureStore = (options = {}) => {
     },
 
     /**
-     * Parse document from Json Insert View Modal or generate object from hadron document
-     * view to insert.
-     */
-    handleInsertDocument() {
-      let doc;
-      if (this.state.insert.jsonDoc !== null) {
-        doc = jsonParse(this.state.insert.jsonDoc).value;
-      } else {
-        doc = this.state.insert.doc.generateObject();
-      }
-      this.insertDocument(doc);
-    },
-
-    /**
      * Insert a single document.
-     *
-     * @param {Array} docs - Documents to insert.
      */
-    insertMany(docs) {
+    insertMany() {
+      const docs = jsonParse(this.state.insert.jsonDoc).value;
       this.dataService.insertMany(this.state.ns, docs, {}, (error) => {
         if (error) {
           return this.setState({
             insert: {
               doc: {},
-              jsonDoc: JSON.stringify(docs),
-              jsonView: this.state.jsonView,
+              jsonDoc: this.state.insert.jsonDoc,
+              jsonView: true,
               message: error.message,
               mode: ERROR,
               isOpen: true
             }
           });
         }
-        // Reset Insert State first since there is no errors.
-        this.setState({ insert: this.getInitialInsertState() });
-
+        this.state.insert = this.getInitialInsertState();
         // Since we are inserting a bunch of documents and we need to rerun all
         // the queries and counts for them, let's just refresh the whole set of
         // documents.
@@ -601,11 +584,18 @@ const configureStore = (options = {}) => {
     },
 
     /**
-     * Insert the document.
-     *
-     * @param {Object} doc - The hadron document to insert.
+     * Insert the document given the document in current state.
+     * Parse document from Json Insert View Modal or generate object from hadron document
+     * view to insert.
      */
-    insertDocument(doc) {
+    insertDocument() {
+      let doc;
+      if (this.state.insert.jsonView) {
+        doc = jsonParse(this.state.insert.jsonDoc).value;
+      } else {
+        doc = this.state.insert.doc.generateObject();
+      }
+
       this.dataService.insertOne(this.state.ns, doc, {}, (error) => {
         if (error) {
           return this.setState({
@@ -619,6 +609,7 @@ const configureStore = (options = {}) => {
             }
           });
         }
+
         // check if the newly inserted document matches the current filter, by
         // running the same filter but targeted only to the doc's _id.
         const filter = Object.assign({}, this.state.query.filter, { _id: doc._id });

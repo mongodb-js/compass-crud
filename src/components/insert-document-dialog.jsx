@@ -27,7 +27,7 @@ class InsertDocumentDialog extends React.PureComponent {
    */
   constructor(props) {
     super(props);
-    this.state = { canHide: false, message: this.props.message, mode: this.props.mode };
+    this.state = { canHide: false, message: this.props.message, mode: this.props.mode, multiple: false };
     this.unsubscribeInvalid = this.handleInvalid.bind(this);
     this.unsubscribeValid = this.handleValid.bind(this);
     this.invalidElements = [];
@@ -38,20 +38,27 @@ class InsertDocumentDialog extends React.PureComponent {
    *
    * @param {Object} nextProps - The new properties.
    */
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.isOpen && this.props.jsonView && !nextProps.jsonView && !this.hasManyDocuments()) {
+  componentWillReceiveProps(nextProps) { // eslint-disable-line complexity
+    const isMany = this.hasManyDocuments();
+
+    if (!isMany) {
       // When switching to Hadron Document View - reset the invalid elements list, which contains the
-      // uuids of each element that current has BSON type cast errors. Subscribe
-      // to the validation errors for BSON types on the document.
-      this.invalidElements = [];
-      nextProps.doc.on(Element.Events.Invalid, this.unsubscribeInvalid);
-      nextProps.doc.on(Element.Events.Valid, this.unsubscribeValid);
-    } else if ((!nextProps.isOpen && this.props.isOpen && !this.props.jsonView && !this.hasManyDocuments())
-               || (nextProps.isOpen && this.props.isOpen && !this.props.jsonView && nextProps.jsonView && !this.hasManyDocuments())) {
-      // Closing the modal. Remove the listeners to the BSON type validation errors
-      // in order to clean up properly.
-      this.props.doc.removeListener(Element.Events.Invalid, this.unsubscribeInvalid);
-      this.props.doc.removeListener(Element.Events.Valid, this.unsubscribeValid);
+      // uuids of each element that current has BSON type cast errors.
+      //
+      // Subscribe to the validation errors for BSON types on the document.
+      if (nextProps.isOpen && this.props.jsonView && !nextProps.jsonView) {
+        this.invalidElements = [];
+        nextProps.doc.on(Element.Events.Invalid, this.unsubscribeInvalid);
+        nextProps.doc.on(Element.Events.Valid, this.unsubscribeValid);
+      // Closing the modal or switching back to jsonView.
+      //
+      // Remove the listeners to the BSON type validation errors in order to
+      // clean up properly.
+      } else if ((!nextProps.isOpen && this.props.isOpen && !this.props.jsonView)
+                 || (nextProps.isOpen && this.props.isOpen && !this.props.jsonView && nextProps.jsonView)) {
+        this.props.doc.removeListener(Element.Events.Invalid, this.unsubscribeInvalid);
+        this.props.doc.removeListener(Element.Events.Valid, this.unsubscribeValid);
+      }
     }
     this.setState({ message: nextProps.message, mode: nextProps.mode });
   }
@@ -104,7 +111,7 @@ class InsertDocumentDialog extends React.PureComponent {
   handleInsert() {
     this.setState({ message: 'Inserting Document', mode: 'progress' });
     if (this.hasManyDocuments()) {
-      this.props.insertMany(jsonParse(this.props.jsonDoc).value);
+      this.props.insertMany();
     } else {
       this.props.handleInsertDocument();
     }
@@ -171,7 +178,7 @@ class InsertDocumentDialog extends React.PureComponent {
       if (this.hasManyDocuments()) {
         return (
           <div className="view-not-supported">
-            <p>This view is not supported for mutliple documents. To specify data
+            <p>This view is not supported for multiple documents. To specify data
                types and use other functionality of this view, please insert
                documents one at a time.</p>
           </div>
