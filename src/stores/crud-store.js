@@ -110,6 +110,10 @@ export const setLocalAppRegistry = (store, appRegistry) => {
 
 /**
  * Configure the main CRUD store.
+ *
+ * @param {Object} options - Options object to configure store. Defaults to {}.
+ *
+ * @returns {Object} Configured compass-crud store with initial states.
  */
 const configureStore = (options = {}) => {
   const store = Reflux.createStore({
@@ -340,6 +344,8 @@ const configureStore = (options = {}) => {
      * Find the index of the document in the list.
      *
      * @param {Document} doc - The hadron document.
+     *
+     * @returns {String} Document Index from the list.
      */
     findDocumentIndex(doc) {
       return findIndex(this.state.docs, (d) => {
@@ -568,7 +574,7 @@ const configureStore = (options = {}) => {
     /**
      * Insert a single document.
      *
-     * @param {Array} doc - Documents to insert.
+     * @param {Array} docs - Documents to insert.
      */
     insertMany(docs) {
       this.dataService.insertMany(this.state.ns, docs, {}, (error) => {
@@ -584,32 +590,13 @@ const configureStore = (options = {}) => {
             }
           });
         }
-        // check if the newly inserted document matches the current filter, by
-        // running the same filter but targeted only to the doc's _id.
-        // const filter = Object.assign({}, this.state.query.filter, { _id: doc._id });
-        // this.dataService.count(this.state.ns, filter, {}, (err, count) => {
-        //   if (err) {
-        //     return this.setState({
-        //       insert: this.getInitialInsertState()
-        //     });
-        //   }
+        // Reset Insert State first since there is no errors.
+        this.setState({ insert: this.getInitialInsertState() });
 
-        const count = docs.length;
-        // TODO: create event to handle multiple documents inserted;
-        const hadronDocs = [];
-        for (let i = 0; i < docs.length; i++) {
-          hadronDocs.push(new HadronDocument(docs[i]));
-          this.localAppRegistry.emit('document-inserted', this.state.view, docs[i]);
-          this.globalAppRegistry.emit('document-inserted', this.state.view, docs[i]);
-        }
-        // count is greater than 0, if 1 then the new doc matches the filter
-        // if (count > 0) {
-        return this.setState({
-          docs: this.state.docs.concat(hadronDocs),
-          count: this.state.count + count,
-          end: this.state.end + count,
-          insert: this.getInitialInsertState()
-        });
+        // Since we are inserting a bunch of documents and we need to rerun all
+        // the queries and counts for them, let's just refresh the whole set of
+        // documents.
+        this.refreshDocuments();
       });
     },
 

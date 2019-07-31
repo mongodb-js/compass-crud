@@ -47,7 +47,7 @@ class InsertDocumentDialog extends React.PureComponent {
       nextProps.doc.on(Element.Events.Invalid, this.unsubscribeInvalid);
       nextProps.doc.on(Element.Events.Valid, this.unsubscribeValid);
     } else if ((!nextProps.isOpen && this.props.isOpen && !this.props.jsonView && !this.hasManyDocuments())
-               || (this.props.isOpen && nextProps.isOpen && !this.props.jsonView && nextProps.jsonView && !this.hasManyDocuments())) {
+               || (nextProps.isOpen && this.props.isOpen && !this.props.jsonView && nextProps.jsonView && !this.hasManyDocuments())) {
       // Closing the modal. Remove the listeners to the BSON type validation errors
       // in order to clean up properly.
       this.props.doc.removeListener(Element.Events.Invalid, this.unsubscribeInvalid);
@@ -115,6 +115,8 @@ class InsertDocumentDialog extends React.PureComponent {
    *
    * In case of multiple documents, only switches the this.props.insert.jsonView
    * In other cases, also modifies this.props.insert.doc/jsonDoc to keep data in place.
+   *
+   * @param {String} view - which view we are looking at: JSON or LIST.
    */
   switchInsertDocumentView(view) {
     if (!this.hasManyDocuments()) {
@@ -143,6 +145,8 @@ class InsertDocumentDialog extends React.PureComponent {
 
   /**
    * Check if the json pasted is multiple documents (array).
+   *
+   * @returns {bool} If many documents are currently being inserted.
    */
   hasManyDocuments() {
     const jsonDoc = jsonParse(this.props.jsonDoc).value;
