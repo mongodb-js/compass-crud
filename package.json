@@ -160,6 +160,7 @@
     "fast-json-parse": "^1.0.3",
     "hadron-document": "^5.0.4",
     "hadron-type-checker": "^4.0.4",
+    "highlight.js": "^9.15.9",
     "js-beautify": "^1.10.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.findindex": "^4.6.0",

@@ -34,16 +34,20 @@ class DocumentActions extends React.Component {
    * @returns {React.Component} The expand all button.
    */
   renderExpandAll() {
-    const title = this.state.allExpanded ? 'Collapse All' : 'Expand All';
-    const iconClass = this.state.allExpanded ? 'fa-angle-down' : 'fa-angle-right';
-    return (
-      <UpdatableIconButton
-        title={title}
-        clickHandler={this.props.expandAll}
-        className="document-actions-button document-actions-expand-button btn btn-default btn-xs"
-        iconClassName={`document-actions-button-icon fa ${iconClass}`}
-        dataTestId="expand-all-button" />
-    );
+    if (this.props.expandAll) {
+      const title = this.state.allExpanded ? 'Collapse All' : 'Expand All';
+      const iconClass = this.state.allExpanded ? 'fa-angle-down' : 'fa-angle-right';
+      return (
+        <div className="document-actions-left">
+          <UpdatableIconButton
+            title={title}
+            clickHandler={this.props.expandAll}
+            className="document-actions-button document-actions-expand-button btn btn-default btn-xs"
+            iconClassName={`document-actions-button-icon fa ${iconClass}`}
+            dataTestId="expand-all-button" />
+        </div>
+      );
+    }
   }
 
   /**
@@ -54,9 +58,7 @@ class DocumentActions extends React.Component {
   render() {
     return (
       <div className="document-actions">
-        <div className="document-actions-left">
-          {this.renderExpandAll()}
-        </div>
+        {this.renderExpandAll()}
         <div className="document-actions-right">
           <IconButton
             title="Edit Document"
@@ -96,7 +98,7 @@ DocumentActions.propTypes = {
   remove: PropTypes.func.isRequired,
   clone: PropTypes.func.isRequired,
   allExpanded: PropTypes.bool.isRequired,
-  expandAll: PropTypes.func.isRequired
+  expandAll: PropTypes.func
 };
 
 export default DocumentActions;
