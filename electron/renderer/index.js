@@ -18,8 +18,8 @@ window.jQuery = require('jquery');
 import 'bootstrap/less/bootstrap.less';
 import 'less/index.less';
 
-const DB = 'echo';
-const COLL = 'artists';
+const DB = 'bars';
+const COLL = 'berlin';
 
 const appRegistry = new AppRegistry();
 

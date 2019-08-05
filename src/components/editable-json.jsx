@@ -1,12 +1,21 @@
 import React from 'react';
+import Ace from 'react-ace';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
+import jsBeautify from 'js-beautify';
+// import Highlight from 'react-highlight';
 import DocumentFooter from 'components/document-footer';
-import hljs from 'highlight.js/lib/highlight';
-import javascript from 'highlight.js/lib/languages/javascript';
 import DocumentActions from 'components/document-actions';
 import RemoveDocumentFooter from 'components/remove-document-footer';
 
-hljs.registerLanguage('javascript', javascript);
+import 'brace/mode/javascript';
+import 'brace/mode/csharp';
+import 'brace/mode/python';
+import 'brace/mode/java';
+
+import 'mongodb-ace-theme';
+
+import styles from './document-json-view.less';
 
 /**
  * The base class.
@@ -182,8 +191,37 @@ class EditableJson extends React.Component {
    * @returns {Component} The footer component.
    */
   renderJson() {
+    const OPTIONS = {
+      tabSize: 2,
+      fontSize: 11,
+      minLines: 2,
+      maxLines: Infinity,
+      showGutter: true,
+      // TODO: set this to false when editing
+      readOnly: true,
+      highlightActiveLine: true,
+      highlightGutterLine: true,
+        // TODO: set this to true when editing
+      showLineNumbers: false,
+      wrapBehavioursEnabled: true,
+      foldStyle: 'markbegin',
+      useWorker: false
+    };
+
+    const queryStyle = classnames(styles.editor);
+    const value = jsBeautify(JSON.stringify(this.props.doc.generateObject()));
+
     return (
-      hljs.highlight('javascript', JSON.stringify(this.props.doc.generateObject())).value
+      <div className={queryStyle}>
+        <Ace
+          mode="javascript"
+          value={value}
+          theme="mongodb"
+          width="100%"
+          editorProps={{$blockScrolling: Infinity}}
+          setOptions={OPTIONS}
+          onLoad={(editor) => { this.editor = editor; }}/>
+      </div>
     );
   }
 
