@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import EditableJson from 'components/editable-json';
-import ReadonlyJson from 'components/readonly-json';
 
 /**
  * Component for a single document in a list of documents.
@@ -13,15 +12,10 @@ class JsonDocument extends React.Component {
    * @returns {React.Component} The component.
    */
   render() {
+    // TODO: implement readonly mode
     if (this.props.editable) {
       return (<EditableJson {...this.props} />);
     }
-    return (
-      <ReadonlyJson
-        doc={this.props.doc}
-        tz={this.props.tz}
-        expandAll={this.props.expandAll} />
-    );
   }
 }
 

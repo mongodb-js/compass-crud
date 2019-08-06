@@ -1,9 +1,7 @@
 import React from 'react';
 import Ace from 'react-ace';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 import jsBeautify from 'js-beautify';
-// import Highlight from 'react-highlight';
 import DocumentFooter from 'components/document-footer';
 import DocumentActions from 'components/document-actions';
 import RemoveDocumentFooter from 'components/remove-document-footer';
@@ -14,8 +12,6 @@ import 'brace/mode/python';
 import 'brace/mode/java';
 
 import 'mongodb-ace-theme';
-
-import styles from './document-json-view.less';
 
 /**
  * The base class.
@@ -57,32 +53,11 @@ class EditableJson extends React.Component {
   }
 
   /**
-   * Subscribe to the update store on mount.
+   * Fold up all nested values when loading editors.
    */
-  // componentDidMount() {
-  //   this.subscribeToDocumentEvents(this.props.doc);
-  // }
-
-  /**
-   * Refreshing the list updates the doc in the props so we should update the
-   * json document on the instance.
-   *
-   * @param {Object} prevProps - The previous props.
-   */
-  // componentDidUpdate(prevProps) {
-  //   if (prevProps.doc !== this.props.doc) {
-  //     this.unsubscribeFromDocumentEvents(prevProps.doc);
-  //     this.subscribeToDocumentEvents(this.props.doc);
-  //   }
-  // }
-
-  /**
-   * Unsubscribe from the update store on unmount.
-   */
-  // componentWillUnmount() {
-  //   this.unsubscribeFromDocumentEvents(this.props.doc);
-  // }
-
+  componentDidMount() {
+    this.editor.getSession().foldAll(2);
+  }
 
   /**
    * Fires when the json document update was successful.
@@ -176,7 +151,6 @@ class EditableJson extends React.Component {
     if (!this.state.editing && !this.state.deleting) {
       return (
         <DocumentActions
-          allExpanded={this.state.expandAll}
           edit={this.handleEdit.bind(this)}
           copy={this.handleCopy.bind(this)}
           remove={this.handleDelete.bind(this)}
@@ -199,20 +173,24 @@ class EditableJson extends React.Component {
       showGutter: true,
       // TODO: set this to false when editing
       readOnly: true,
-      highlightActiveLine: true,
-      highlightGutterLine: true,
-        // TODO: set this to true when editing
+      highlightActiveLine: false,
+      highlightGutterLine: false,
+      // TODO: set this to true when editing
       showLineNumbers: false,
+      vScrollBarAlwaysVisible: false,
+      hScrollBarAlwaysVisible: false,
+      fixedWidthGutter: false,
+      showPrintMargin: false,
+      displayIndentGuides: false,
       wrapBehavioursEnabled: true,
       foldStyle: 'markbegin',
       useWorker: false
     };
 
-    const queryStyle = classnames(styles.editor);
     const value = jsBeautify(JSON.stringify(this.props.doc.generateObject()));
 
     return (
-      <div className={queryStyle}>
+      <div className="json-ace-editor">
         <Ace
           mode="javascript"
           value={value}

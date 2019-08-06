@@ -10,40 +10,32 @@
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
     margin-bottom: 5px;
 
-    // pre {
-    //   background-color: #FFFFFF;
-    //   border: none;
-    //   margin: 0;
-    //   font-size: 11px;
-
-    //   .hljs-string {
-    //     color: steelblue;
-    //     white-space: pre-wrap;
-    //     word-break: break-all;
-    //   }
-    //   .hljs-number {
-    //     color: #145a32;
-    //   }
-
-    //   .hljs-literal {
-    //     color: purple;
-    //   }
-    // }
-
-    .ace-editor {
+    .json-ace-editor {
       padding: 10px 10px 10px 0;
       background: #ffffff;
-      border-left: 3px solid @gray10;
-      height: 150px;
       overflow: auto;
       flex-basis: auto;
       flex-shrink: 1;
       flex-grow: 1;
+
+      .ace-mongodb {
+        background: #ffffff;
+
+        .ace_gutter {
+          background: #ffffff;
+        }
+      }
     }
 
     &:last-child {
       margin-bottom: 0;
       border-bottom: 0 solid transparent;
+    }
+
+    &:hover {
+      .document-actions-button {
+        visibility: visible;
+      }
     }
   }
 }

@@ -97,7 +97,7 @@ DocumentActions.propTypes = {
   copy: PropTypes.func.isRequired,
   remove: PropTypes.func.isRequired,
   clone: PropTypes.func.isRequired,
-  allExpanded: PropTypes.bool.isRequired,
+  allExpanded: PropTypes.bool,
   expandAll: PropTypes.func
 };
 
