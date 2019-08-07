@@ -27,7 +27,7 @@ class InsertDocumentDialog extends React.PureComponent {
    */
   constructor(props) {
     super(props);
-    this.state = { canHide: false, message: this.props.message, mode: this.props.mode, multiple: false };
+    this.state = { canHide: false, message: this.props.message, mode: this.props.mode };
     this.unsubscribeInvalid = this.handleInvalid.bind(this);
     this.unsubscribeValid = this.handleValid.bind(this);
     this.invalidElements = [];
