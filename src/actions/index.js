@@ -15,7 +15,6 @@ const configureActions = () => {
     'getNextPage',
     'getPrevPage',
     'insertDocument',
-    'handleInsertDocument',
     'insertMany',
     'toggleInsertDocumentView',
     'toggleInsertDocument',
