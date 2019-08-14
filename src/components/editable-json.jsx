@@ -128,7 +128,7 @@ class EditableJson extends React.Component {
    */
   handleUpdate() {
     this.setState({ mode: PROGRESS, message: UPDATING });
-    this.props.updateExtJsonDocument(EJSON.parse(this.state.json));
+    this.props.updateExtJsonDocument(EJSON.parse(this.state.json), this.props.doc);
   }
 
   /**

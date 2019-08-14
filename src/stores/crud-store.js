@@ -346,8 +346,9 @@ const configureStore = (options = {}) => {
      * Update the provided document given a document object.
      *
      * @param {Object} doc - EJSON document object.
+     * @param {Document} originalDoc - origin Hadron document getting modified.
      */
-    updateExtJsonDocument(doc) {
+    updateExtJsonDocument(doc, originalDoc) {
       const opts = { returnOriginal: false, promoteValues: false };
       const id = doc._id;
       this.dataService.findOneAndReplace(this.state.ns, { _id: id }, doc, opts, (error, d) => {
@@ -356,13 +357,12 @@ const configureStore = (options = {}) => {
           this.trigger(this.state);
         } else {
           this.state.updateSuccess = true;
-          const updatedDoc = new HadronDocument(d);
 
           this.localAppRegistry.emit('document-updated', this.state.view);
           this.globalAppRegistry.emit('document-updated', this.state.view);
 
-          const index = this.findDocumentIndex(updatedDoc);
-          this.state.docs[index] = updatedDoc;
+          const index = this.findDocumentIndex(originalDoc);
+          this.state.docs[index] = new HadronDocument(d);
           this.trigger(this.state);
         }
       });
@@ -386,10 +386,8 @@ const configureStore = (options = {}) => {
      * updateExtJsonDocument.
      */
     clearUpdateStatus() {
-      if (this.state.updateSuccess) this.state.updateSuccess = null;
-      if (this.state.updateError) this.state.updateError = null;
-
-      this.trigger(this.state);
+      if (this.state.updateSuccess) this.setState({ updateSuccess: null });
+      if (this.state.updateError) this.setState({ updateError: null });
     },
 
     /**
