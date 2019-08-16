@@ -155,7 +155,7 @@
     "ag-grid-community": "19.0.0",
     "ag-grid-react": "19.0.0",
     "brace": "^0.11.1",
-    "bson": "^1.1.1",
+    "bson": "^4.0.2",
     "fast-json-parse": "^1.0.3",
     "hadron-document": "^5.0.4",
     "hadron-type-checker": "^4.0.4",

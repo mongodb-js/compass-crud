@@ -1,5 +1,6 @@
 import Reflux from 'reflux';
 import toNS from 'mongodb-ns';
+import { ObjectId } from 'bson';
 import EJSON from 'mongodb-extjson';
 import toPairs from 'lodash.topairs';
 import jsonParse from 'fast-json-parse';
@@ -539,6 +540,7 @@ const configureStore = (options = {}) => {
       if (view === 'JSON') {
         const jsonDoc = JSON.stringify(this.state.insert.doc.generateObject());
         const hadronDoc = this.state.insert.doc;
+
         this.setState({
           insert: {
             doc: hadronDoc,
@@ -550,8 +552,17 @@ const configureStore = (options = {}) => {
           }
         });
       } else {
-        const hadronDoc = new HadronDocument(jsonParse(this.state.insert.jsonDoc).value, true);
+        let hadronDoc;
+
+        if (this.state.insert.jsonDoc === '') {
+          const emptyDoc = { _id: new ObjectId(), '': '' };
+          hadronDoc = new HadronDocument(emptyDoc, false);
+        } else {
+          hadronDoc = new HadronDocument(jsonParse(this.state.insert.jsonDoc).value, false);
+        }
+
         const jsonDoc = this.state.insert.jsonDoc;
+
         this.setState({
           insert: {
             doc: hadronDoc,
