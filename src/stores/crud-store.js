@@ -1,6 +1,6 @@
 import Reflux from 'reflux';
 import toNS from 'mongodb-ns';
-import { ObjectId } from 'bson';
+import { ObjectID } from 'bson';
 import EJSON from 'mongodb-extjson';
 import toPairs from 'lodash.topairs';
 import findIndex from 'lodash.findindex';
@@ -553,7 +553,7 @@ const configureStore = (options = {}) => {
         let hadronDoc;
 
         if (this.state.insert.jsonDoc === '') {
-          const emptyDoc = { _id: new ObjectId(), '': '' };
+          const emptyDoc = { _id: new ObjectID(), '': '' };
           hadronDoc = new HadronDocument(emptyDoc, false);
         } else {
           hadronDoc = new HadronDocument(EJSON.parse(this.state.insert.jsonDoc), false);
