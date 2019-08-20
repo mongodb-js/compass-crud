@@ -212,7 +212,7 @@ class EditableJson extends React.Component {
    * @param {String} value - changed value of json doc being edited.
    */
   handleOnChange(value) {
-    if (!!jsonParse(this.state.json).err) {
+    if (!!jsonParse(value).err) {
       this.setState({ json: value, mode: ERROR, message: INVALID_MESSAGE });
     } else {
       this.setState({ json: value, mode: EDITING, message: MODIFIED });
