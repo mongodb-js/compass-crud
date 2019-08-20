@@ -1,5 +1,6 @@
 import Reflux from 'reflux';
 import toNS from 'mongodb-ns';
+import { ObjectID } from 'bson';
 import EJSON from 'mongodb-extjson';
 import toPairs from 'lodash.topairs';
 import findIndex from 'lodash.findindex';
