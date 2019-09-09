@@ -63,25 +63,25 @@ class DocumentActions extends React.Component {
           <IconButton
             title="Edit Document"
             className="document-actions-button btn btn-default btn-xs"
-            iconClassName="document-actions-button-icon fa fa-pencil"
+            iconClassName="document-actions-button-icon fa fa-pencil-alt"
             dataTestId="edit-document-button"
             clickHandler={this.props.edit} />
           <IconButton
             title="Copy Document"
             className="document-actions-button document-actions-button-copy btn btn-default btn-xs"
-            iconClassName="document-actions-button-icon fa fa-copy"
+            iconClassName="document-actions-button-icon far fa-copy"
             dataTestId="copy-document-button"
             clickHandler={this.props.copy} />
           <IconButton
             title="Clone Document"
             className="document-actions-button btn btn-default btn-xs"
-            iconClassName="document-actions-button-icon fa fa-clone"
+            iconClassName="document-actions-button-icon far fa-clone"
             dataTestId="clone-document-button"
             clickHandler={this.props.clone} />
           <IconButton
             title="Delete Document"
             className="document-actions-button btn btn-default btn-xs"
-            iconClassName="document-actions-button-icon fa fa-trash-o"
+            iconClassName="document-actions-button-icon far fa-trash-alt"
             dataTestId="delete-document-button"
             clickHandler={this.props.remove} />
         </div>

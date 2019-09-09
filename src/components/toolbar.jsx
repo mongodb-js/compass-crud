@@ -120,7 +120,7 @@ class Toolbar extends React.Component {
                 label="View"
                 buttonLabels={['List', 'JSON', 'Table']}
                 showLabels={false}
-                iconClassNames={['fa fa-list-ul', 'curly-bracket', 'fa fa-table']}
+                iconClassNames={['fa fa-list-ul', 'fas fa-brackets-curly', 'fal fa-table']}
                 activeButton={this.props.activeDocumentView}
                 onClick={this.switchDocumentView.bind(this)} />
             </div>
@@ -136,7 +136,7 @@ class Toolbar extends React.Component {
                 stopAnimationListenable={this.props.pageLoadedListenable}
                 dataTestId="refresh-documents-button"
                 className="btn btn-default btn-xs sampling-message-refresh-documents"
-                iconClassName="fa fa-repeat"
+                iconClassName="fa fa-redo"
                 animatingIconClassName="fa fa-refresh fa-spin"/>
             </div>
           </div>
