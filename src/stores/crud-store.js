@@ -1,6 +1,6 @@
 import Reflux from 'reflux';
 import toNS from 'mongodb-ns';
-import EJSON from 'mongodb-extjson';
+import { EJSON } from 'bson';
 import toPairs from 'lodash.topairs';
 import findIndex from 'lodash.findindex';
 import StateMixin from 'reflux-state-mixin';

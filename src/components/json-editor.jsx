@@ -1,7 +1,7 @@
 import React from 'react';
 import Ace from 'react-ace';
 import PropTypes from 'prop-types';
-import EJSON from 'mongodb-extjson';
+import { EJSON } from 'bson';
 import jsBeautify from 'js-beautify';
 import jsonParse from 'fast-json-parse';
 import { TextButton } from 'hadron-react-buttons';
@@ -303,6 +303,7 @@ class EditableJson extends React.Component {
       foldStyle: 'markbegin',
       useWorker: false
     };
+
 
     const value = this.state.json
       ? this.state.json
