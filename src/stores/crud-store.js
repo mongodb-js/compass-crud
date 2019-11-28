@@ -669,8 +669,8 @@ const configureStore = (options = {}) => {
         if (error) {
           return this.setState({
             insert: {
-              doc: new HadronDocument(doc),
-              jsonDoc: JSON.stringify(doc),
+              doc: this.state.insert.jsonDoc,
+              jsonDoc: this.state.insert.jsonDoc,
               jsonView: this.state.insert.jsonView,
               message: error.message,
               mode: ERROR,

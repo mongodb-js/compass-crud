@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
-import jsBeautify from 'js-beautify';
 import PropTypes from 'prop-types';
 import Ace from 'react-ace';
 
@@ -22,22 +21,18 @@ class InsertJsonDocument extends Component {
    */
   constructor(props) {
     super(props);
-  }
-
-  componentDidMount() {
-    if (this.props.jsonDoc !== '') {
-      const doc = jsBeautify(this.props.jsonDoc);
-      this.editor.setValue(`${EDITOR_COMMENT}${doc}`);
-      this.editor.clearSelection();
-    }
+    this.state = { isCommentNeeded: true };
   }
 
   shouldComponentUpdate(nextProps) {
     return (nextProps.jsonDoc !== this.props.jsonDoc);
   }
 
-
   onChange(value) {
+    if (!value.includes(EDITOR_COMMENT)) {
+      this.setState({ isCommentNeeded: false });
+    }
+
     this.props.updateJsonDoc(value.split('*/\n').pop());
   }
 
@@ -55,7 +50,11 @@ class InsertJsonDocument extends Component {
     };
 
     const queryStyle = classnames(styles.editor);
-    const value = `${EDITOR_COMMENT}${this.props.jsonDoc}`;
+    let value = this.props.jsonDoc;
+
+    if (this.state.isCommentNeeded) {
+      value = `${EDITOR_COMMENT}${this.props.jsonDoc}`;
+    }
 
     return (
       <div className={queryStyle}>
