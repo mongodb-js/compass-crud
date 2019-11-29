@@ -161,7 +161,8 @@ const configureStore = (options = {}) => {
         message: '',
         mode: MODIFYING,
         jsonView: false,
-        isOpen: false
+        isOpen: false,
+        isCommentNeeded: true
       };
     },
 
@@ -350,6 +351,11 @@ const configureStore = (options = {}) => {
       });
     },
 
+    updateComment(isCommentNeeded) {
+      const insert = { ...this.state.insert, isCommentNeeded };
+      this.setState({ insert });
+    },
+
     /**
      * Update the provided document given a document object.
      *
@@ -519,7 +525,8 @@ const configureStore = (options = {}) => {
           jsonView: true,
           message: '',
           mode: MODIFYING,
-          isOpen: true
+          isOpen: true,
+          isCommentNeeded: true
         }
       });
     },
@@ -557,7 +564,8 @@ const configureStore = (options = {}) => {
             jsonDoc: jsonDoc,
             message: '',
             mode: MODIFYING,
-            isOpen: true
+            isOpen: true,
+            isCommentNeeded: this.state.insert.isCommentNeeded
           }
         });
       } else {
@@ -576,7 +584,8 @@ const configureStore = (options = {}) => {
             jsonDoc: this.state.insert.jsonDoc,
             message: '',
             mode: MODIFYING,
-            isOpen: true
+            isOpen: true,
+            isCommentNeeded: this.state.insert.isCommentNeeded
           }
         });
       }
@@ -596,7 +605,8 @@ const configureStore = (options = {}) => {
           jsonView: jsonView,
           message: '',
           mode: MODIFYING,
-          isOpen: true
+          isOpen: true,
+          isCommentNeeded: this.state.insert.isCommentNeeded
         }
       });
     },
@@ -615,7 +625,8 @@ const configureStore = (options = {}) => {
           jsonView: true,
           message: '',
           mode: MODIFYING,
-          isOpen: true
+          isOpen: true,
+          isCommentNeeded: this.state.insert.isCommentNeeded
         }
       });
     },
@@ -635,7 +646,8 @@ const configureStore = (options = {}) => {
               jsonView: true,
               message: error.message,
               mode: ERROR,
-              isOpen: true
+              isOpen: true,
+              isCommentNeeded: this.state.insert.isCommentNeeded
             }
           });
         }
@@ -675,7 +687,8 @@ const configureStore = (options = {}) => {
               jsonView: this.state.insert.jsonView,
               message: error.message,
               mode: ERROR,
-              isOpen: true
+              isOpen: true,
+              isCommentNeeded: this.state.insert.isCommentNeeded
             }
           });
         }

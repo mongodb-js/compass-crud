@@ -810,7 +810,7 @@ describe('store', () => {
         const unsubscribe = store.listen((state) => {
           expect(state.docs.length).to.equal(0);
           expect(state.count).to.equal(0);
-          expect(state.insert.doc).to.not.equal({});
+          expect(state.insert.doc).to.deep.equal({});
           expect(state.insert.jsonDoc).to.equal(docs);
           expect(state.insert.isOpen).to.equal(true);
           expect(state.insert.jsonView).to.equal(true);

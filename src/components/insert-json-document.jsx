@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
+import jsBeautify from 'js-beautify';
 import PropTypes from 'prop-types';
 import Ace from 'react-ace';
 
@@ -11,17 +12,37 @@ import 'brace/mode/json';
 
 import styles from './insert-json-document.less';
 
+/**
+ * The comments block.
+ */
 const EDITOR_COMMENT = '/** \n* Paste one or more documents here\n*/\n';
 
+/**
+ * Ace editor settings.
+ */
+const OPTIONS = {
+  tabSize: 2,
+  fontSize: 11,
+  minLines: 2,
+  maxLines: Infinity,
+  showGutter: true,
+  readOnly: false,
+  highlightActiveLine: true,
+  highlightGutterLine: true,
+  useWorker: false
+};
+
 class InsertJsonDocument extends Component {
-  /**
-   * The component constructor.
-   *
-   * @param {Object} props - The properties.
-   */
-  constructor(props) {
-    super(props);
-    this.state = { isCommentNeeded: true };
+  componentDidMount() {
+    if (this.props.jsonDoc !== '') {
+      let value = jsBeautify(this.props.jsonDoc);
+
+      if (this.props.isCommentNeeded) {
+        value = `${EDITOR_COMMENT}${value}`;
+      }
+
+      this.editor.setValue(value);
+    }
   }
 
   shouldComponentUpdate(nextProps) {
@@ -29,35 +50,19 @@ class InsertJsonDocument extends Component {
   }
 
   onChange(value) {
-    if (this.state.isCommentNeeded && !value.includes(EDITOR_COMMENT)) {
-      this.setState({ isCommentNeeded: false });
-    }
-
+    this.props.updateComment(value.includes(EDITOR_COMMENT));
     this.props.updateJsonDoc(value.split('*/\n').pop());
   }
 
   render() {
-    const OPTIONS = {
-      tabSize: 2,
-      fontSize: 11,
-      minLines: 2,
-      maxLines: Infinity,
-      showGutter: true,
-      readOnly: false,
-      highlightActiveLine: true,
-      highlightGutterLine: true,
-      useWorker: false
-    };
-
-    const queryStyle = classnames(styles.editor);
     let value = this.props.jsonDoc;
 
-    if (this.state.isCommentNeeded) {
+    if (this.props.isCommentNeeded) {
       value = `${EDITOR_COMMENT}${this.props.jsonDoc}`;
     }
 
     return (
-      <div className={queryStyle}>
+      <div className={classnames(styles.editor)}>
         <Ace
           mode="json"
           defaultValue={EDITOR_COMMENT}
@@ -77,7 +82,9 @@ InsertJsonDocument.displayName = 'InsertJsonDocumentComponent';
 
 InsertJsonDocument.propTypes = {
   updateJsonDoc: PropTypes.func,
-  jsonDoc: PropTypes.string
+  jsonDoc: PropTypes.string,
+  isCommentNeeded: PropTypes.bool,
+  updateComment: PropTypes.func
 };
 
 export default InsertJsonDocument;
