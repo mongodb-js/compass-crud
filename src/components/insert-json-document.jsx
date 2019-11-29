@@ -29,7 +29,7 @@ class InsertJsonDocument extends Component {
   }
 
   onChange(value) {
-    if (!value.includes(EDITOR_COMMENT)) {
+    if (this.state.isCommentNeeded && !value.includes(EDITOR_COMMENT)) {
       this.setState({ isCommentNeeded: false });
     }
 
