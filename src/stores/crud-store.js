@@ -351,6 +351,11 @@ const configureStore = (options = {}) => {
       });
     },
 
+    /**
+     * Set if the default comment should be displayed.
+     *
+     * @param {Boolean} isCommentNeeded - Is a comment needed or not.
+     */
     updateComment(isCommentNeeded) {
       const insert = { ...this.state.insert, isCommentNeeded };
       this.setState({ insert });

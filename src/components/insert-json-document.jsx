@@ -13,7 +13,7 @@ import 'brace/mode/json';
 import styles from './insert-json-document.less';
 
 /**
- * The comments block.
+ * The comment block.
  */
 const EDITOR_COMMENT = '/** \n* Paste one or more documents here\n*/\n';
 
