@@ -659,6 +659,7 @@ const configureStore = (options = {}) => {
      */
     insertDocument() {
       let doc;
+
       if (this.state.insert.jsonView) {
         doc = EJSON.parse(this.state.insert.jsonDoc);
       } else {
@@ -669,7 +670,7 @@ const configureStore = (options = {}) => {
         if (error) {
           return this.setState({
             insert: {
-              doc: this.state.insert.jsonDoc,
+              doc: this.state.insert.doc,
               jsonDoc: this.state.insert.jsonDoc,
               jsonView: this.state.insert.jsonView,
               message: error.message,
