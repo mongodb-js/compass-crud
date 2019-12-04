@@ -131,7 +131,7 @@ class DocumentList extends React.Component {
   renderZeroState() {
     const editableClass = !this.props.isEditable ? 'disabled' : '';
 
-    if (this.props.docs.length === 0) {
+    if (this.props.status === 'active' && this.props.docs.length === 0) {
       return (
         <div className="document-list-zero-state">
           <ZeroGraphic />
@@ -199,7 +199,8 @@ DocumentList.propTypes = {
   docs: PropTypes.array,
   ns: PropTypes.string,
   tz: PropTypes.string,
-  updateComment: PropTypes.func.isRequired
+  updateComment: PropTypes.func.isRequired,
+  status: PropTypes.string.isRequired
 };
 
 DocumentList.defaultProps = {
