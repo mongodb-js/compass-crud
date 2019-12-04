@@ -129,25 +129,27 @@ class DocumentList extends React.Component {
    * @returns {React.Component} The query bar.
    */
   renderZeroState() {
+    if (this.props.docs.length > 0 || this.props.status !== 'active') {
+      return null;
+    }
+
     const editableClass = !this.props.isEditable ? 'disabled' : '';
 
-    if (this.props.status === 'active' && this.props.docs.length === 0) {
-      return (
-        <div className="document-list-zero-state">
-          <ZeroGraphic />
-          <ZeroState header={HEADER} subtext={SUBTEXT}>
-            <div className="document-list-zero-state-action">
-              <div>
-                <TextButton
-                  className={`btn btn-primary btn-lg ${editableClass}`}
-                  text="Import Data"
-                  clickHandler={this.props.openImportFileDialog} />
-              </div>
+    return (
+      <div className="document-list-zero-state">
+        <ZeroGraphic />
+        <ZeroState header={HEADER} subtext={SUBTEXT}>
+          <div className="document-list-zero-state-action">
+            <div>
+              <TextButton
+                className={`btn btn-primary btn-lg ${editableClass}`}
+                text="Import Data"
+                clickHandler={this.props.openImportFileDialog} />
             </div>
-          </ZeroState>
-        </div>
-      );
-    }
+          </div>
+        </ZeroState>
+      </div>
+    );
   }
 
   /**
