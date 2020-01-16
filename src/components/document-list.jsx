@@ -213,7 +213,7 @@ DocumentList.propTypes = {
   ns: PropTypes.string,
   tz: PropTypes.string,
   updateComment: PropTypes.func.isRequired,
-  status: PropTypes.string.isRequired
+  status: PropTypes.string
 };
 
 DocumentList.defaultProps = {
