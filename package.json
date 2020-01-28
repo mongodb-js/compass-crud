@@ -17,7 +17,7 @@
     "test": "cross-env NODE_ENV=test mocha-webpack \"./src/**/*.spec.js\"",
     "posttest": "mongodb-runner stop --port 27018",
     "pretest:karma": "electron-rebuild --force --only keytar && mongodb-runner start --port 27018",
-    "test:karma": "cross-env NODE_ENV=test karma start",
+    "test:karma": "xvfb-maybe cross-env NODE_ENV=test karma start",
     "posttest:karma": "mongodb-runner stop --port 27018",
     "cover": "nyc npm run test",
     "ci": "npm run check && npm run cover",
@@ -145,7 +145,8 @@
     "webpack-dev-server": "^3.2.1",
     "webpack-merge": "^4.2.1",
     "webpack-node-externals": "^1.7.2",
-    "webpack-sources": "1.4.3"
+    "webpack-sources": "1.4.3",
+    "xvfb-maybe": "^0.2.1"
   },
   "dependencies": {
     "ag-grid-community": "19.1.4",
