@@ -32,6 +32,7 @@ export {
   Decimal128Editor,
   DoubleEditor,
   Int32Editor,
+  Int64Editor,
   NullEditor,
   UndefinedEditor,
   ObjectIdEditor
