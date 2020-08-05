@@ -112,7 +112,7 @@
     "mongodb-ace-mode": "^0.4.0",
     "mongodb-ace-theme-query": "0.0.2",
     "mongodb-connection-model": "^14.4.3",
-    "mongodb-data-service": "^16.4.0",
+    "mongodb-data-service": "^16.9.1",
     "mongodb-js-precommit": "^2.0.0",
     "mongodb-ns": "^2.0.0",
     "mongodb-query-parser": "^2.0.2",
