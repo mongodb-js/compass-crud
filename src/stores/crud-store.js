@@ -337,11 +337,18 @@ const configureStore = (options = {}) => {
      * @param {Document} doc - The hadron document.
      */
     updateDocument(doc) {
+      console.log('here', doc);
       const documentId = doc.getId();
       const originalFieldsThatWillBeUpdated = doc.getOriginalKeysAndValuesForFieldsThatWereUpdated();
-      const setUpdateObject = doc.generateUnsetUpdateObject();
-      const unsetUpdateObject = doc.generateSetUpdateObject();
-      const updateObject = { $set: setUpdateObject, $unset: unsetUpdateObject };
+      const setUpdateObject = doc.generateSetUpdateObject();
+      const unsetUpdateObject = doc.generateUnsetUpdateObject();
+      const updateObject = { };
+      if (setUpdateObject && Object.keys(setUpdateObject).length > 0) {
+        updateObject.$set = setUpdateObject;
+      }
+      if (unsetUpdateObject && Object.keys(unsetUpdateObject).length > 0) {
+        updateObject.$unset = unsetUpdateObject;
+      }
       const opts = { returnOriginal: false, promoteValues: false };
       this.dataService.findOneAndUpdate(
         this.state.ns,
