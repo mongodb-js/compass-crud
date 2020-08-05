@@ -337,21 +337,33 @@ const configureStore = (options = {}) => {
      * @param {Document} doc - The hadron document.
      */
     updateDocument(doc) {
-      const object = doc.generateObject();
+      const documentId = doc.getId();
+      const originalFieldsThatWillBeUpdated = doc.getOriginalKeysAndValuesForFieldsThatWereUpdated();
+      const setUpdateObject = doc.generateUnsetUpdateObject();
+      const unsetUpdateObject = doc.generateSetUpdateObject();
+      const updateObject = { $set: setUpdateObject, $unset: unsetUpdateObject };
       const opts = { returnOriginal: false, promoteValues: false };
-      const id = object._id;
-      this.dataService.findOneAndReplace(this.state.ns, { _id: id }, object, opts, (error, d) => {
-        if (error) {
-          doc.emit('update-error', error.message);
-        } else {
-          doc.emit('update-success', d);
-          this.localAppRegistry.emit('document-updated', this.state.view);
-          this.globalAppRegistry.emit('document-updated', this.state.view);
-          const index = this.findDocumentIndex(doc);
-          this.state.docs[index] = new HadronDocument(d);
-          this.trigger(this.state);
+      this.dataService.findOneAndUpdate(
+        this.state.ns,
+        {
+          _id: documentId,
+          ...originalFieldsThatWillBeUpdated
+        },
+        updateObject,
+        opts,
+        (error, d) => {
+          if (error) {
+            doc.emit('update-error', error.message);
+          } else {
+            doc.emit('update-success', d);
+            this.localAppRegistry.emit('document-updated', this.state.view);
+            this.globalAppRegistry.emit('document-updated', this.state.view);
+            const index = this.findDocumentIndex(doc);
+            this.state.docs[index] = new HadronDocument(d);
+            this.trigger(this.state);
+          }
         }
-      });
+      );
     },
 
     /**
@@ -373,7 +385,7 @@ const configureStore = (options = {}) => {
     updateExtJsonDocument(doc, originalDoc) {
       const opts = { returnOriginal: false, promoteValues: false };
       const id = doc._id;
-      this.dataService.findOneAndReplace(this.state.ns, { _id: id }, doc, opts, (error, d) => {
+      this.dataService.findOneAndUpdate(this.state.ns, { _id: id }, doc, opts, (error, d) => {
         if (error) {
           this.state.updateError = error.message;
           this.trigger(this.state);

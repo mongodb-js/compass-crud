@@ -470,7 +470,7 @@ describe('store', () => {
       let stub;
 
       beforeEach(() => {
-        stub = sinon.stub(dataService, 'findOneAndReplace').yields({ message: 'error happened' });
+        stub = sinon.stub(dataService, 'findOneAndUpdate').yields({ message: 'error happened' });
       });
 
       afterEach(() => {
@@ -537,7 +537,7 @@ describe('store', () => {
       let stub;
 
       beforeEach(() => {
-        stub = sinon.stub(dataService, 'findOneAndReplace').yields({ message: 'error happened' });
+        stub = sinon.stub(dataService, 'findOneAndUpdate').yields({ message: 'error happened' });
       });
 
       afterEach(() => {
