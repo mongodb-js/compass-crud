@@ -29,7 +29,7 @@ const EMPTY_MESSAGE = '';
 const MODIFIED_MESSAGE = 'Document Modified.';
 const UPDATING_MESSAGE = 'Updating Document.';
 const UPDATED_MESSAGE = 'Document Updated.';
-const BLOCKED_MESSAGE = 'Update was blocked, document was modified in the background or it longer exists. Do you wish to update and possibly overwrite new changes?';
+const BLOCKED_MESSAGE = 'Document was modified in the background or it longer exists. Do you wish to continue and possibly overwrite new changes?';
 const INVALID_MESSAGE = 'Update not permitted while document contains errors.';
 
 /**
