@@ -335,11 +335,22 @@ const configureStore = (options = {}) => {
      * Update the provided document.
      *
      * @param {Document} doc - The hadron document.
+     * @param {Boolean} forceUpdate - Optional - Performs the update without
+     * ensuring the previous values weren't updated in the background.
      */
-    updateDocument(doc) {
-      console.log('here', doc);
+    updateDocument(doc, forceUpdate) {
       const documentId = doc.getId();
       const originalFieldsThatWillBeUpdated = doc.getOriginalKeysAndValuesForFieldsThatWereUpdated();
+      let query;
+      if (forceUpdate) {
+        query = { _id: documentId };
+      } else {
+        query = {
+          _id: documentId,
+          ...originalFieldsThatWillBeUpdated
+        };
+      }
+
       const setUpdateObject = doc.generateSetUpdateObject();
       const unsetUpdateObject = doc.generateUnsetUpdateObject();
       const updateObject = { };
@@ -349,25 +360,26 @@ const configureStore = (options = {}) => {
       if (unsetUpdateObject && Object.keys(unsetUpdateObject).length > 0) {
         updateObject.$unset = unsetUpdateObject;
       }
+
       const opts = { returnOriginal: false, promoteValues: false };
+
       this.dataService.findOneAndUpdate(
         this.state.ns,
-        {
-          _id: documentId,
-          ...originalFieldsThatWillBeUpdated
-        },
+        query,
         updateObject,
         opts,
         (error, d) => {
           if (error) {
             doc.emit('update-error', error.message);
-          } else {
+          } else if (d) {
             doc.emit('update-success', d);
             this.localAppRegistry.emit('document-updated', this.state.view);
             this.globalAppRegistry.emit('document-updated', this.state.view);
             const index = this.findDocumentIndex(doc);
             this.state.docs[index] = new HadronDocument(d);
             this.trigger(this.state);
+          } else {
+            doc.emit('update-blocked');
           }
         }
       );
