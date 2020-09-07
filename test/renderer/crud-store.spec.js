@@ -486,6 +486,60 @@ describe('store', () => {
         store.updateDocument(hadronDoc);
       });
     });
+
+    context('when the update fails', () => {
+      const doc = { _id: 'testing', name: 'Beach Sand' };
+      const hadronDoc = new HadronDocument(doc);
+      let stub;
+
+      beforeEach(() => {
+        stub = sinon.stub(dataService, 'findOneAndUpdate').yields(null, null);
+      });
+
+      afterEach(() => {
+        stub.restore();
+      });
+
+      it('sets the update blocked for the document', (done) => {
+        hadronDoc.on('update-blocked', () => {
+          done();
+        });
+
+        store.updateDocument(hadronDoc);
+      });
+    });
+
+    context('when update is called on an edited doc', () => {
+      const doc = { _id: 'testing', name: 'Beach Sand' };
+      const hadronDoc = new HadronDocument(doc);
+      hadronDoc.find('name').edit('Desert Sand');
+      let stub;
+
+      beforeEach(() => {
+        stub = sinon.stub(dataService, 'findOneAndUpdate').yields(null, {});
+      });
+
+      afterEach(() => {
+        stub.restore();
+      });
+
+      it('has the original value for the edited value in the query', () => {
+        store.updateDocument(hadronDoc);
+
+        expect(stub.getCall(0).args[0]).to.deep.equal({
+          _id: 'testing',
+          name: 'Beach Sand'
+        });
+      });
+
+      context('when the force update parameter is true', () => {
+        it('calls findOneAndUpdate without the explicit document in the query', () => {
+          store.updateDocument(hadronDoc, true);
+
+          expect(stub.getCall(0).args[0]).to.deep.equal({ _id: 'testing' });
+        });
+      });
+    });
   });
 
   describe('#updateExtJsonDocument', () => {

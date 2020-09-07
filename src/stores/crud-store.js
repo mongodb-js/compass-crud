@@ -4,7 +4,13 @@ import EJSON from 'mongodb-extended-json';
 import { toPairs, findIndex, isEmpty } from 'lodash';
 import StateMixin from 'reflux-state-mixin';
 import HadronDocument from 'hadron-document';
+
 import configureGridStore from './grid-store';
+import {
+  getOriginalKeysAndValuesForFieldsThatWereUpdated,
+  getSetUpdateForDocuments,
+  getUnsetUpdateForDocuments
+} from '../utils/document';
 
 /**
  * Number of docs per page.
@@ -332,27 +338,24 @@ const configureStore = (options = {}) => {
     },
 
     /**
-     * Update the provided document.
+     * Update the provided document, ensuring the values to be changed
+     * weren't updated or removed in the background.
      *
      * @param {Document} doc - The hadron document.
-     * @param {Boolean} forceUpdate - Optional - Performs the update without
-     * ensuring the previous values weren't updated in the background.
      */
-    updateDocument(doc, forceUpdate) {
-      const documentId = doc.getId();
-      const originalFieldsThatWillBeUpdated = doc.getOriginalKeysAndValuesForFieldsThatWereUpdated();
-      let query;
-      if (forceUpdate) {
-        query = { _id: documentId };
-      } else {
-        query = {
-          _id: documentId,
-          ...originalFieldsThatWillBeUpdated
-        };
-      }
+    updateDocument(doc) {
+      const newDocument = doc.generateObject();
+      const originalDocument = doc.generateOriginalObject();
 
-      const setUpdateObject = doc.generateSetUpdateObject();
-      const unsetUpdateObject = doc.generateUnsetUpdateObject();
+      const originalFieldsThatWillBeUpdated = getOriginalKeysAndValuesForFieldsThatWereUpdated(originalDocument, newDocument);
+
+      const query = {
+        _id: doc.getId(),
+        ...originalFieldsThatWillBeUpdated
+      };
+
+      const setUpdateObject = getSetUpdateForDocuments(originalDocument, newDocument);
+      const unsetUpdateObject = getUnsetUpdateForDocuments(originalDocument, newDocument);
       const updateObject = { };
       if (setUpdateObject && Object.keys(setUpdateObject).length > 0) {
         updateObject.$set = setUpdateObject;
@@ -383,6 +386,29 @@ const configureStore = (options = {}) => {
           }
         }
       );
+    },
+
+    /**
+     * Replace the document in the database with the provided document.
+     *
+     * @param {Document} doc - The hadron document.
+     */
+    replaceDocument(doc) {
+      const object = doc.generateObject();
+      const opts = { returnOriginal: false, promoteValues: false };
+      const id = object._id;
+      this.dataService.findOneAndReplace(this.state.ns, { _id: id }, object, opts, (error, d) => {
+        if (error) {
+          doc.emit('update-error', error.message);
+        } else {
+          doc.emit('update-success', d);
+          this.localAppRegistry.emit('document-updated', this.state.view);
+          this.globalAppRegistry.emit('document-updated', this.state.view);
+          const index = this.findDocumentIndex(doc);
+          this.state.docs[index] = new HadronDocument(d);
+          this.trigger(this.state);
+        }
+      });
     },
 
     /**
