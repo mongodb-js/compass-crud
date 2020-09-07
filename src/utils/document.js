@@ -88,7 +88,7 @@ const getUnsetUpdateKeysForElementChanges = (path, currentElement) => {
   return unsetKeys;
 };
 
-export const getUnsetUpdateForDocuments = (doc) => {
+export const getUnsetUpdateForDocumentChanges = (doc) => {
   const object = {};
 
   if (doc.elements) {

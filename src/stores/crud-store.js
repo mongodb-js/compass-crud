@@ -8,8 +8,8 @@ import HadronDocument from 'hadron-document';
 import configureGridStore from './grid-store';
 import {
   getOriginalKeysAndValuesForFieldsThatWereUpdated,
-  getSetUpdateForDocuments,
-  getUnsetUpdateForDocuments
+  getSetUpdateForDocumentChanges,
+  getUnsetUpdateForDocumentChanges
 } from '../utils/document';
 
 /**
@@ -354,8 +354,8 @@ const configureStore = (options = {}) => {
         ...originalFieldsThatWillBeUpdated
       };
 
-      const setUpdateObject = getSetUpdateForDocuments(originalDocument, newDocument);
-      const unsetUpdateObject = getUnsetUpdateForDocuments(originalDocument, newDocument);
+      const setUpdateObject = getSetUpdateForDocumentChanges(originalDocument, newDocument);
+      const unsetUpdateObject = getUnsetUpdateForDocumentChanges(originalDocument, newDocument);
       const updateObject = { };
       if (setUpdateObject && Object.keys(setUpdateObject).length > 0) {
         updateObject.$set = setUpdateObject;
