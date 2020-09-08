@@ -167,11 +167,17 @@ class DocumentFooter extends React.Component {
     // it means they intend to overwrite/force update values of the document
     // that may have changed in the background.
     const forceUpdate = this.state.mode === BLOCKED_MODE;
+
     if (this.props.api) {
       this.props.api.stopEditing();
     }
     this.setState({ mode: PROGRESS_MODE, message: UPDATING_MESSAGE });
-    this.props.updateDocument(this.props.doc, forceUpdate /* Force update */);
+
+    if (forceUpdate) {
+      this.props.replaceDocument(this.props.doc);
+    } else {
+      this.props.updateDocument(this.props.doc);
+    }
   }
 
   /**
@@ -228,6 +234,7 @@ DocumentFooter.displayName = 'DocumentFooter';
 
 DocumentFooter.propTypes = {
   doc: PropTypes.object.isRequired,
+  replaceDocument: PropTypes.func.isRequired,
   updateDocument: PropTypes.func.isRequired,
   cancelHandler: PropTypes.func,
   api: PropTypes.any

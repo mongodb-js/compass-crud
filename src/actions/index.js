@@ -27,6 +27,7 @@ const configureActions = () => {
     'removeColumn',
     'renameColumn',
     'replaceDoc',
+    'replaceDocument',
     'resetHeaders',
     'updateDocument',
     'updateExtJsonDocument',

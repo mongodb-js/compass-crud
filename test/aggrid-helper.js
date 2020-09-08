@@ -33,6 +33,7 @@ const getActions = function() {
     elementMarkRemoved: sinon.spy(),
     elementTypeChanged: sinon.spy(),
     removeDocument: sinon.spy(),
+    replaceDocument: sinon.spy(),
     updateDocument: sinon.spy(),
     getNextPage: sinon.spy(),
     getPrevPage: sinon.spy(),

@@ -531,10 +531,95 @@ describe('store', () => {
           name: 'Beach Sand'
         });
       });
+    });
+  });
+
+  describe('#replaceDocument', () => {
+    let store;
+    let actions;
+
+    beforeEach(() => {
+      actions = configureActions();
+      store = configureStore({
+        localAppRegistry: localAppRegistry,
+        globalAppRegistry: globalAppRegistry,
+        dataProvider: {
+          error: null,
+          dataProvider: dataService
+        },
+        actions: actions,
+        namespace: 'compass-crud.test'
+      });
+    });
+
+    context('when there is no error', () => {
+      const doc = { _id: 'testing', name: 'Depeche Mode' };
+      const hadronDoc = new HadronDocument(doc);
+
+      beforeEach(() => {
+        store.state.docs = [ hadronDoc ];
+      });
+
+      it('replaces the document in the list', (done) => {
+        const unsubscribe = store.listen((state) => {
+          expect(state.docs[0]).to.not.equal(hadronDoc);
+          unsubscribe();
+          done();
+        });
+
+        store.replaceDocument(hadronDoc);
+      });
+    });
+
+    context('when the replace errors', () => {
+      const doc = { _id: 'testing', name: 'Depeche Mode' };
+      const hadronDoc = new HadronDocument(doc);
+      let stub;
+
+      beforeEach(() => {
+        stub = sinon.stub(dataService, 'findOneAndReplace').yields({ message: 'error happened' });
+      });
+
+      afterEach(() => {
+        stub.restore();
+      });
+
+      it('sets the error for the document', (done) => {
+        hadronDoc.on('update-error', (message) => {
+          expect(message).to.equal('error happened');
+          done();
+        });
+
+        store.replaceDocument(hadronDoc);
+      });
+    });
+
+    context('when replace is called on an edited doc', () => {
+      const doc = { _id: 'testing', name: 'Beach Sand' };
+      const hadronDoc = new HadronDocument(doc);
+      hadronDoc.find('name').edit('Desert Sand');
+      let stub;
+
+      beforeEach(() => {
+        stub = sinon.stub(dataService, 'findOneAndReplace').yields(null, {});
+      });
+
+      afterEach(() => {
+        stub.restore();
+      });
+
+      it('has the original value for the edited value in the query', () => {
+        store.replaceDocument(hadronDoc);
+
+        expect(stub.getCall(0).args[0]).to.deep.equal({
+          _id: 'testing',
+          name: 'Beach Sand'
+        });
+      });
 
       context('when the force update parameter is true', () => {
-        it('calls findOneAndUpdate without the explicit document in the query', () => {
-          store.updateDocument(hadronDoc, true);
+        it('calls findOneAndReplace without the explicit document in the query', () => {
+          store.replaceDocument(hadronDoc, true);
 
           expect(stub.getCall(0).args[0]).to.deep.equal({ _id: 'testing' });
         });
