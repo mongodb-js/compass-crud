@@ -86,10 +86,17 @@ const getContext = function(path) {
 };
 
 const getDataService = function(done) {
+  const foarSpy = sinon.spy();
   const foauSpy = sinon.spy();
   const iSpy = sinon.spy();
   const dSpy = sinon.spy();
   return {
+    foarSpy: foarSpy,
+    findOneAndReplace: (ns, filter, obj, prefs, handleResult) => {
+      foarSpy(filter, obj);
+      handleResult(null, obj);
+      done();
+    },
     foauSpy: foauSpy,
     findOneAndUpdate: (ns, filter, obj, prefs, handleResult) => {
       foauSpy(filter, obj);

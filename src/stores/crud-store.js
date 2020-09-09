@@ -347,15 +347,18 @@ const configureStore = (options = {}) => {
       const newDocument = doc.generateObject();
       const originalDocument = doc.generateOriginalObject();
 
-      const originalFieldsThatWillBeUpdated = getOriginalKeysAndValuesForFieldsThatWereUpdated(originalDocument, newDocument);
+      const originalFieldsThatWillBeUpdated = getOriginalKeysAndValuesForFieldsThatWereUpdated(
+        originalDocument,
+        newDocument
+      );
 
       const query = {
         _id: doc.getId(),
         ...originalFieldsThatWillBeUpdated
       };
 
-      const setUpdateObject = getSetUpdateForDocumentChanges(originalDocument, newDocument);
-      const unsetUpdateObject = getUnsetUpdateForDocumentChanges(originalDocument, newDocument);
+      const setUpdateObject = getSetUpdateForDocumentChanges(doc);
+      const unsetUpdateObject = getUnsetUpdateForDocumentChanges(doc);
       const updateObject = { };
       if (setUpdateObject && Object.keys(setUpdateObject).length > 0) {
         updateObject.$set = setUpdateObject;
