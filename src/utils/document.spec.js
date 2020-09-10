@@ -104,6 +104,48 @@ describe('document utils', () => {
       });
     });
 
+    context('when an element is named empty string', function() {
+      const object = { name: 'test' };
+      const doc = new HadronDocument(object);
+
+      before(function() {
+        doc.elements.at(0).rename('');
+      });
+
+      it('does not include the change in the object', function() {
+        expect(getSetUpdateForDocumentChanges(doc)).to.deep.equal({ });
+      });
+    });
+
+    context('when an added element is named empty string', function() {
+      const object = { name: 'test' };
+      const doc = new HadronDocument(object);
+
+      before(function() {
+        doc.insertEnd('aa', '333');
+        doc.elements.at(1).rename('');
+      });
+
+      it('does not include the change in the object', function() {
+        expect(getSetUpdateForDocumentChanges(doc)).to.deep.equal({ });
+      });
+    });
+
+    context('when an element is added', function() {
+      const object = { name: 'test' };
+      const doc = new HadronDocument(object);
+
+      before(() => {
+        doc.insertEnd('pineapple', 'hat');
+      });
+
+      it('includes the change in the object', function() {
+        expect(getSetUpdateForDocumentChanges(doc)).to.deep.equal({
+          pineapple: 'hat'
+        });
+      });
+    });
+
     context('when a nested element is removed', function() {
       const object = {
         name: {
@@ -158,7 +200,7 @@ describe('document utils', () => {
       });
     });
 
-    context('when an element is blank', function() {
+    context('when an element is renamed empty string', function() {
       const object = { name: 'test' };
       const doc = new HadronDocument(object);
 
@@ -166,10 +208,37 @@ describe('document utils', () => {
         doc.elements.at(0).rename('');
       });
 
-      it('includes the original key in the object', function() {
+      it('has the original key in the object', function() {
         expect(getUnsetUpdateForDocumentChanges(doc)).to.deep.equal({
           name: true
         });
+      });
+    });
+
+    context('when an added element is named empty string', function() {
+      const object = { name: 'test' };
+      const doc = new HadronDocument(object);
+
+      before(function() {
+        doc.insertEnd('aa', '333');
+        doc.elements.at(1).rename('');
+      });
+
+      it('does not include the change in the object', function() {
+        expect(getUnsetUpdateForDocumentChanges(doc)).to.deep.equal({ });
+      });
+    });
+
+    context('when an element is added', function() {
+      const object = { name: 'test' };
+      const doc = new HadronDocument(object);
+
+      before(() => {
+        doc.insertEnd('pineapple', 'hat');
+      });
+
+      it('does not have any change in the object', function() {
+        expect(getUnsetUpdateForDocumentChanges(doc)).to.deep.equal({ });
       });
     });
 
@@ -256,7 +325,7 @@ describe('document utils', () => {
       });
     });
 
-    context('when an element named to blank', function() {
+    context('when an element named to empty string', function() {
       const object = { name: 'test', another: 'ok' };
       const doc = new HadronDocument(object);
 
@@ -307,6 +376,48 @@ describe('document utils', () => {
             last: 'hendrix'
           }
         });
+      });
+    });
+
+    context('when an element is renamed empty string', function() {
+      const object = { name: 'test' };
+      const doc = new HadronDocument(object);
+
+      before(function() {
+        doc.elements.at(0).rename('');
+      });
+
+      it('includes the change in the object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({
+          name: 'test'
+        });
+      });
+    });
+
+    context('when an added element is named empty string', function() {
+      const object = { name: 'test' };
+      const doc = new HadronDocument(object);
+
+      before(function() {
+        doc.insertEnd('aa', '333');
+        doc.elements.at(1).rename('');
+      });
+
+      it('does not have any element in the object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({ });
+      });
+    });
+
+    context('when an element is added', function() {
+      const object = { name: 'test' };
+      const doc = new HadronDocument(object);
+
+      before(() => {
+        doc.insertEnd('pineapple', 'hat');
+      });
+
+      it('does not include the new element in the object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({ });
       });
     });
 

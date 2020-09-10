@@ -41,10 +41,10 @@ export const getUnsetUpdateForDocumentChanges = (doc) => {
 
   if (doc && doc.elements) {
     for (const element of doc.elements) {
-      if (element.isRemoved() && element.currentKey !== '') {
-        object[element.currentKey] = true;
+      if (!element.isAdded() && element.isRemoved() && element.key !== '') {
+        object[element.key] = true;
       }
-      if (element.isRenamed()) {
+      if (!element.isAdded() && element.isRenamed() && element.key !== '') {
         // Remove the original field when an element is renamed.
         object[element.key] = true;
       }
@@ -68,7 +68,7 @@ export const getOriginalKeysAndValuesForFieldsThatWereUpdated = (doc) => {
 
   if (doc && doc.elements) {
     for (const element of doc.elements) {
-      if (element.isModified()) {
+      if (element.isModified() && !element.isAdded()) {
         // Using `.key` instead of `.currentKey` to ensure we look at
         // the original field's value.
         object[element.key] = element.generateOriginalObject();
