@@ -424,10 +424,10 @@ const configureStore = (options = {}) => {
      * @param {Object} doc - EJSON document object.
      * @param {Document} originalDoc - origin Hadron document getting modified.
      */
-    updateExtJsonDocument(doc, originalDoc) {
+    replaceExtJsonDocument(doc, originalDoc) {
       const opts = { returnOriginal: false, promoteValues: false };
       const id = doc._id;
-      this.dataService.findOneAndUpdate(this.state.ns, { _id: id }, doc, opts, (error, d) => {
+      this.dataService.findOneAndReplace(this.state.ns, { _id: id }, doc, opts, (error, d) => {
         if (error) {
           this.state.updateError = error.message;
           this.trigger(this.state);
@@ -459,7 +459,7 @@ const configureStore = (options = {}) => {
 
     /**
      * Clear update statuses, if updateSuccess or updateError were set by
-     * updateExtJsonDocument.
+     * replaceExtJsonDocument.
      */
     clearUpdateStatus() {
       if (this.state.updateSuccess) this.setState({ updateSuccess: null });

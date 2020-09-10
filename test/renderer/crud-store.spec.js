@@ -627,7 +627,7 @@ describe('store', () => {
     });
   });
 
-  describe('#updateExtJsonDocument', () => {
+  describe('#replaceExtJsonDocument', () => {
     let store;
     let actions;
 
@@ -664,7 +664,7 @@ describe('store', () => {
           done();
         });
 
-        store.updateExtJsonDocument(ejsonDoc, hadronDoc);
+        store.replaceExtJsonDocument(ejsonDoc, hadronDoc);
       });
     });
 
@@ -676,7 +676,7 @@ describe('store', () => {
       let stub;
 
       beforeEach(() => {
-        stub = sinon.stub(dataService, 'findOneAndUpdate').yields({ message: 'error happened' });
+        stub = sinon.stub(dataService, 'findOneAndReplace').yields({ message: 'error happened' });
       });
 
       afterEach(() => {
@@ -690,7 +690,7 @@ describe('store', () => {
           done();
         });
 
-        store.updateExtJsonDocument(ejsonDoc, hadronDoc);
+        store.replaceExtJsonDocument(ejsonDoc, hadronDoc);
       });
     });
   });
