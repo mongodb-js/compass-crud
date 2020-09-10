@@ -451,6 +451,7 @@ describe('store', () => {
 
       beforeEach(() => {
         store.state.docs = [ hadronDoc ];
+        hadronDoc.elements.at(1).rename('new name');
       });
 
       it('replaces the document in the list', (done) => {
@@ -464,12 +465,36 @@ describe('store', () => {
       });
     });
 
+    context('when there is no update to make', () => {
+      const doc = { _id: 'testing', name: 'Depeche Mode' };
+      const hadronDoc = new HadronDocument(doc);
+      let stub;
+
+      beforeEach(() => {
+        stub = sinon.stub(dataService, 'findOneAndUpdate').yields({ message: 'error happened' });
+      });
+
+      afterEach(() => {
+        stub.restore();
+      });
+
+      it('sets the error for the document', (done) => {
+        hadronDoc.on('update-error', (message) => {
+          expect(message).to.equal('Unable to update, no changes have been made.');
+          done();
+        });
+
+        store.updateDocument(hadronDoc);
+      });
+    });
+
     context('when the update errors', () => {
       const doc = { _id: 'testing', name: 'Depeche Mode' };
       const hadronDoc = new HadronDocument(doc);
       let stub;
 
       beforeEach(() => {
+        hadronDoc.elements.at(1).rename('new name');
         stub = sinon.stub(dataService, 'findOneAndUpdate').yields({ message: 'error happened' });
       });
 
@@ -493,6 +518,7 @@ describe('store', () => {
       let stub;
 
       beforeEach(() => {
+        hadronDoc.elements.at(1).rename('new name');
         stub = sinon.stub(dataService, 'findOneAndUpdate').yields(null, null);
       });
 
@@ -512,10 +538,10 @@ describe('store', () => {
     context('when update is called on an edited doc', () => {
       const doc = { _id: 'testing', name: 'Beach Sand' };
       const hadronDoc = new HadronDocument(doc);
-      hadronDoc.find('name').edit('Desert Sand');
       let stub;
 
       beforeEach(() => {
+        hadronDoc.get('name').edit('Desert Sand');
         stub = sinon.stub(dataService, 'findOneAndUpdate').yields(null, {});
       });
 
@@ -526,9 +552,14 @@ describe('store', () => {
       it('has the original value for the edited value in the query', () => {
         store.updateDocument(hadronDoc);
 
-        expect(stub.getCall(0).args[0]).to.deep.equal({
+        expect(stub.getCall(0).args[1]).to.deep.equal({
           _id: 'testing',
           name: 'Beach Sand'
+        });
+        expect(stub.getCall(0).args[2]).to.deep.equal({
+          $set: {
+            name: 'Desert Sand'
+          }
         });
       });
     });
@@ -597,10 +628,10 @@ describe('store', () => {
     context('when replace is called on an edited doc', () => {
       const doc = { _id: 'testing', name: 'Beach Sand' };
       const hadronDoc = new HadronDocument(doc);
-      hadronDoc.find('name').edit('Desert Sand');
       let stub;
 
       beforeEach(() => {
+        hadronDoc.get('name').edit('Desert Sand');
         stub = sinon.stub(dataService, 'findOneAndReplace').yields(null, {});
       });
 
@@ -611,17 +642,9 @@ describe('store', () => {
       it('has the original value for the edited value in the query', () => {
         store.replaceDocument(hadronDoc);
 
-        expect(stub.getCall(0).args[0]).to.deep.equal({
+        expect(stub.getCall(0).args[2]).to.deep.equal({
           _id: 'testing',
-          name: 'Beach Sand'
-        });
-      });
-
-      context('when the force update parameter is true', () => {
-        it('calls findOneAndReplace without the explicit document in the query', () => {
-          store.replaceDocument(hadronDoc, true);
-
-          expect(stub.getCall(0).args[0]).to.deep.equal({ _id: 'testing' });
+          name: 'Desert Sand'
         });
       });
     });

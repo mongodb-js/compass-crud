@@ -63,6 +63,11 @@ const COPY = 'copy';
 const DELETE_ERROR = new Error('Cannot delete documents that do not have an _id field.');
 
 /**
+ * The empty update error message.
+ */
+const EMPTY_UPDATE_ERROR = new Error('Unable to update, no changes have been made.');
+
+/**
  * Set the data provider.
  *
  * @param {Store} store - The store.
@@ -359,6 +364,11 @@ const configureStore = (options = {}) => {
       }
       if (unsetUpdateObject && Object.keys(unsetUpdateObject).length > 0) {
         updateObject.$unset = unsetUpdateObject;
+      }
+
+      if (Object.keys(updateObject).length === 0) {
+        doc.emit('update-error', EMPTY_UPDATE_ERROR.message);
+        return;
       }
 
       const opts = { returnOriginal: false, promoteValues: false };
