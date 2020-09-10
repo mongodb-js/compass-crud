@@ -73,6 +73,11 @@ export const getOriginalKeysAndValuesForFieldsThatWereUpdated = (doc) => {
         // the original field's value.
         object[element.key] = element.generateOriginalObject();
       }
+      if (element.isAdded() && element.currentKey !== '') {
+        // Using `.currentKey` to ensure we see if the new field was
+        // added with a different value in the background.
+        object[element.currentKey] = element.generateOriginalObject();
+      }
     }
   }
 

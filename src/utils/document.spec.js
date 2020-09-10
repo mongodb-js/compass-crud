@@ -416,8 +416,10 @@ describe('document utils', () => {
         doc.insertEnd('pineapple', 'hat');
       });
 
-      it('does not include the new element in the object', function() {
-        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({ });
+      it('includes the new element in the object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({
+          pineapple: 'hat'
+        });
       });
     });
 
