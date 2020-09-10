@@ -126,7 +126,7 @@ describe('document utils', () => {
       });
     });
 
-    context('when the element is undefined', function() {
+    context('when the document is undefined', function() {
       it('returns an empty object', function() {
         expect(getSetUpdateForDocumentChanges(undefined)).to.deep.equal({});
       });
@@ -224,12 +224,120 @@ describe('document utils', () => {
       });
     });
 
-    context('when the element is undefined', function() {
+    context('when the document is undefined', function() {
       it('returns an empty object', function() {
         expect(getUnsetUpdateForDocumentChanges(undefined)).to.deep.equal({});
       });
     });
   });
 
-  // To test: getOriginalKeysAndValuesForFieldsThatWereUpdated
+  describe('#getOriginalKeysAndValuesForFieldsThatWereUpdated', () => {
+    context('when an element is removed', function() {
+      const object = { name: 'test', another: 'ok' };
+      const doc = new HadronDocument(object);
+
+      before(function() {
+        doc.elements.at(0).remove();
+      });
+
+      it('includes the key in the object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({
+          name: 'test'
+        });
+      });
+    });
+
+    context('when nothing is changed', function() {
+      const object = { name: 'test' };
+      const doc = new HadronDocument(object);
+
+      it('returns an empty object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({});
+      });
+    });
+
+    context('when an element named to blank', function() {
+      const object = { name: 'test', another: 'ok' };
+      const doc = new HadronDocument(object);
+
+      before(function() {
+        doc.elements.at(0).rename('');
+      });
+
+      it('includes the original in the object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({
+          name: 'test'
+        });
+      });
+    });
+
+    context('when an element is renamed', function() {
+      const object = { name: 'test', another: 'ok' };
+      const doc = new HadronDocument(object);
+
+      before(function() {
+        doc.elements.at(0).rename('aa');
+      });
+
+      it('includes the original in the object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({
+          name: 'test'
+        });
+      });
+    });
+
+    context('when a nested element is edited', function() {
+      const object = {
+        name: {
+          first: 'jimmy',
+          last: 'hendrix'
+        },
+        other: 'ok'
+      };
+      const doc = new HadronDocument(object);
+
+      before(function() {
+        doc.get('name').get('last').edit('aa');
+      });
+
+      it('returns the original element in the object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({
+          name: {
+            first: 'jimmy',
+            last: 'hendrix'
+          }
+        });
+      });
+    });
+
+    context('when a nested element is removed', function() {
+      const object = {
+        name: {
+          first: 'jimmy',
+          last: 'hendrix'
+        },
+        test: 'ok'
+      };
+      const doc = new HadronDocument(object);
+
+      before(function() {
+        doc.get('name').get('last').remove();
+      });
+
+      it('returns the original element in the object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({
+          name: {
+            first: 'jimmy',
+            last: 'hendrix'
+          }
+        });
+      });
+    });
+
+    context('when the document is undefined', function() {
+      it('returns an empty object', function() {
+        expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(undefined)).to.deep.equal({});
+      });
+    });
+  });
 });
