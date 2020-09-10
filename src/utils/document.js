@@ -9,7 +9,7 @@
 export const getSetUpdateForDocumentChanges = (doc) => {
   const object = {};
 
-  if (doc.elements) {
+  if (doc && doc.elements) {
     for (const element of doc.elements) {
       if (
         !element.isRemoved()
@@ -39,7 +39,7 @@ export const getSetUpdateForDocumentChanges = (doc) => {
 export const getUnsetUpdateForDocumentChanges = (doc) => {
   const object = {};
 
-  if (doc.elements) {
+  if (doc && doc.elements) {
     for (const element of doc.elements) {
       if (element.isRemoved() && element.currentKey !== '') {
         object[element.currentKey] = true;
@@ -66,7 +66,7 @@ export const getUnsetUpdateForDocumentChanges = (doc) => {
 export const getOriginalKeysAndValuesForFieldsThatWereUpdated = (doc) => {
   const object = {};
 
-  if (doc.elements) {
+  if (doc && doc.elements) {
     for (const element of doc.elements) {
       if (element.isModified()) {
         // Using `.key` instead of `.currentKey` to ensure we look at
