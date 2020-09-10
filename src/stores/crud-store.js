@@ -344,13 +344,7 @@ const configureStore = (options = {}) => {
      * @param {Document} doc - The hadron document.
      */
     updateDocument(doc) {
-      const newDocument = doc.generateObject();
-      const originalDocument = doc.generateOriginalObject();
-
-      const originalFieldsThatWillBeUpdated = getOriginalKeysAndValuesForFieldsThatWereUpdated(
-        originalDocument,
-        newDocument
-      );
+      const originalFieldsThatWillBeUpdated = getOriginalKeysAndValuesForFieldsThatWereUpdated(doc);
 
       const query = {
         _id: doc.getId(),
