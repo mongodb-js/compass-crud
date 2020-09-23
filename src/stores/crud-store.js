@@ -7,9 +7,7 @@ import HadronDocument from 'hadron-document';
 
 import configureGridStore from './grid-store';
 import {
-  getOriginalKeysAndValuesForFieldsThatWereUpdated,
-  getSetUpdateForDocumentChanges,
-  getUnsetUpdateForDocumentChanges
+  buildUpdateUnlessChangedInBackgroundQuery
 } from '../utils/document';
 
 /**
@@ -343,56 +341,49 @@ const configureStore = (options = {}) => {
     },
 
     /**
-     * Update the provided document, ensuring the values to be changed
-     * weren't updated or removed in the background.
+     * Update the provided document unless the elements being changed were
+     * changed in the background. If the elements being changed were changed
+     * in the background, block the update.
      *
      * @param {Document} doc - The hadron document.
      */
     updateDocument(doc) {
-      const originalFieldsThatWillBeUpdated = getOriginalKeysAndValuesForFieldsThatWereUpdated(doc);
+      try {
+        const {
+          query,
+          updateDoc
+        } = buildUpdateUnlessChangedInBackgroundQuery(doc);
 
-      const query = {
-        _id: doc.getId(),
-        ...originalFieldsThatWillBeUpdated
-      };
-
-      const setUpdateObject = getSetUpdateForDocumentChanges(doc);
-      const unsetUpdateObject = getUnsetUpdateForDocumentChanges(doc);
-      const updateObject = { };
-      if (setUpdateObject && Object.keys(setUpdateObject).length > 0) {
-        updateObject.$set = setUpdateObject;
-      }
-      if (unsetUpdateObject && Object.keys(unsetUpdateObject).length > 0) {
-        updateObject.$unset = unsetUpdateObject;
-      }
-
-      if (Object.keys(updateObject).length === 0) {
-        doc.emit('update-error', EMPTY_UPDATE_ERROR.message);
-        return;
-      }
-
-      const opts = { returnOriginal: false, promoteValues: false };
-
-      this.dataService.findOneAndUpdate(
-        this.state.ns,
-        query,
-        updateObject,
-        opts,
-        (error, d) => {
-          if (error) {
-            doc.emit('update-error', error.message);
-          } else if (d) {
-            doc.emit('update-success', d);
-            this.localAppRegistry.emit('document-updated', this.state.view);
-            this.globalAppRegistry.emit('document-updated', this.state.view);
-            const index = this.findDocumentIndex(doc);
-            this.state.docs[index] = new HadronDocument(d);
-            this.trigger(this.state);
-          } else {
-            doc.emit('update-blocked');
-          }
+        if (Object.keys(updateDoc).length === 0) {
+          doc.emit('update-error', EMPTY_UPDATE_ERROR.message);
+          return;
         }
-      );
+
+        const opts = { returnOriginal: false, promoteValues: false };
+
+        this.dataService.findOneAndUpdate(
+          this.state.ns,
+          query,
+          updateDoc,
+          opts,
+          (error, d) => {
+            if (error) {
+              doc.emit('update-error', error.message);
+            } else if (d) {
+              doc.emit('update-success', d);
+              this.localAppRegistry.emit('document-updated', this.state.view);
+              this.globalAppRegistry.emit('document-updated', this.state.view);
+              const index = this.findDocumentIndex(doc);
+              this.state.docs[index] = new HadronDocument(d);
+              this.trigger(this.state);
+            } else {
+              doc.emit('update-blocked');
+            }
+          }
+        );
+      } catch (err) {
+        doc.emit('update-error', `An error occured when attempting to update the document: ${err.message}`);
+      }
     },
 
     /**

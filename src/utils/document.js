@@ -87,3 +87,41 @@ export const getOriginalKeysAndValuesForFieldsThatWereUpdated = (doc) => {
   return object;
 };
 
+/**
+ * Generate the `query` and `updateDoc` to be used in an update operation
+ * where the update only succeeds when the changed document's elements have
+ * not been changed in the background.
+ *
+ * @param {Object} doc - The hadron document.
+ *
+ * @returns {Object} An object containing the `query` and `updateDoc` to be
+ * used in an update operation.
+ */
+export const buildUpdateUnlessChangedInBackgroundQuery = (doc) => {
+  // Build a query that will find the document to update only if it has the
+  // values of elements that were changed with their original value.
+  // This query won't find the document if an updated element's value isn't
+  // the same value as it was when it was originally loaded.
+  const originalFieldsThatWillBeUpdated = getOriginalKeysAndValuesForFieldsThatWereUpdated(doc);
+  const query = {
+    _id: doc.getId(),
+    ...originalFieldsThatWillBeUpdated
+  };
+
+  // Build the update document to be used in an update operation with `$set`
+  // and `$unset` reflecting the changes that have occured in the document.
+  const setUpdateObject = getSetUpdateForDocumentChanges(doc);
+  const unsetUpdateObject = getUnsetUpdateForDocumentChanges(doc);
+  const updateDoc = { };
+  if (setUpdateObject && Object.keys(setUpdateObject).length > 0) {
+    updateDoc.$set = setUpdateObject;
+  }
+  if (unsetUpdateObject && Object.keys(unsetUpdateObject).length > 0) {
+    updateDoc.$unset = unsetUpdateObject;
+  }
+
+  return {
+    query,
+    updateDoc
+  };
+};

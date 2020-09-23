@@ -1,6 +1,7 @@
 import HadronDocument from 'hadron-document';
 
 import {
+  buildUpdateUnlessChangedInBackgroundQuery,
   getOriginalKeysAndValuesForFieldsThatWereUpdated,
   getSetUpdateForDocumentChanges,
   getUnsetUpdateForDocumentChanges
@@ -450,6 +451,180 @@ describe('document utils', () => {
     context('when the document is undefined', function() {
       it('returns an empty object', function() {
         expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(undefined)).to.deep.equal({});
+      });
+    });
+  });
+
+  describe('#buildUpdateUnlessChangedInBackgroundQuery', function() {
+    context('when called with an edited document', function() {
+      const doc = { _id: 'testing', name: 'Beach Sand' };
+      const hadronDoc = new HadronDocument(doc);
+      hadronDoc.get('name').edit('Desert Sand');
+
+      it('has the original value for the edited value in the query', () => {
+        const {
+          query
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(query).to.deep.equal({
+          _id: 'testing',
+          name: 'Beach Sand'
+        });
+      });
+
+      it('has the new value in the update doc', () => {
+        const {
+          updateDoc
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(updateDoc).to.deep.equal({
+          $set: {
+            name: 'Desert Sand'
+          }
+        });
+      });
+    });
+
+    context('when an element has been renamed', function() {
+      const doc = { _id: 'testing', name: 'Beach Sand' };
+      const hadronDoc = new HadronDocument(doc);
+      hadronDoc.get('name').edit('Desert Sand');
+      hadronDoc.get('name').rename('newname');
+
+      it('has the original value for the edited value in the query', () => {
+        const {
+          query
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(query).to.deep.equal({
+          _id: 'testing',
+          name: 'Beach Sand'
+        });
+      });
+
+      it('has the new value in the update doc', () => {
+        const {
+          updateDoc
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(updateDoc).to.deep.equal({
+          $set: {
+            newname: 'Desert Sand'
+          },
+          $unset: {
+            name: true
+          }
+        });
+      });
+    });
+
+    context('when a nested element has been updated in the document', function() {
+      const doc = { _id: 'testing', a: { nestedField1: 5, nestedField2: 'aaa' } };
+      const hadronDoc = new HadronDocument(doc);
+      hadronDoc.get('a').get('nestedField1').edit(10);
+
+      it('has the original value for the edited value in the query', () => {
+        const {
+          query
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(query).to.deep.equal({
+          _id: 'testing',
+          a: { nestedField1: 5, nestedField2: 'aaa' }
+        });
+      });
+
+      it('has the new value in the update doc', () => {
+        const {
+          updateDoc
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(updateDoc).to.deep.equal({
+          $set: {
+            a: { nestedField1: 10, nestedField2: 'aaa' }
+          }
+        });
+      });
+    });
+
+    context('when a nested element has been renamed in the document', function() {
+      const doc = { _id: 'testing', a: { nestedField1: 5, bbb: 'vvv' } };
+      const hadronDoc = new HadronDocument(doc);
+      hadronDoc.get('a').get('nestedField1').rename('newname');
+
+      it('has the original value for the edited value in the query', () => {
+        const {
+          query
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(query).to.deep.equal({
+          _id: 'testing',
+          a: { nestedField1: 5, bbb: 'vvv' }
+        });
+      });
+
+      it('has the new value in the update doc', () => {
+        const {
+          updateDoc
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(updateDoc).to.deep.equal({
+          $set: {
+            a: { newname: 5, bbb: 'vvv' }
+          }
+        });
+      });
+    });
+
+    context('when a nested element has been removed in the document', function() {
+      const doc = { _id: 'testing', a: { nestedField1: 5, nestedField2: 'aaa' } };
+      const hadronDoc = new HadronDocument(doc);
+      hadronDoc.get('a').get('nestedField1').remove();
+
+      it('has the original value for the edited value in the query', () => {
+        const {
+          query
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(query).to.deep.equal({
+          _id: 'testing',
+          a: { nestedField1: 5, nestedField2: 'aaa' }
+        });
+      });
+
+      it('has the new value in the update doc', () => {
+        const {
+          updateDoc
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(updateDoc).to.deep.equal({
+          $set: {
+            a: { nestedField2: 'aaa' }
+          }
+        });
+      });
+    });
+
+    context('when called with a document with no edits', function() {
+      const doc = { _id: 'testing', name: 'Beach Sand' };
+      const hadronDoc = new HadronDocument(doc);
+
+      it('has only the _id in the query', () => {
+        const {
+          query
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(query).to.deep.equal({
+          _id: 'testing'
+        });
+      });
+
+      it('has an empty update document', () => {
+        const {
+          updateDoc
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc);
+
+        expect(updateDoc).to.deep.equal({ });
       });
     });
   });

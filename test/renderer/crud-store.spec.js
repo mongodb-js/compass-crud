@@ -563,6 +563,28 @@ describe('store', () => {
         });
       });
     });
+
+    context('when passed an invalid document', () => {
+      it('should emit an error to the state', (done) => {
+        let didEmitError = false;
+        let emittedErrorMessage = '';
+        const unsubscribe = store.listen((state) => {
+          expect(state.updateSuccess).to.not.equal(true);
+          expect(didEmitError).to.equal(true);
+          expect(emittedErrorMessage).to.equal('An error occured when attempting to update the document: doc.getId is not a function');
+
+          unsubscribe();
+          done();
+        });
+
+        store.updateDocument({
+          emit: (errorType, errorMsg) => {
+            didEmitError = true;
+            emittedErrorMessage = errorMsg;
+          }
+        });
+      });
+    });
   });
 
   describe('#replaceDocument', () => {
