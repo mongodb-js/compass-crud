@@ -29,8 +29,8 @@ const EMPTY_MESSAGE = '';
 const MODIFIED_MESSAGE = 'Document Modified.';
 const UPDATING_MESSAGE = 'Updating Document.';
 const UPDATED_MESSAGE = 'Document Updated.';
-const BLOCKED_MESSAGE = 'Document was modified in the background or it longer exists. Do you wish to continue and possibly overwrite new changes?';
 const INVALID_MESSAGE = 'Update not permitted while document contains errors.';
+const WAITING_OVERWRITE_CONFIRMATION_MESSAGE = 'Document was modified in the background or it longer exists. Do you wish to continue and possibly overwrite new changes?';
 
 /**
  * Component for a the edit document footer.
@@ -120,7 +120,7 @@ class DocumentFooter extends React.Component {
    * Handle when a document is blocked from updating (underlying data has changed).
    */
   handleUpdateBlocked() {
-    this.setState({ mode: BLOCKED_MODE, message: BLOCKED_MESSAGE });
+    this.setState({ mode: BLOCKED_MODE, message: WAITING_OVERWRITE_CONFIRMATION_MESSAGE });
   }
 
   /**
