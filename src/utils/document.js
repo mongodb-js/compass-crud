@@ -78,7 +78,7 @@ export const getOriginalKeysAndValuesForFieldsThatWereUpdated = (doc) => {
       }
       if (element.isAdded() && element.currentKey !== '') {
         // When a new field is added, check if that field
-        //  was already added in the background.
+        // was already added in the background.
         object[element.currentKey] = { $exists: false };
       }
     }
