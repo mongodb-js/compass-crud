@@ -420,12 +420,7 @@ describe('document utils', () => {
       it('includes a check that the new element doesnt exist or exists with the same value', function() {
         expect(getOriginalKeysAndValuesForFieldsThatWereUpdated(doc)).to.deep.equal({
           pineapple: {
-            $in: [
-              {
-                $exists: false
-              },
-              'hat'
-            ]
+            $exists: false
           }
         });
       });
