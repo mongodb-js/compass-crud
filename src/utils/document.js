@@ -79,7 +79,14 @@ export const getOriginalKeysAndValuesForFieldsThatWereUpdated = (doc) => {
       if (element.isAdded() && element.currentKey !== '') {
         // Using `.currentKey` to ensure we see if the new field was
         // added with a different value in the background.
-        object[element.currentKey] = element.generateOriginalObject();
+        object[element.currentKey] = {
+          $in: [
+            {
+              $exists: false
+            },
+            element.generateOriginalObject()
+          ]
+        };
       }
     }
   }
