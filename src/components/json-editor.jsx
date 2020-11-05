@@ -157,7 +157,9 @@ class EditableJson extends React.Component {
    * @param {String} message - The error message.
    */
   handleUpdateError() {
-    this.setState({ mode: ERROR, message: this.props.updateError });
+    setTimeout(() => {
+      this.setState({ mode: ERROR, message: this.props.updateError });
+    }, 100);
   }
 
   /**

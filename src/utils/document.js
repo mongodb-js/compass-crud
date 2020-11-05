@@ -91,6 +91,34 @@ export const getOriginalKeysAndValuesForFieldsThatWereUpdated = (doc, alwaysIncl
 };
 
 /**
+ * Generate the query javascript object reflecting the elements that
+ * are specified by the keys listed in `keys`. The values of this object are
+ * the original values, this can be used when querying for an update based
+ * on multiple criteria.
+ *
+ * @param {Object} doc - The hadron document.
+ * @param {Object} keys - An object whose keys are used as keys
+ *     that are included in the generated query.
+ *
+ * @returns {Object} The javascript object.
+ */
+export const getOriginalKeysAndValuesForSpecifiedKeys = (doc, keys) => {
+  const object = {};
+
+  if (doc && doc.elements) {
+    for (const element of doc.elements) {
+      if (element.key in keys) {
+        // Using `.key` instead of `.currentKey` to ensure we look at
+        // the original field's value.
+        object[element.key] = element.generateOriginalObject();
+      }
+    }
+  }
+
+  return object;
+};
+
+/**
  * Generate the `query` and `updateDoc` to be used in an update operation
  * where the update only succeeds when the changed document's elements have
  * not been changed in the background.

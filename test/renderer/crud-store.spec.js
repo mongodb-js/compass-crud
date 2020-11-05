@@ -744,6 +744,37 @@ describe('store', function() {
         });
       });
     });
+
+    context('when update is called on an edited doc in sharded collection', () => {
+      const doc = { _id: 'testing', name: 'Beach Sand', yes: 'no' };
+      const hadronDoc = new HadronDocument(doc);
+      let stub;
+
+      beforeEach(() => {
+        store.state.shardKeys = { yes: 1 };
+        hadronDoc.get('name').edit('Desert Sand');
+        stub = sinon.stub(dataService, 'findOneAndReplace').yields(null, {});
+      });
+
+      afterEach(() => {
+        store.state.shardKeys = null;
+        stub.restore();
+      });
+
+      it('has the shard key in the query', () => {
+        store.replaceDocument(hadronDoc);
+
+        expect(stub.getCall(0).args[1]).to.deep.equal({
+          _id: 'testing',
+          yes: 'no'
+        });
+        expect(stub.getCall(0).args[2]).to.deep.equal({
+          _id: 'testing',
+          name: 'Desert Sand',
+          yes: 'no'
+        });
+      });
+    });
   });
 
   describe('#replaceExtJsonDocument', () => {
@@ -810,6 +841,38 @@ describe('store', function() {
         });
 
         store.replaceExtJsonDocument(ejsonDoc, hadronDoc);
+      });
+    });
+
+    context('when update is called on an edited doc in sharded collection', () => {
+      const doc = { _id: 'testing', name: 'Beach Sand', yes: 'no' };
+      const hadronDoc = new HadronDocument(doc);
+      const stringifiedDoc = EJSON.stringify(doc);
+      const ejsonDoc = EJSON.parse(stringifiedDoc);
+      let stub;
+
+      beforeEach(() => {
+        store.state.shardKeys = { yes: 1 };
+        stub = sinon.stub(dataService, 'findOneAndReplace').yields(null, {});
+      });
+
+      afterEach(() => {
+        store.state.shardKeys = null;
+        stub.restore();
+      });
+
+      it('has the shard key in the query', () => {
+        store.replaceExtJsonDocument(ejsonDoc, hadronDoc);
+
+        expect(stub.getCall(0).args[1]).to.deep.equal({
+          _id: 'testing',
+          yes: 'no'
+        });
+        expect(stub.getCall(0).args[2]).to.deep.equal({
+          _id: 'testing',
+          name: 'Beach Sand',
+          yes: 'no'
+        });
       });
     });
   });

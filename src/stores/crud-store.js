@@ -7,7 +7,8 @@ import HadronDocument from 'hadron-document';
 
 import configureGridStore from './grid-store';
 import {
-  buildUpdateUnlessChangedInBackgroundQuery
+  buildUpdateUnlessChangedInBackgroundQuery,
+  getOriginalKeysAndValuesForSpecifiedKeys
 } from '../utils/document';
 
 /**
@@ -397,8 +398,9 @@ const configureStore = (options = {}) => {
     replaceDocument(doc) {
       const object = doc.generateObject();
       const opts = { returnOriginal: false, promoteValues: false };
-      const id = object._id;
-      this.dataService.findOneAndReplace(this.state.ns, { _id: id }, object, opts, (error, d) => {
+      const query = getOriginalKeysAndValuesForSpecifiedKeys(
+        doc, { _id: 1, ...(this.state.shardKeys || {}) });
+      this.dataService.findOneAndReplace(this.state.ns, query, object, opts, (error, d) => {
         if (error) {
           doc.emit('update-error', error.message);
         } else {
@@ -430,8 +432,9 @@ const configureStore = (options = {}) => {
      */
     replaceExtJsonDocument(doc, originalDoc) {
       const opts = { returnOriginal: false, promoteValues: false };
-      const id = doc._id;
-      this.dataService.findOneAndReplace(this.state.ns, { _id: id }, doc, opts, (error, d) => {
+      const query = getOriginalKeysAndValuesForSpecifiedKeys(
+        originalDoc, { _id: 1, ...(this.state.shardKeys || {}) });
+      this.dataService.findOneAndReplace(this.state.ns, query, doc, opts, (error, d) => {
         if (error) {
           this.state.updateError = error.message;
           this.trigger(this.state);
