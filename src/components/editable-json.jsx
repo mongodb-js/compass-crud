@@ -157,9 +157,9 @@ class JsonEditor extends React.Component {
    * @param {String} message - The error message.
    */
   handleUpdateError() {
-    setTimeout(() => {
+    if (this.state.mode !== ERROR || this.state.message !== this.props.updateError) {
       this.setState({ mode: ERROR, message: this.props.updateError });
-    }, 100);
+    }
   }
 
   /**
