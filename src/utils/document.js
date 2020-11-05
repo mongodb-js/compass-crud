@@ -63,15 +63,18 @@ export const getUnsetUpdateForDocumentChanges = (doc) => {
  * document was changed in the background while it was being updated elsewhere.
  *
  * @param {Object} doc - The hadron document.
+ * @param {Object} alwaysIncludeKeys - An object whose keys are used as keys
+ *     that are always included in the generated query.
  *
  * @returns {Object} The javascript object.
  */
-export const getOriginalKeysAndValuesForFieldsThatWereUpdated = (doc) => {
+export const getOriginalKeysAndValuesForFieldsThatWereUpdated = (doc, alwaysIncludeKeys = null) => {
   const object = {};
 
   if (doc && doc.elements) {
     for (const element of doc.elements) {
-      if (element.isModified() && !element.isAdded()) {
+      if ((element.isModified() && !element.isAdded()) ||
+          (alwaysIncludeKeys && element.key in alwaysIncludeKeys)) {
         // Using `.key` instead of `.currentKey` to ensure we look at
         // the original field's value.
         object[element.key] = element.generateOriginalObject();
@@ -93,16 +96,18 @@ export const getOriginalKeysAndValuesForFieldsThatWereUpdated = (doc) => {
  * not been changed in the background.
  *
  * @param {Object} doc - The hadron document.
+ * @param {Object} alwaysIncludeKeys - An object whose keys are used as keys
+ *     that are always included in the generated query.
  *
  * @returns {Object} An object containing the `query` and `updateDoc` to be
  * used in an update operation.
  */
-export const buildUpdateUnlessChangedInBackgroundQuery = (doc) => {
+export const buildUpdateUnlessChangedInBackgroundQuery = (doc, alwaysIncludeKeys = null) => {
   // Build a query that will find the document to update only if it has the
   // values of elements that were changed with their original value.
   // This query won't find the document if an updated element's value isn't
   // the same value as it was when it was originally loaded.
-  const originalFieldsThatWillBeUpdated = getOriginalKeysAndValuesForFieldsThatWereUpdated(doc);
+  const originalFieldsThatWillBeUpdated = getOriginalKeysAndValuesForFieldsThatWereUpdated(doc, alwaysIncludeKeys);
   const query = {
     _id: doc.getId(),
     ...originalFieldsThatWillBeUpdated

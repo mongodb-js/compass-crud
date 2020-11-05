@@ -459,7 +459,7 @@ describe('document utils', () => {
 
   describe('#buildUpdateUnlessChangedInBackgroundQuery', function() {
     context('when called with an edited document', function() {
-      const doc = { _id: 'testing', name: 'Beach Sand' };
+      const doc = { _id: 'testing', name: 'Beach Sand', yes: 'no' };
       const hadronDoc = new HadronDocument(doc);
       hadronDoc.get('name').edit('Desert Sand');
 
@@ -471,6 +471,18 @@ describe('document utils', () => {
         expect(query).to.deep.equal({
           _id: 'testing',
           name: 'Beach Sand'
+        });
+      });
+
+      it('contains keys that were explicitly requested', () => {
+        const {
+          query
+        } = buildUpdateUnlessChangedInBackgroundQuery(hadronDoc, { yes: 1 });
+
+        expect(query).to.deep.equal({
+          _id: 'testing',
+          name: 'Beach Sand',
+          yes: 'no'
         });
       });
 

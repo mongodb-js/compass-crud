@@ -154,7 +154,8 @@ const configureStore = (options = {}) => {
         query: this.getInitialQueryState(),
         isDataLake: false,
         isReadonly: false,
-        status: 'fetching'
+        status: 'fetching',
+        shardKeys: null
       };
     },
 
@@ -349,10 +350,12 @@ const configureStore = (options = {}) => {
      */
     updateDocument(doc) {
       try {
+        // We add the shard keys here, if there are any, because that is
+        // required for updated documents in sharded collections.
         const {
           query,
           updateDoc
-        } = buildUpdateUnlessChangedInBackgroundQuery(doc);
+        } = buildUpdateUnlessChangedInBackgroundQuery(doc, this.state.shardKeys);
 
         if (Object.keys(updateDoc).length === 0) {
           doc.emit('update-error', EMPTY_UPDATE_ERROR.message);
@@ -873,25 +876,55 @@ const configureStore = (options = {}) => {
       }
 
       this.globalAppRegistry.emit('compass:status:show-progress-bar');
-      this.dataService.count(this.state.ns, query.filter, countOptions, (err, count) => {
-        this.dataService.find(this.state.ns, query.filter, findOptions, (error, documents) => {
-          const length = documents ? documents.length : 0;
-          const docs = documents ? documents : [];
-          this.globalAppRegistry.emit('compass:status:done');
-          this.setState({
-            status: this.isInitialQuery(query) ? 'fetchedWithInitialQuery' : 'fetchedWithCustomQuery',
-            error: error,
-            docs: docs.map(doc => new HadronDocument(doc)),
-            count: (err ? null : count),
-            page: 0,
-            start: length > 0 ? 1 : 0,
-            end: length,
-            table: this.getInitialTableState()
-          });
-          this.localAppRegistry.emit('documents-refreshed', this.state.view, docs);
-          this.globalAppRegistry.emit('documents-refreshed', this.state.view, docs);
+      let shardKeys;
+      let count;
+      let documents;
+      let error;
+      this.dataService.find('config.collections', {
+        _id: this.state.ns
+      }, {
+        projection: {
+          key: 1, _id: 0
+        }
+      }, (err, configDocs) => {
+        if (err) {
+          shardKeys = null;
+        } else {
+          shardKeys = configDocs.length === 0 ? {} : configDocs[0].key;
+        }
+
+        if (documents !== undefined) {
+          done.call(this);
+        }
+      });
+      this.dataService.count(this.state.ns, query.filter, countOptions, (err, count_) => {
+        this.dataService.find(this.state.ns, query.filter, findOptions, (error_, documents_) => {
+          count = err ? null : count_;
+          documents = documents_ || [];
+          error = error_;
+          if (shardKeys !== undefined) {
+            done.call(this);
+          }
         });
       });
+      function done() {
+        const length = documents.length;
+
+        this.globalAppRegistry.emit('compass:status:done');
+        this.setState({
+          status: this.isInitialQuery(query) ? 'fetchedWithInitialQuery' : 'fetchedWithCustomQuery',
+          error: error,
+          docs: documents.map(doc => new HadronDocument(doc)),
+          count: count,
+          page: 0,
+          start: length > 0 ? 1 : 0,
+          end: length,
+          table: this.getInitialTableState(),
+          shardKeys: shardKeys
+        });
+        this.localAppRegistry.emit('documents-refreshed', this.state.view, documents);
+        this.globalAppRegistry.emit('documents-refreshed', this.state.view, documents);
+      }
     },
 
     /**
