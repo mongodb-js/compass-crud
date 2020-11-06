@@ -113,9 +113,7 @@ class EditableValue extends React.Component {
     } else if (evt.keyCode === ENTER_KEY_CODE) {
       // When we're editing a string and shift is clicked with enter
       // we don't want to choose the next value.
-      console.log('is enter');
       if (!(this.element.currentType === STRING_TYPE && evt.shiftKey)) {
-        console.log('here');
         if (this.element.nextElement) {
           // need to force the focus.
           this._node.parentNode.parentNode.nextSibling.childNodes[2].focus();
