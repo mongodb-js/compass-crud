@@ -5,8 +5,6 @@ import initEditors from 'components/editor';
 
 import { STRING_TYPE } from './editor/string';
 
-/* eslint no-return-assign:0 */
-
 const ESC_KEY_CODE = 27;
 const TAB_KEY_CODE = 9;
 const ENTER_KEY_CODE = 13;
@@ -243,7 +241,6 @@ class EditableValue extends React.Component {
    * @returns {React.Component} The element component.
    */
   render() {
-    // const length = (this.editor().size(this.state.editing) * 6.625) + 6.625;
     const length = this.editor().size(this.state.editing) + (this.state.editing ? 1 : 0.4);
     return (
       <span className={this.wrapperStyle()}>
@@ -257,7 +254,7 @@ class EditableValue extends React.Component {
           <textarea
             data-tip=""
             data-for={this.element.uuid}
-            ref={(c) => this._node = c}
+            ref={(c) => { this._node = c; }}
             type="text"
             className={this.style()}
             onBlur={this.handleBlur.bind(this)}
@@ -265,14 +262,20 @@ class EditableValue extends React.Component {
             onChange={this.handleChange.bind(this)}
             onKeyDown={this.handleKeyDown.bind(this)}
             onPaste={this.handlePaste.bind(this)}
-            style={{ width: `${length}ch` }}
+            style={(this.element.currentValue || '').includes('\n') ? {
+              minHeight: '77px',
+              width: '85vw' // Scale to max width when it's a multi-line string.
+            } : {
+              minHeight: '17px',
+              width: `${length}ch`
+            }}
             value={this.editor().value(this.state.editing)}
           />
         ) : (
           <input
             data-tip=""
             data-for={this.element.uuid}
-            ref={(c) => this._node = c}
+            ref={(c) => { this._node = c; }}
             type="text"
             className={this.style()}
             onBlur={this.handleBlur.bind(this)}

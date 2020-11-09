@@ -1,17 +1,19 @@
 import TypeChecker from 'hadron-type-checker';
 import { Element } from 'hadron-document';
 
+import StandardEditor from './standard';
+
 /**
  * CRUD editor for object id values.
  */
-class ObjectIdEditor {
+class ObjectIdEditor extends StandardEditor {
   /**
    * Create the editor with the element.
    *
    * @param {Element} element - The hadron document element.
    */
   constructor(element) {
-    this.element = element;
+    super(element);
   }
 
   /**

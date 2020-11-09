@@ -6,7 +6,6 @@
   white-space: nowrap;
   overflow: hidden;
   max-width: ~"calc(85vw - 260px);";
-  width: fit-content;
 
   &-tooltip {
     height: 20px !important;
@@ -16,17 +15,11 @@
   }
 
   &-is-string {
-    // white-space: pre-line;
-    // word-break: break-all;
     padding-right: 0px;
-    min-height: 17px;
+    height: 17px;
     overflow-y: scroll;
-    // max-height: 10vh;
+    max-height: 50vh;
   }
-
-  // &-is-editing &-is-string {
-  //   max-height: 40vh;
-  // }
 
   &-is-int32 {
     color: #145a32;
