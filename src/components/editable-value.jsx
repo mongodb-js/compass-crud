@@ -264,7 +264,7 @@ class EditableValue extends React.Component {
             onPaste={this.handlePaste.bind(this)}
             style={(this.element.currentValue || '').includes('\n') ? {
               minHeight: '77px',
-              width: '85vw' // Scale to max width when it's a multi-line string.
+              width: '100%' // Scale to max width when it's a multi-line string.
             } : {
               minHeight: '17px',
               width: `${length}ch`

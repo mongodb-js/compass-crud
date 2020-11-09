@@ -116,8 +116,8 @@ describe('<EditableValue />', () => {
         expect(wrapper.find('textarea').prop('style').minHeight).to.equal('77px');
       });
 
-      it('has a width of 85vw', () => {
-        expect(wrapper.find('textarea').prop('style').width).to.equal('85vw');
+      it('has a width of 100%', () => {
+        expect(wrapper.find('textarea').prop('style').width).to.equal('100%');
       });
     });
   });
