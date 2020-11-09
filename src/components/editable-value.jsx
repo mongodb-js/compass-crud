@@ -113,7 +113,7 @@ class EditableValue extends React.Component {
       // we don't want to choose the next value.
       if (!(this.element.currentType === STRING_TYPE && evt.shiftKey)) {
         if (this.element.nextElement) {
-          // need to force the focus.
+          // Focus the next element.
           this._node.parentNode.parentNode.nextSibling.childNodes[2].focus();
         }
         this.simulateTab(evt);
