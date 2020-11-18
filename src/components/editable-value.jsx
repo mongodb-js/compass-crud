@@ -241,7 +241,7 @@ class EditableValue extends React.Component {
    * @returns {React.Component} The element component.
    */
   render() {
-    const length = this.editor().size(this.state.editing) + (this.state.editing ? 1 : 0.4);
+    const length = Math.max(3, this.editor().size(this.state.editing)) + (this.state.editing ? 1 : 0.5);
     return (
       <span className={this.wrapperStyle()}>
         <Tooltip
