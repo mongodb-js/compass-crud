@@ -853,13 +853,14 @@ const configureStore = (options = {}) => {
      */
     async refreshDocuments() {
       if (this.isRefreshingDocuments) {
-        return true;
+        return;
       }
 
       this.isRefreshingDocuments = true;
 
       try {
-        const query = this.state.query;
+        const query = this.state.query || {};
+
         const countOptions = {
           skip: query.skip,
           maxTimeMS: query.maxTimeMS
@@ -910,6 +911,7 @@ const configureStore = (options = {}) => {
           status: this.isInitialQuery(query) ?
             'fetchedWithInitialQuery' :
             'fetchedWithCustomQuery',
+          isEditable: this.hasProjection(query) ? false : this.isListEditable(),
           error: null,
           docs: docs.map(doc => new HadronDocument(doc)),
           count,
@@ -929,6 +931,10 @@ const configureStore = (options = {}) => {
         this.globalAppRegistry.emit('compass:status:done');
         this.isRefreshingDocuments = false;
       }
+    },
+
+    hasProjection(query) {
+      return !!(query.project && Object.keys(query.project).length > 0);
     },
 
     /**
