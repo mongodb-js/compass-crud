@@ -28,6 +28,14 @@ class DocumentList extends React.Component {
     }
   }
 
+  onApplyClicked() {
+    this.props.store.refreshDocuments();
+  }
+
+  onResetClicked() {
+    this.props.store.refreshDocuments();
+  }
+
   /**
    * Handle opening of the insert dialog.
    *
@@ -114,7 +122,10 @@ class DocumentList extends React.Component {
         <this.queryBar
           store={this.queryBarStore}
           actions={this.queryBarActions}
-          buttonLabel="Find" />
+          buttonLabel="Find"
+          onApply={this.onApplyClicked.bind(this)}
+          onReset={this.onResetClicked.bind(this)}
+        />
       );
     }
   }

@@ -4,6 +4,9 @@ import EJSON from 'mongodb-extended-json';
 import { toPairs, findIndex, isEmpty } from 'lodash';
 import StateMixin from 'reflux-state-mixin';
 import HadronDocument from 'hadron-document';
+import util from 'util';
+import createDebug from 'debug';
+const debug = createDebug('mongodb-compass:crud:crud-store');
 
 import configureGridStore from './grid-store';
 import {
@@ -265,13 +268,6 @@ const configureStore = (options = {}) => {
       this.state.query.project = state.project;
       this.state.query.collation = state.collation;
       this.state.query.maxTimeMS = state.maxTimeMS;
-      if (state.project) {
-        this.state.isEditable = false;
-      } else {
-        const editable = this.isListEditable();
-        this.state.isEditable = editable;
-      }
-      this.refreshDocuments();
     },
 
     /**
@@ -855,78 +851,83 @@ const configureStore = (options = {}) => {
      *
      * @param {Object} filter - The query filter.
      */
-    refreshDocuments() {
-      const query = this.state.query;
-      const countOptions = {
-        skip: query.skip,
-        maxTimeMS: query.maxTimeMS
-      };
-
-      const findOptions = {
-        sort: query.sort,
-        projection: query.project,
-        skip: query.skip,
-        limit: NUM_PAGE_DOCS,
-        collation: query.collation,
-        maxTimeMS: query.maxTimeMS,
-        promoteValues: false
-      };
-
-      // only set limit if it's > 0, read-only views cannot handle 0 limit.
-      if (query.limit > 0) {
-        countOptions.limit = query.limit;
-        findOptions.limit = Math.min(NUM_PAGE_DOCS, query.limit);
+    async refreshDocuments() {
+      if (this.isRefreshingDocuments) {
+        return true;
       }
 
-      this.globalAppRegistry.emit('compass:status:show-progress-bar');
-      let shardKeys;
-      let count;
-      let documents;
-      let error;
-      this.dataService.find('config.collections', {
-        _id: this.state.ns
-      }, {
-        projection: {
-          key: 1, _id: 0
-        }
-      }, (err, configDocs) => {
-        if (err) {
-          shardKeys = null;
-        } else {
-          shardKeys = configDocs.length === 0 ? {} : configDocs[0].key;
+      this.isRefreshingDocuments = true;
+
+      try {
+        const query = this.state.query;
+        const countOptions = {
+          skip: query.skip,
+          maxTimeMS: query.maxTimeMS
+        };
+
+        const findOptions = {
+          sort: query.sort,
+          projection: query.project,
+          skip: query.skip,
+          limit: NUM_PAGE_DOCS,
+          collation: query.collation,
+          maxTimeMS: query.maxTimeMS,
+          promoteValues: false
+        };
+
+        // only set limit if it's > 0, read-only views cannot handle 0 limit.
+        if (query.limit > 0) {
+          countOptions.limit = query.limit;
+          findOptions.limit = Math.min(NUM_PAGE_DOCS, query.limit);
         }
 
-        if (documents !== undefined) {
-          done.call(this);
-        }
-      });
-      this.dataService.count(this.state.ns, query.filter, countOptions, (err, count_) => {
-        this.dataService.find(this.state.ns, query.filter, findOptions, (error_, documents_) => {
-          count = err ? null : count_;
-          documents = documents_ || [];
-          error = error_;
-          if (shardKeys !== undefined) {
-            done.call(this);
-          }
+        debug('refreshing documents', {
+          ns: this.state.ns,
+          filter: query.filter,
+          findOptions,
+          countOptions
         });
-      });
-      function done() {
-        const length = documents.length;
 
-        this.globalAppRegistry.emit('compass:status:done');
+        this.globalAppRegistry.emit('compass:status:show-progress-bar');
+
+        const [
+          shardKeys,
+          count,
+          docs
+        ] = await Promise.all([
+          fetchShardingKeys(this.dataService, this.state.ns),
+          countDocuments(this.dataService, this.state.ns, query.filter, countOptions),
+          fetchDocuments(this.dataService, this.state.ns, query.filter, findOptions)
+        ]);
+
+        debug('fetch', [
+          shardKeys,
+          count,
+          docs
+        ]);
+
         this.setState({
-          status: this.isInitialQuery(query) ? 'fetchedWithInitialQuery' : 'fetchedWithCustomQuery',
-          error: error,
-          docs: documents.map(doc => new HadronDocument(doc)),
-          count: count,
+          status: this.isInitialQuery(query) ?
+            'fetchedWithInitialQuery' :
+            'fetchedWithCustomQuery',
+          error: null,
+          docs: docs.map(doc => new HadronDocument(doc)),
+          count,
           page: 0,
-          start: length > 0 ? 1 : 0,
-          end: length,
+          start: docs.length > 0 ? 1 : 0,
+          end: docs.length,
           table: this.getInitialTableState(),
-          shardKeys: shardKeys
+          shardKeys
         });
-        this.localAppRegistry.emit('documents-refreshed', this.state.view, documents);
-        this.globalAppRegistry.emit('documents-refreshed', this.state.view, documents);
+
+        this.localAppRegistry.emit('documents-refreshed', this.state.view, docs);
+        this.globalAppRegistry.emit('documents-refreshed', this.state.view, docs);
+      } catch (error) {
+        debug('Failed to fetch data for refresh documents', error);
+        this.setState({ error });
+      } finally {
+        this.globalAppRegistry.emit('compass:status:done');
+        this.isRefreshingDocuments = false;
       }
     },
 
@@ -996,3 +997,38 @@ const configureStore = (options = {}) => {
 };
 
 export default configureStore;
+
+
+async function fetchShardingKeys(dataService, ns) {
+  const find = util.promisify(dataService.find.bind(dataService));
+
+  const configDocs = await find(
+    'config.collections',
+    { _id: ns },
+    { projection: { key: 1, _id: 0 } }
+  ).catch((err) => {
+    debug('warning: unable to fetch sharding keys', err);
+    return [];
+  });
+
+  if (configDocs && configDocs.length) {
+    return configDocs[0].key;
+  }
+
+  return {};
+}
+
+async function countDocuments(dataService, ns, filter, countOptions) {
+  const count = util.promisify(dataService.count.bind(dataService));
+  return count(ns, filter, countOptions)
+    .catch((err) => {
+      debug('warning: unable to count documents', err);
+      return null;
+    });
+}
+
+async function fetchDocuments(dataService, ns, filter, findOptions) {
+  const find = util.promisify(dataService.find.bind(dataService));
+  return find(ns, filter, findOptions);
+}
+
