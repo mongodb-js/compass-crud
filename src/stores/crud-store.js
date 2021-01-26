@@ -901,12 +901,6 @@ const configureStore = (options = {}) => {
           fetchDocuments(this.dataService, this.state.ns, query.filter, findOptions)
         ]);
 
-        debug('fetch', [
-          shardKeys,
-          count,
-          docs
-        ]);
-
         this.setState({
           status: this.isInitialQuery(query) ?
             'fetchedWithInitialQuery' :
