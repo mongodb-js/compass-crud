@@ -4,9 +4,10 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
 const path = require('path');
+const os = require('os');
 
 const pluginPath = path.resolve(__dirname, '..');
-const compassPath = path.resolve(pluginPath, 'compass');
+const compassPath = path.resolve(os.tmpdir(), 'run-in-compass', path.basename(pluginPath), 'compass');
 const compassRepo = 'https://github.com/mongodb-js/compass.git';
 
 function main() {

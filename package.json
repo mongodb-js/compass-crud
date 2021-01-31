@@ -24,7 +24,6 @@
     "check": "depcheck && eslint .",
     "prepublishOnly": "npm run compile",
     "install": "node scripts/download-akzidenz.js",
-    "prestart-compass": "npm run compile",
     "start-compass": "node scripts/run-in-compass.js"
   },
   "pre-commit": [
