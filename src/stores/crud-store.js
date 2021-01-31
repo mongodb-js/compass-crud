@@ -70,6 +70,24 @@ const DELETE_ERROR = new Error('Cannot delete documents that do not have an _id 
 const EMPTY_UPDATE_ERROR = new Error('Unable to update, no changes have been made.');
 
 /**
+ * Default max time ms for the first query which is not getting the value from
+ * the query bar.
+ */
+const DEFAULT_INITIAL_MAX_TIME_MS = 60000;
+
+/**
+ * A cap for the maxTimeMS used for countDocuments. This value is used
+ * in place of the query maxTimeMS unless that is smaller.
+ *
+ * Due to the limit of 20 documents the batch of data for the query is usually
+ * ready sooner than the count.
+ *
+ * We want to make sure `count` does not hold back the query results for too
+ * long after docs are returned.
+ */
+const COUNT_MAX_TIME_MS_CAP = 5000;
+
+/**
  * Set the data provider.
  *
  * @param {Store} store - The store.
@@ -159,6 +177,7 @@ const configureStore = (options = {}) => {
         isDataLake: false,
         isReadonly: false,
         status: 'fetching',
+        outdated: false,
         shardKeys: null
       };
     },
@@ -205,7 +224,7 @@ const configureStore = (options = {}) => {
         sort: [],
         limit: 0,
         skip: 0,
-        maxTimeMS: 5000,
+        maxTimeMS: DEFAULT_INITIAL_MAX_TIME_MS,
         project: null,
         collation: null
       };
@@ -268,6 +287,13 @@ const configureStore = (options = {}) => {
       this.state.query.project = state.project;
       this.state.query.collation = state.collation;
       this.state.query.maxTimeMS = state.maxTimeMS;
+
+      if (
+        this.state.status === 'fetchedWithInitialQuery' ||
+        this.state.status === 'fetchedWithCustomQuery'
+      ) {
+        this.setState({ outdated: true });
+      }
     },
 
     /**
@@ -859,11 +885,18 @@ const configureStore = (options = {}) => {
       this.isRefreshingDocuments = true;
 
       try {
+        this.setState({
+          status: 'fetching',
+          outdated: false
+        });
+
         const query = this.state.query || {};
 
         const countOptions = {
           skip: query.skip,
-          maxTimeMS: query.maxTimeMS
+          maxTimeMS: query.maxTimeMS > COUNT_MAX_TIME_MS_CAP ?
+            COUNT_MAX_TIME_MS_CAP :
+            query.maxTimeMS
         };
 
         const findOptions = {
@@ -874,6 +907,10 @@ const configureStore = (options = {}) => {
           collation: query.collation,
           maxTimeMS: query.maxTimeMS,
           promoteValues: false
+        };
+
+        const fetchShardingKeysOptions = {
+          maxTimeMS: query.maxTimeMS
         };
 
         // only set limit if it's > 0, read-only views cannot handle 0 limit.
@@ -896,7 +933,7 @@ const configureStore = (options = {}) => {
           count,
           docs
         ] = await Promise.all([
-          fetchShardingKeys(this.dataService, this.state.ns),
+          fetchShardingKeys(this.dataService, this.state.ns, fetchShardingKeysOptions),
           countDocuments(this.dataService, this.state.ns, query.filter, countOptions),
           fetchDocuments(this.dataService, this.state.ns, query.filter, findOptions)
         ]);
@@ -999,13 +1036,13 @@ const configureStore = (options = {}) => {
 export default configureStore;
 
 
-async function fetchShardingKeys(dataService, ns) {
+async function fetchShardingKeys(dataService, ns, fetchShardingKeysOptions) {
   const find = util.promisify(dataService.find.bind(dataService));
 
   const configDocs = await find(
     'config.collections',
     { _id: ns },
-    { projection: { key: 1, _id: 0 } }
+    { ...fetchShardingKeysOptions, projection: { key: 1, _id: 0 } }
   ).catch((err) => {
     debug('warning: unable to fetch sharding keys', err);
     return [];
@@ -1019,12 +1056,25 @@ async function fetchShardingKeys(dataService, ns) {
 }
 
 async function countDocuments(dataService, ns, filter, countOptions) {
-  const count = util.promisify(dataService.count.bind(dataService));
-  return count(ns, filter, countOptions)
+  return countWithHint(dataService, ns, filter, countOptions)
     .catch((err) => {
       debug('warning: unable to count documents', err);
       return null;
     });
+}
+
+async function countWithHint(dataService, ns, filter, countOptions = {}) {
+  const dataServiceCount = util.promisify(dataService.count.bind(dataService));
+
+  if (filter && Object.keys(filter).length > 0) {
+    return await dataServiceCount(ns, filter, countOptions);
+  }
+
+  try { // suggest to use the _id_ index if available to speed up full count
+    return await dataServiceCount(ns, filter, { hint: '_id_', ...countOptions });
+  } catch (err) {
+    return await dataServiceCount(ns, filter, countOptions);
+  }
 }
 
 async function fetchDocuments(dataService, ns, filter, findOptions) {
