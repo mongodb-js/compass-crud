@@ -21,10 +21,11 @@
     "posttest:karma": "mongodb-runner stop --port 27018",
     "cover": "nyc npm run test",
     "ci": "npm run check && npm run cover",
-    "precheck": "npm run compile",
     "check": "depcheck && eslint .",
     "prepublishOnly": "npm run compile",
-    "install": "node scripts/download-akzidenz.js"
+    "install": "node scripts/download-akzidenz.js",
+    "prestart-compass": "npm run compile",
+    "start-compass": "node scripts/run-in-compass.js"
   },
   "pre-commit": [
     "check"
