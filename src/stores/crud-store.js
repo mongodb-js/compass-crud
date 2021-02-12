@@ -585,7 +585,7 @@ const configureStore = (options = {}) => {
         }
       }
 
-      const jsonDoc = clone ? EJSON.stringify(hadronDoc.generateObject()) : '';
+      const jsonDoc = EJSON.stringify(hadronDoc.generateObject());
 
       this.setState({
         insert: {
