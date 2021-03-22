@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { ViewSwitcher, Tooltip } from 'hadron-react-components';
 import { AnimatedIconTextButton, IconButton } from 'hadron-react-buttons';
 
+import DOCUMENT_VIEW_TYPES from '../constants/document-view-types';
+
 const BASE_CLASS = 'document-list';
 const ACTION_BAR_CLASS = `${BASE_CLASS}-action-bar`;
 const CONTAINER_CLASS = `${ACTION_BAR_CLASS}-container`;
@@ -100,7 +102,8 @@ class Toolbar extends React.Component {
           options={dropdownOptions}
           bsSize="xs"
           tooltipId="document-is-not-writable"
-          onSelect={this.props.insertHandler} />
+          onSelect={this.props.insertHandler}
+        />
       );
     }
   }
@@ -116,7 +119,8 @@ class Toolbar extends React.Component {
           className={`${EXPORT_COLLECTION_CLASS} btn btn-default btn-xs`}
           iconClassName={`${EXPORT_COLLECTION_CLASS}-button fa fa-upload`}
           dataTestId="export-collection-button"
-          clickHandler={this.props.openExportFileDialog} />
+          clickHandler={this.props.openExportFileDialog}
+        />
         <Tooltip id="export-collection-tooltip" />
       </div>
     );
@@ -137,11 +141,16 @@ class Toolbar extends React.Component {
             <div className={VIEW_SWITCHER_CLASS}>
               <ViewSwitcher
                 label="View"
-                buttonLabels={['List', 'JSON', 'Table']}
+                buttonLabels={[
+                  DOCUMENT_VIEW_TYPES.LIST,
+                  DOCUMENT_VIEW_TYPES.JSON,
+                  DOCUMENT_VIEW_TYPES.TABLE
+                ]}
                 showLabels={false}
                 iconClassNames={['fa fa-list-ul', 'curly-bracket', 'fa fa-table']}
                 activeButton={this.props.activeDocumentView}
-                onClick={this.switchDocumentView.bind(this)} />
+                onClick={this.switchDocumentView.bind(this)}
+              />
             </div>
           </div>
           <div className={CONTAINER_CLASS}>
@@ -157,7 +166,8 @@ class Toolbar extends React.Component {
                 className="btn btn-default btn-xs"
                 iconClassName="fa fa-repeat"
                 text="REFRESH"
-                animatingIconClassName="fa fa-refresh fa-spin"/>
+                animatingIconClassName="fa fa-refresh fa-spin"
+              />
             </div>
           </div>
         </div>

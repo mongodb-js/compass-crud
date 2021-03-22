@@ -3,12 +3,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import jsonParse from 'fast-json-parse';
-import InsertJsonDocument from 'components/insert-json-document';
-import InsertDocument from 'components/insert-document';
-import InsertDocumentFooter from 'components/insert-document-footer';
 import { TextButton } from 'hadron-react-buttons';
 import { ViewSwitcher } from 'hadron-react-components';
 import { Element } from 'hadron-document';
+
+
+import InsertJsonDocument from 'components/insert-json-document';
+import InsertDocument from 'components/insert-document';
+import InsertDocumentFooter from 'components/insert-document-footer';
+import DOCUMENT_VIEW_TYPES from '../constants/document-view-types';
 
 /**
  * The insert invalid message.
@@ -209,7 +212,9 @@ class InsertDocumentDialog extends React.PureComponent {
    * @returns {React.Component} The react component.
    */
   render() {
-    const currentView = this.props.jsonView ? 'JSON' : 'List';
+    const currentView = this.props.jsonView
+      ? DOCUMENT_VIEW_TYPES.JSON
+      : DOCUMENT_VIEW_TYPES.LIST;
 
     return (
       <Modal
@@ -224,7 +229,10 @@ class InsertDocumentDialog extends React.PureComponent {
           <div className="insert-document-views">
             <ViewSwitcher
               label="View"
-              buttonLabels={['JSON', 'List']}
+              buttonLabels={[
+                DOCUMENT_VIEW_TYPES.JSON,
+                DOCUMENT_VIEW_TYPES.LIST
+              ]}
               showLabels={false}
               iconClassNames={['curly-bracket', 'fa fa-list-ul']}
               activeButton={currentView}

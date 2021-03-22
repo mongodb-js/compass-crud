@@ -13,6 +13,7 @@ import {
   buildUpdateUnlessChangedInBackgroundQuery,
   getOriginalKeysAndValuesForSpecifiedKeys
 } from '../utils/document';
+import DOCUMENT_VIEW_TYPES from '../constants/document-view-types';
 
 /**
  * Number of docs per page.
@@ -28,11 +29,6 @@ const ERROR = 'error';
  * Modifying constant.
  */
 const MODIFYING = 'modifying';
-
-/**
- * The list view constant.
- */
-const LIST = 'List';
 
 /**
  * Input type.
@@ -167,7 +163,7 @@ const configureStore = (options = {}) => {
         end: 0,
         page: 0,
         isEditable: true,
-        view: LIST,
+        view: DOCUMENT_VIEW_TYPES.LIST,
         count: 0,
         updateSuccess: null,
         updateError: null,
@@ -645,7 +641,7 @@ const configureStore = (options = {}) => {
      * @param {String} view - view we are switching to.
      */
     toggleInsertDocument(view) {
-      if (view === 'JSON') {
+      if (view === DOCUMENT_VIEW_TYPES.JSON) {
         const jsonDoc = EJSON.stringify(this.state.insert.doc.generateObject());
 
         this.setState({
@@ -688,7 +684,7 @@ const configureStore = (options = {}) => {
      * @param {String} view - view we are switching to.
      */
     toggleInsertDocumentView(view) {
-      const jsonView = view === 'JSON';
+      const jsonView = view === DOCUMENT_VIEW_TYPES.JSON;
       this.setState({
         insert: {
           doc: {},

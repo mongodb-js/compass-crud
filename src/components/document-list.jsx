@@ -3,12 +3,14 @@ import React from 'react';
 import { ObjectID as ObjectId } from 'bson';
 import { StatusRow, ZeroState } from 'hadron-react-components';
 import { TextButton } from 'hadron-react-buttons';
+
 import InsertDocumentDialog from 'components/insert-document-dialog';
 import ZeroGraphic from './zero-graphic';
 import DocumentListView from 'components/document-list-view';
 import DocumentJsonView from 'components/document-json-view';
 import DocumentTableView from 'components/document-table-view';
 import Toolbar from 'components/toolbar';
+import DOCUMENT_VIEW_TYPES from '../constants/document-view-types';
 
 import './index.less';
 import './ag-grid-dist.css';
@@ -59,9 +61,9 @@ class DocumentList extends React.Component {
    * @returns {React.Component} The document list views.
    */
   renderViews() {
-    if (this.props.view === 'List') {
+    if (this.props.view === DOCUMENT_VIEW_TYPES.LIST) {
       return (<DocumentListView {...this.props} />);
-    } else if (this.props.view === 'Table') {
+    } else if (this.props.view === DOCUMENT_VIEW_TYPES.TABLE) {
       return (<DocumentTableView {...this.props} />);
     }
 
@@ -208,7 +210,8 @@ class DocumentList extends React.Component {
             insertHandler={this.handleOpenInsert.bind(this)}
             viewSwitchHandler={this.props.viewChanged}
             activeDocumentView={this.props.view}
-            {...this.props} />
+            {...this.props}
+          />
         </div>
         {this.renderOutdatedWarning()}
         {this.renderZeroState()}
@@ -253,7 +256,7 @@ DocumentList.propTypes = {
 
 DocumentList.defaultProps = {
   error: null,
-  view: 'List',
+  view: DOCUMENT_VIEW_TYPES.LIST,
   version: '3.4.0',
   isEditable: true,
   insert: {},
