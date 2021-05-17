@@ -1,3 +1,7 @@
+:warning: This project has been moved to https://github.com/mongodb-js/compass/tree/master/packages/compass-crud
+
+---
+
 # Compass CRUD Plugin [![][workflow_img]][workflow_url] [![][npm_img]][npm_url]
 
 Provide functionality shown in the "Documents" tab in the Collection view in
