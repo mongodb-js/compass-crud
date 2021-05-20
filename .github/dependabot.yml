@@ -1,0 +1,18 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "08:00"
+    timezone: Australia/Sydney
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: mongodb-connection-model
+    versions:
+    - 19.0.2
+    - 19.0.3
+    - 19.1.0
+  - dependency-name: moment-timezone
+    versions:
+    - 0.5.32
